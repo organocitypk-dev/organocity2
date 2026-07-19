@@ -22,7 +22,7 @@ const values = [
     icon: Award,
     title: "20-Year Legacy",
     description:
-      "Since 2006, Mudassir Meer has built OrganoCity on honesty, dependable service, and a deep respect for Pakistan's natural resources.",
+      "Since 2006, OrganoCity has grown through honesty, dependable service, and a deep respect for Pakistan's natural resources.",
   },
   {
     icon: ShieldCheck,
@@ -115,7 +115,7 @@ export function AboutPageContent() {
 
               <div className="space-y-6 text-base leading-relaxed text-gray-600 sm:text-lg">
                 <p>
-                  OrganoCity began with a simple vision from our founder, <strong className="font-semibold text-gray-900">Mudassir Meer</strong>: make authentic natural products from Pakistan easier to discover, understand, and trust.
+                  OrganoCity began with a simple vision: make authentic natural products from Pakistan easier to discover, understand, and trust.
                 </p>
                 <p>
                   Starting with Himalayan pink salt and traditional wellness products, he built the business around one enduring principle: <strong className="font-semibold text-gray-900">absolute authenticity</strong>. Every customer deserves honest information, thoughtful service, and products selected with care.
@@ -147,8 +147,8 @@ export function AboutPageContent() {
                     <Users className="h-6 w-6" />
                   </div>
                   <div>
-                    <p className="text-base font-bold text-gray-950">Mudassir Meer</p>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-[#b57910]">Founder & CEO</p>
+                    <p className="text-base font-bold text-gray-950">The OrganoCity Team</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[#b57910]">Serving Pakistan Since 2006</p>
                   </div>
                 </div>
               </div>
@@ -231,7 +231,7 @@ export function AboutPageContent() {
                 Four pillars of our business success
               </h2>
               <p className="mt-6 text-base leading-relaxed text-gray-600 sm:text-lg">
-                We build relationships that go beyond a single order. Mudassir Meer&apos;s original commitment to trust still guides how we source products, share information, package orders, and support every customer.
+                We build relationships that go beyond a single order. Our commitment to trust guides how we source products, share information, package orders, and support every customer.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
                 <Button asChild className="rounded-full border border-[#C6A24A]/45 bg-black px-7 py-6 text-[#f6a45d] hover:bg-gray-900">

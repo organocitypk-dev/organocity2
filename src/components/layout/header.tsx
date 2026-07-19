@@ -28,7 +28,6 @@ import { search as trackSearch } from "@/lib/pixel";
 
 const mainMenuItems = [
   { text: "Home", href: "/" },
-  { text: "All Products", href: "/products" },
   { text: "Products", href: "/products" },
   { text: "Accessories", href: "/category/accessories" },
   { text: "Deals", href: "/collections/hot-deals" },
@@ -332,7 +331,7 @@ export function Header() {
                       : "text-[#1a1308]"
                   }`}
                 >
-                  Categories
+                  All Products
                 </Link>
                 <ChevronDown className="h-4 w-4 text-[#7a6333] transition-transform duration-200 group-hover:rotate-180" />
               </div>
@@ -389,17 +388,6 @@ export function Header() {
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="relative">
-            <Link
-              href="/products"
-              className={`text-sm font-semibold transition-colors hover:text-[#b57910] ${
-                isActive("/products") ? "text-[#8a5b00]" : "text-[#1a1308]"
-              }`}
-            >
-              All Products
-            </Link>
           </div>
 
           <div className="relative">
