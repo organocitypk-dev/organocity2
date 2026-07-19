@@ -1,0 +1,47 @@
+{
+  "name": "OrganoCity",
+  "short_name": "OrganoCity",
+  "description": "Pure Himalayan pink salt, Shilajit, herbal products, salt lamps, and natural wellness products.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fcf5e8",
+  "theme_color": "#C6A24A",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["shopping", "food", "health"],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Shop Products",
+      "short_name": "Shop",
+      "description": "Browse our products",
+      "url": "/products"
+    },
+    {
+      "name": "My Cart",
+      "short_name": "Cart",
+      "description": "View your cart",
+      "url": "/cart"
+    }
+  ]
+}
