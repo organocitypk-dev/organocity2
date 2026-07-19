@@ -11,10 +11,10 @@ import {
 } from "@esmate/shadcn/pkgs/lucide-react";
 
 const highlights = [
-  "20+ Years of industry leadership",
-  "Hand-selected, tested inventory",
-  "Specialists in Himalayan Shilajit & Salt Lamps",
-  "Official after-sales warranty support",
+  "20+ years of trusted service",
+  "Carefully sourced natural products",
+  "Specialists in Himalayan salt and Shilajit",
+  "Secure packaging and nationwide delivery",
 ];
 
 const values = [
@@ -22,25 +22,25 @@ const values = [
     icon: Award,
     title: "20-Year Legacy",
     description:
-      "Since 2006, Mudassir Meer has built a reputation based on transparency. We don't just sell tech; we guide you to the perfect machine.",
+      "Since 2006, Mudassir Meer has built OrganoCity on honesty, dependable service, and a deep respect for Pakistan's natural resources.",
   },
   {
     icon: ShieldCheck,
-    title: "Genuine Verification",
+    title: "Authentic Sourcing",
     description:
-      "We source directly and inspect every device. From keyboard response to battery health, we certify that what you see is what you get.",
+      "We carefully select our Himalayan salt, Shilajit, herbs, honey, oils, and wellness products with quality and authenticity in mind.",
   },
   {
     icon: Sparkles,
-    title: "Premium Catalog",
+    title: "Natural Collection",
     description:
-      "We curate only high-performance Himalayan Shilajit, enterprise-grade herbal products, and authentic natural wellness products that lasts.",
+      "Our collection brings together edible pink salt, handcrafted salt decor, pure Shilajit, herbal care, and everyday wellness essentials.",
   },
   {
     icon: Headphones,
-    title: "Human Support",
+    title: "Personal Support",
     description:
-      "No robotic scripts. Our experienced support team helps you set up, upgrade, and troubleshoot your system post-purchase.",
+      "Our team offers clear product guidance, responsive order support, secure delivery assistance, and genuine after-sales care.",
   },
 ];
 
@@ -59,12 +59,12 @@ export function AboutPageContent() {
               </span>
 
               <h1 className="font-serif text-4xl font-extrabold leading-[1.1] tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
-                Authentic Products & Accessories.
-                <span className="mt-2 block text-[#ea580c]">Founded by Mudassir Meer.</span>
+                Nature&apos;s finest, from Pakistan.
+                <span className="mt-2 block text-[#ea580c]">The story of OrganoCity.</span>
               </h1>
 
               <p className="max-w-2xl text-base leading-relaxed text-gray-700 sm:text-lg">
-                For over two decades, we have been Pakistan's go-to destination for high-quality Himalayan Shilajit, performance products, and certified natural products.
+                For more than two decades, OrganoCity has shared authentic Himalayan pink salt, pure Shilajit, herbal products, and natural wellness essentials with families across Pakistan.
               </p>
 
               <div className="flex flex-wrap gap-4 pt-2">
@@ -88,8 +88,8 @@ export function AboutPageContent() {
               <div className="absolute inset-0 rounded-[32px] bg-gradient-to-tr from-[#C6A24A] to-[#f6a45d] opacity-40 blur-md" />
               <div className="relative aspect-video overflow-hidden rounded-[28px] border border-[#C6A24A]/35 bg-white shadow-xl lg:aspect-square">
                 <Image
-                  src="https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=800&q=80"
-                  alt="Premium workspace setups"
+                  src="https://res.cloudinary.com/dwfj50rzg/image/upload/v1775730489/organocity/products/lo6qnaapdivv39mpjeb8.png"
+                  alt="OrganoCity Himalayan pink salt crystal lamp"
                   fill
                   className="object-cover"
                   priority
@@ -109,19 +109,19 @@ export function AboutPageContent() {
                   How We Started
                 </span>
                 <h2 className="mt-4 font-serif text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
-                  Twenty years ago, buying a product was a leap of faith.
+                  A trusted name in natural products since 2006.
                 </h2>
               </div>
 
               <div className="space-y-6 text-base leading-relaxed text-gray-600 sm:text-lg">
                 <p>
-                  Back in the early 2000s, our founder, <strong className="font-semibold text-gray-900">Mudassir Meer</strong>, noticed a persistent problem in Pakistan's tech market: a lack of trust. Customers wanting high-end products or Himalayan Shilajit were often met with faked specifications, swapped batteries, and non-existent warranty support.
+                  OrganoCity began with a simple vision from our founder, <strong className="font-semibold text-gray-900">Mudassir Meer</strong>: make authentic natural products from Pakistan easier to discover, understand, and trust.
                 </p>
                 <p>
-                  Determined to create a change, Mudassir set up a single repair and testing table with one core philosophy: <strong className="font-semibold text-gray-900">absolute authenticity</strong>. He believed that if you treat customers with honesty, explain spec sheets clearly, and supply only tested, genuine products, people would notice.
+                  Starting with Himalayan pink salt and traditional wellness products, he built the business around one enduring principle: <strong className="font-semibold text-gray-900">absolute authenticity</strong>. Every customer deserves honest information, thoughtful service, and products selected with care.
                 </p>
                 <p>
-                  They did. Today, OrganoCity has grown into one of the most trusted natural wellness brands in the country. We specialize in curate-select Himalayan pink salt, Shilajit, handcrafted salt products, herbal products, honey, and other natural wellness essentials.
+                  Today, OrganoCity serves customers across Pakistan with edible pink salt, handcrafted salt lamps and decor, pure Himalayan Shilajit, herbal products, honey, oils, dry fruits, and other natural wellness essentials.
                 </p>
               </div>
 
@@ -140,7 +140,7 @@ export function AboutPageContent() {
                 <div className="absolute right-0 top-0 h-16 w-16 rounded-tr-3xl border-r-2 border-t-2 border-[#C6A24A]" />
                 <h3 className="mb-4 font-serif text-2xl font-bold text-[#ea580c]">Our Commitment</h3>
                 <blockquote className="mb-6 text-base leading-relaxed italic text-gray-700 sm:text-lg">
-                  &ldquo;OrganoCity isn't just about selling boxes of natural products. We help software developers compile faster, students write their theses without battery anxiety, and gamers play with smooth frames. We stand behind every screw in every product we sell.&rdquo;
+                  &ldquo;OrganoCity is more than a store. It is our promise to share the natural richness of Pakistan with honesty, care, and respect—from the source to every customer&apos;s home.&rdquo;
                 </blockquote>
                 <div className="flex items-center gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#C6A24A] bg-[#f6a45d]/20 text-[#ea580c]">
@@ -164,10 +164,10 @@ export function AboutPageContent() {
               Our Collections
             </span>
             <h2 className="font-serif text-3xl font-extrabold text-gray-900 sm:text-4xl lg:text-5xl">
-              Curated Tech Built for Performance
+              Naturally sourced, thoughtfully selected
             </h2>
             <p className="text-base text-gray-600 sm:text-lg">
-              We select, audit, and showcase only premium hardware devices that match modern workloads.
+              Explore the product families at the heart of OrganoCity, chosen for authenticity, usefulness, and everyday wellbeing.
             </p>
           </div>
 
@@ -175,7 +175,7 @@ export function AboutPageContent() {
             <div className="group rounded-3xl border border-[#C6A24A]/20 bg-white p-8 shadow-lg transition-all hover:border-[#f6a45d]">
               <div className="relative mb-6 h-48 w-full overflow-hidden rounded-2xl bg-gray-100">
                 <Image
-                  src="https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=600&q=80"
+                  src="https://res.cloudinary.com/dwfj50rzg/image/upload/v1775730375/organocity/products/v2ep6qff4zyhxq9vnqdt.jpg"
                   alt="Himalayan Shilajit"
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -183,37 +183,37 @@ export function AboutPageContent() {
               </div>
               <h3 className="font-serif text-xl font-bold text-gray-950 transition-colors group-hover:text-[#ea580c]">Himalayan Shilajit</h3>
               <p className="mt-3 text-sm leading-relaxed text-gray-600">
-                Specialized configurations of Shilajit Air and Pro. Inspected for battery cycles, hardware thermals, and display perfection. Perfect for creative designers and programmers.
+                Pure Himalayan Shilajit selected for customers who value traditional wellness, authenticity, and clear product guidance.
               </p>
             </div>
 
             <div className="group rounded-3xl border border-[#C6A24A]/20 bg-white p-8 shadow-lg transition-all hover:border-[#f6a45d]">
               <div className="relative mb-6 h-48 w-full overflow-hidden rounded-2xl bg-gray-100">
                 <Image
-                  src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80"
-                  alt="Premium Products"
+                  src="https://res.cloudinary.com/dwfj50rzg/image/upload/v1775730497/organocity/products/jtgbx8llvrsaef0chgzy.png"
+                  alt="OrganoCity Himalayan edible pink salt"
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
-              <h3 className="font-serif text-xl font-bold text-gray-950 transition-colors group-hover:text-[#ea580c]">Premium Products</h3>
+              <h3 className="font-serif text-xl font-bold text-gray-950 transition-colors group-hover:text-[#ea580c]">Himalayan Pink Salt</h3>
               <p className="mt-3 text-sm leading-relaxed text-gray-600">
-                Carefully selected edible salts, natural wellness products, honey, dry fruits, and herbal essentials with clear product information and secure packaging.
+                Naturally mineral-rich edible salt, cooking products, bath care, and beautifully handcrafted lamps and decor from the Himalayan salt range.
               </p>
             </div>
 
             <div className="group rounded-3xl border border-[#C6A24A]/20 bg-white p-8 shadow-lg transition-all hover:border-[#f6a45d]">
               <div className="relative mb-6 h-48 w-full overflow-hidden rounded-2xl bg-gray-100">
                 <Image
-                  src="https://images.unsplash.com/photo-1603481588273-2f908a9a7a1b?auto=format&fit=crop&w=600&q=80"
-                  alt="Natural Products"
+                  src="https://res.cloudinary.com/dwfj50rzg/image/upload/v1775730510/organocity/products/omm2anfecmznicysbzhd.jpg"
+                  alt="OrganoCity herbal wellness product"
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
-              <h3 className="font-serif text-xl font-bold text-gray-950 transition-colors group-hover:text-[#ea580c]">Natural Products</h3>
+              <h3 className="font-serif text-xl font-bold text-gray-950 transition-colors group-hover:text-[#ea580c]">Herbal & Wellness</h3>
               <p className="mt-3 text-sm leading-relaxed text-gray-600">
-                Genuine peripherals including mechanical keyboards, ergonomic mice, multi-port USB-C hubs, protective sleeves, and high-resolution monitors to complete your workspace.
+                Herbal formulations, natural oils, honey, dry fruits, and carefully selected essentials designed to support a balanced everyday lifestyle.
               </p>
             </div>
           </div>
@@ -231,14 +231,14 @@ export function AboutPageContent() {
                 Four pillars of our business success
               </h2>
               <p className="mt-6 text-base leading-relaxed text-gray-600 sm:text-lg">
-                We believe in building relationships that go beyond a simple transaction. Mudassir Meer's original goal of establishing trust is visible in the way we handle testing, packaging, and warranty claims.
+                We build relationships that go beyond a single order. Mudassir Meer&apos;s original commitment to trust still guides how we source products, share information, package orders, and support every customer.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
                 <Button asChild className="rounded-full border border-[#C6A24A]/45 bg-black px-7 py-6 text-[#f6a45d] hover:bg-gray-900">
                   <Link href="/products">Shop the Catalog</Link>
                 </Button>
                 <Button asChild variant="outline" className="rounded-full border-gray-300 bg-white px-7 py-6 text-gray-800 hover:bg-gray-50">
-                  <Link href="/contact">Visit Our Showroom</Link>
+                  <Link href="/contact">Contact OrganoCity</Link>
                 </Button>
               </div>
             </div>

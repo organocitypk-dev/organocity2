@@ -34,7 +34,7 @@ export function SiteLoader() {
         </h1>
 
         <p className="mt-2 text-sm text-[#5A5E55] sm:text-base">
-          Your Trusted Tech Destination
+          Natural wellness from Pakistan
         </p>
 
         <div className="mt-6 flex items-center gap-2">

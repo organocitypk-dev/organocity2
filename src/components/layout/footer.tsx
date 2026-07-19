@@ -21,7 +21,7 @@ export function Footer() {
             </Link>
 
             <p className="text-sm text-gray-600 leading-relaxed max-w-xs">
-              Your Trusted Tech Destination — premium products, natural wellness products, and accessories with genuine warranty support.
+              Authentic Himalayan pink salt, Shilajit, herbal products, and natural wellness essentials delivered across Pakistan.
             </p>
 
             <div className="flex space-x-4">
