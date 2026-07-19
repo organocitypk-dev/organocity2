@@ -41,6 +41,10 @@ export function HeroSlideForm({ editingSlide, formValues, setFormValues, saving,
             hint="Used on vertical mobile screens. Leave empty to use the desktop image."
           />
           <Input value={formValues.imageAlt} onChange={(value) => setFormValues((v) => ({ ...v, imageAlt: value }))} placeholder="Image Alt Text" />
+          <div>
+            <input type="number" min={1} step={1} value={formValues.order ?? ""} onChange={(e) => setFormValues((v) => ({ ...v, order: e.target.value ? Number(e.target.value) : undefined }))} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#f6a45d]/50" placeholder="Slide order (1 = first, 2 = second, 3 = third...)" />
+            <p className="mt-1 text-xs text-[#5A5E55]">Leave empty to place a new slide last. You can change this order at any time.</p>
+          </div>
           <Input value={formValues.eyebrow} onChange={(value) => setFormValues((v) => ({ ...v, eyebrow: value }))} placeholder="Eyebrow Text (e.g., Your Trusted Tech Destination)" />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Input value={formValues.title} onChange={(value) => setFormValues((v) => ({ ...v, title: value }))} placeholder="Title (e.g., Premium Products)" />

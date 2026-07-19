@@ -20,7 +20,7 @@ const updateHeroSlideSchema = z.object({
   ctaSecondaryLabel: z.string().optional(),
   ctaSecondaryHref: z.string().optional(),
   isActive: z.boolean().optional(),
-  order: z.number().optional(),
+  order: z.number().int().positive().optional(),
 });
 
 interface Params {

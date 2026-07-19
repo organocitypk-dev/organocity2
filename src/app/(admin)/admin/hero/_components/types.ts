@@ -11,4 +11,5 @@ export type SlideFormValues = {
   ctaSecondaryLabel?: string;
   ctaSecondaryHref?: string;
   isActive: boolean;
+  order?: number;
 };

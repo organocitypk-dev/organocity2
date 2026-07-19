@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { HeroSlide } from "@/types/hero";
 import staticHeroSlides from "../../data/hero-slides.json";
 
-type HeroSlideInput = Omit<HeroSlide, "id" | "order">;
+type HeroSlideInput = Omit<HeroSlide, "id" | "order"> & { order?: number };
 type HeroSlideUpdate = Partial<Omit<HeroSlide, "id">>;
 
 function toHeroSlide(slide: any): HeroSlide {
@@ -54,12 +54,17 @@ export async function getAllHeroSlides(): Promise<HeroSlide[]> {
 }
 
 export async function createHeroSlide(slide: HeroSlideInput): Promise<HeroSlide> {
-  const maxSlide = await prisma.heroSlide.findFirst({
-    orderBy: { order: "desc" },
-    select: { order: true },
-  });
-  const created = await prisma.heroSlide.create({
-    data: { ...slide, order: (maxSlide?.order ?? 0) + 1 },
+  const slideCount = await prisma.heroSlide.count();
+  const requestedOrder = slide.order ?? slideCount + 1;
+  const order = Math.min(Math.max(requestedOrder, 1), slideCount + 1);
+  const { order: _requestedOrder, ...data } = slide;
+
+  const created = await prisma.$transaction(async (tx) => {
+    await tx.heroSlide.updateMany({
+      where: { order: { gte: order } },
+      data: { order: { increment: 1 } },
+    });
+    return tx.heroSlide.create({ data: { ...data, order } });
   });
   return toHeroSlide(created);
 }
@@ -69,9 +74,31 @@ export async function updateHeroSlide(
   data: HeroSlideUpdate,
 ): Promise<HeroSlide | null> {
   try {
-    const updated = await prisma.heroSlide.update({
-      where: { id },
-      data,
+    const current = await prisma.heroSlide.findUnique({ where: { id } });
+    if (!current) return null;
+
+    const { order: requestedOrder, ...slideData } = data;
+    const updated = await prisma.$transaction(async (tx) => {
+      if (requestedOrder !== undefined && requestedOrder !== current.order) {
+        const slideCount = await tx.heroSlide.count();
+        const order = Math.min(Math.max(requestedOrder, 1), slideCount);
+
+        if (order < current.order) {
+          await tx.heroSlide.updateMany({
+            where: { id: { not: id }, order: { gte: order, lt: current.order } },
+            data: { order: { increment: 1 } },
+          });
+        } else {
+          await tx.heroSlide.updateMany({
+            where: { id: { not: id }, order: { gt: current.order, lte: order } },
+            data: { order: { decrement: 1 } },
+          });
+        }
+
+        return tx.heroSlide.update({ where: { id }, data: { ...slideData, order } });
+      }
+
+      return tx.heroSlide.update({ where: { id }, data: slideData });
     });
     return toHeroSlide(updated);
   } catch (error: any) {

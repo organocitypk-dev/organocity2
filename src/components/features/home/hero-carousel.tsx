@@ -104,9 +104,6 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
         );
       })}
 
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-orange-50/10" />
-      <div className="pointer-events-none absolute inset-0 z-[2] bg-[linear-gradient(90deg,rgba(255,247,237,0.82)_0%,rgba(255,247,237,0.62)_34%,rgba(255,247,237,0.28)_58%,rgba(255,255,255,0.04)_76%,transparent_100%)]" />
-
       <div className="absolute inset-0 z-10">
         {slides.map((slide, index) => {
           const isActive = index === active;

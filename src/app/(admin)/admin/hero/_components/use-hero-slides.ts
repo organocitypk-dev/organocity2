@@ -8,6 +8,7 @@ const emptyForm: SlideFormValues = {
   imageUrl: "", mobileImageUrl: "", imageAlt: "", eyebrow: "", title: "", titleHighlight: "",
   description: "", ctaPrimaryLabel: undefined, ctaPrimaryHref: undefined,
   ctaSecondaryLabel: undefined, ctaSecondaryHref: undefined, isActive: true,
+  order: undefined,
 };
 
 export function useHeroSlides() {
@@ -44,8 +45,8 @@ export function useHeroSlides() {
       const url = editingSlide ? `/api/admin/hero/${editingSlide.id}` : "/api/admin/hero";
       const res = await fetch(url, { method: editingSlide ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(formValues) });
       if (!res.ok) throw new Error((await res.json()).error || "Failed to save slide");
-      const data = await res.json();
-      setSlides((items) => editingSlide ? items.map((s) => (s.id === editingSlide.id ? data.slide : s)) : [...items, data.slide]);
+      await res.json();
+      await fetchSlides();
       resetForm();
     } catch (error: any) {
       setError(error.message || "Failed to save slide");
@@ -86,7 +87,7 @@ export function useHeroSlides() {
 
   function editSlide(slide: HeroSlide) {
     setEditingSlide(slide);
-    setFormValues({ imageUrl: slide.imageUrl, mobileImageUrl: slide.mobileImageUrl ?? "", imageAlt: slide.imageAlt, eyebrow: slide.eyebrow, title: slide.title, titleHighlight: slide.titleHighlight, description: slide.description, ctaPrimaryLabel: slide.ctaPrimaryLabel, ctaPrimaryHref: slide.ctaPrimaryHref, ctaSecondaryLabel: slide.ctaSecondaryLabel, ctaSecondaryHref: slide.ctaSecondaryHref, isActive: slide.isActive });
+    setFormValues({ imageUrl: slide.imageUrl, mobileImageUrl: slide.mobileImageUrl ?? "", imageAlt: slide.imageAlt, eyebrow: slide.eyebrow, title: slide.title, titleHighlight: slide.titleHighlight, description: slide.description, ctaPrimaryLabel: slide.ctaPrimaryLabel, ctaPrimaryHref: slide.ctaPrimaryHref, ctaSecondaryLabel: slide.ctaSecondaryLabel, ctaSecondaryHref: slide.ctaSecondaryHref, isActive: slide.isActive, order: slide.order });
     setShowForm(true);
   }
 

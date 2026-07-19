@@ -16,6 +16,7 @@ const heroSlideSchema = z.object({
   ctaSecondaryLabel: z.string().optional(),
   ctaSecondaryHref: z.string().optional(),
   isActive: z.boolean().default(true),
+  order: z.number().int().positive().optional(),
 });
 
 export async function GET(request: NextRequest) {
