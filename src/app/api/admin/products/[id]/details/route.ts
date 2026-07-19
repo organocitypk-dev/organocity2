@@ -5,7 +5,7 @@ import { requireAdmin } from "@/lib/admin-auth";
 
 const detailSchema = z.object({
   id: z.string().optional(), // For updates
-  title: z.string().min(1, "Detail title is required"),
+  title: z.string().default(""),
   description: z.string().optional(),
   image: z.string().optional(),
   videoUrl: z.string().optional(),
@@ -30,10 +30,10 @@ export async function GET(
     }
 
     return NextResponse.json({ details: product.details });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching details:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to fetch details" },
+      { error: error instanceof Error ? error.message : "Failed to fetch details" },
       { status: 401 }
     );
   }
@@ -58,7 +58,7 @@ export async function POST(
     }
 
     // Validate each detail
-    const validatedDetails = details.map((d: any) => detailSchema.parse(d));
+    const validatedDetails = z.array(detailSchema).parse(details);
 
     // Update the product with new details
     const product = await prisma.product.update({

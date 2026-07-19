@@ -16,6 +16,12 @@ import { ProductInfoPanel } from "./_components/ProductInfoPanel";
 import { ProductVariantsSection, type VariantCardItem } from "./_components/ProductVariantsSection";
 import { ExtraProductDetails } from "./_components/ExtraProductDetails";
 import {
+  ProductFaqs,
+  ProductInformationGrid,
+  ProductSpecifications,
+  WholesaleQuoteSection,
+} from "./_components/ProductStructuredSections";
+import {
   ProductDescriptionSection,
   ProductReviewsSection,
   RelatedProductsSection,
@@ -41,6 +47,7 @@ export function ProductSingle({ data }: Props) {
   const [url, setUrl] = useState("");
   const [buyLoading, setBuyLoading] = useState(false);
   const [wishlisted, setWishlisted] = useState(false);
+  const [selectedPackagingSize, setSelectedPackagingSize] = useState(data.packagingSizes[0] || "");
 
   const defaultVariantId = useMemo(() => {
     return data.variants?.nodes.find((variant) => variant.availableForSale)?.id || data.variants?.nodes[0]?.id;
@@ -328,7 +335,31 @@ export function ProductSingle({ data }: Props) {
             descriptionHtml={data.descriptionHtml}
           />
 
+          <ProductInformationGrid
+            packagingSizes={data.packagingSizes}
+            netWeight={data.netWeight}
+            origin={data.origin}
+            shelfLife={data.shelfLife}
+            selectedPackagingSize={selectedPackagingSize}
+            onSelectPackagingSize={setSelectedPackagingSize}
+          />
+
           <ExtraProductDetails details={data.details || []} />
+
+          <ProductSpecifications specifications={data.specifications} />
+
+          <ProductFaqs faqs={data.faqs} />
+
+          {data.wholesaleQuoteEnabled ? (
+            <WholesaleQuoteSection
+              productName={data.title}
+              productId={data.id}
+              sku={selectedVariant?.sku || data.sku}
+              selectedOption={[selectedLabel, selectedPackagingSize ? `Packaging: ${selectedPackagingSize}` : ""].filter(Boolean).join(", ")}
+              productUrl={url}
+              whatsappNumber={whatsAppNumber}
+            />
+          ) : null}
 
           <ProductReviewsSection productHandle={productHandle} />
 

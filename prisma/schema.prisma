@@ -33,6 +33,12 @@ model Product {
   displayOrder     Int      @default(9999)
   details          Json     @default("[]")
   certificates     Json     @default("[]")
+  packagingSizes   Json     @default("[]")
+  netWeight        String?
+  origin           String?
+  shelfLife        String?
+  faqs             Json     @default("[]")
+  wholesaleQuoteEnabled Boolean @default(false)
   color            String?
   size             String?
   storage          String?

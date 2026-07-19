@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-auth";
+import type { Prisma } from "@prisma/client";
 
 const productSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -28,11 +29,21 @@ const productSchema = z.object({
   displayOrder: z.number().int().min(1).default(9999),
   details: z.array(z.object({
     id: z.string(),
-    title: z.string().min(1, "Detail title is required"),
+    title: z.string().default(""),
     description: z.string().optional(),
     image: z.string().optional(),
     videoUrl: z.string().optional(),
   })).default([]),
+  packagingSizes: z.array(z.string()).default([]),
+  netWeight: z.string().optional(),
+  origin: z.string().optional(),
+  shelfLife: z.string().optional(),
+  faqs: z.array(z.object({
+    id: z.string(),
+    question: z.string(),
+    answer: z.string(),
+  })).default([]),
+  wholesaleQuoteEnabled: z.boolean().default(false),
   color: z.string().optional(), size: z.string().optional(), storage: z.string().optional(), ram: z.string().optional(),
   processor: z.string().optional(), condition: z.string().optional(),
   specifications: z.record(z.string(), z.string()).default({}), customAttributes: z.record(z.string(), z.string()).default({}),
@@ -53,10 +64,11 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get("limit") || "20");
     const search = searchParams.get("search") || "";
     const status = searchParams.get("status") || "";
-    const sort = searchParams.get("sort") || "displayOrder";
-    const order = searchParams.get("order") || "asc";
+    const requestedSort = searchParams.get("sort") || "displayOrder";
+    const sort = ["displayOrder", "updatedAt", "title", "price"].includes(requestedSort) ? requestedSort : "displayOrder";
+    const order = searchParams.get("order") === "desc" ? "desc" : "asc";
 
-    const where: any = {};
+    const where: Prisma.ProductWhereInput = {};
     if (search) {
       where.OR = [
         { title: { contains: search, mode: "insensitive" } },
@@ -104,12 +116,11 @@ export async function POST(request: Request) {
 
     const { details, variants, ...productData } = validated;
 
-    if (!productData.categoryId) delete (productData as any).categoryId;
-    if (!productData.subcategoryId) delete (productData as any).subcategoryId;
-
     const product = await prisma.product.create({
       data: {
         ...productData,
+        categoryId: productData.categoryId || null,
+        subcategoryId: productData.subcategoryId || null,
         details: details,
         variations: { create: variants.map(({ id, ...variant }) => ({ id, ...variant, value: variant.name })) },
       },

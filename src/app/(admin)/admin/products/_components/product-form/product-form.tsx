@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { ProductFormValues } from "./types";
-import { BasicInfoSection, DetailsSection } from "./sections";
+import { BasicInfoSection, DetailsSection, StructuredInformationSection } from "./sections";
 import { FormFooter } from "./form-footer";
 import { useProductForm } from "./use-product-form";
 import { AttributesFields } from "./attributes-fields";
@@ -53,6 +53,8 @@ export function ProductForm({
         </section>
 
         <VariantsSection values={form.values} setValues={form.setValues} />
+
+        <StructuredInformationSection values={form.values} setValues={form.setValues} />
 
         <DetailsSection
           values={form.values}

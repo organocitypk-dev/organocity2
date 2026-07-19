@@ -28,11 +28,21 @@ const productSchema = z.object({
   displayOrder: z.number().int().min(1).default(9999),
   details: z.array(z.object({
     id: z.string(),
-    title: z.string().min(1, "Detail title is required"),
+    title: z.string().default(""),
     description: z.string().optional(),
     image: z.string().optional(),
     videoUrl: z.string().optional(),
   })).default([]),
+  packagingSizes: z.array(z.string()).default([]),
+  netWeight: z.string().optional(),
+  origin: z.string().optional(),
+  shelfLife: z.string().optional(),
+  faqs: z.array(z.object({
+    id: z.string(),
+    question: z.string(),
+    answer: z.string(),
+  })).default([]),
+  wholesaleQuoteEnabled: z.boolean().default(false),
   color: z.string().optional(), size: z.string().optional(), storage: z.string().optional(), ram: z.string().optional(),
   processor: z.string().optional(), condition: z.string().optional(),
   specifications: z.record(z.string(), z.string()).default({}), customAttributes: z.record(z.string(), z.string()).default({}),
@@ -63,10 +73,10 @@ export async function GET(
 
     const { variations, ...productData } = product;
     return NextResponse.json({ ...productData, variants: variations });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching product:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to fetch product" },
+      { error: error instanceof Error ? error.message : "Failed to fetch product" },
       { status: 401 }
     );
   }
@@ -84,9 +94,6 @@ export async function PUT(
     const validated = productSchema.parse(body);
     const { details, variants, ...productData } = validated;
 
-    if (!productData.categoryId) delete (productData as any).categoryId;
-    if (!productData.subcategoryId) delete (productData as any).subcategoryId;
-
     const existing = await prisma.product.findUnique({
       where: { id },
     });
@@ -99,6 +106,8 @@ export async function PUT(
       where: { id },
       data: {
         ...productData,
+        categoryId: productData.categoryId || null,
+        subcategoryId: productData.subcategoryId || null,
         details: details,
         variations: {
           deleteMany: { id: { notIn: variants.map((variant) => variant.id) } },

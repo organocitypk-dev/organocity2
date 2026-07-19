@@ -11,6 +11,12 @@ export type ProductDetail = {
   videoUrl?: string;
 };
 
+export type ProductFaq = {
+  id: string;
+  question: string;
+  answer: string;
+};
+
 export type ProductAttributes = {
   color?: string;
   size?: string;
@@ -59,5 +65,11 @@ export type ProductFormValues = ProductAttributes & {
   isFeatured: boolean;
   displayOrder: number;
   details: ProductDetail[];
+  packagingSizes: string[];
+  netWeight?: string;
+  origin?: string;
+  shelfLife?: string;
+  faqs: ProductFaq[];
+  wholesaleQuoteEnabled: boolean;
   variants: ProductVariantFormValue[];
 };

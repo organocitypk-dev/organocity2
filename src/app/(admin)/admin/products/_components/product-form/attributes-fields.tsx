@@ -6,8 +6,7 @@ const inputClass = "w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm
 
 export function AttributesFields({ value, onChange }: { value: ProductAttributes; onChange: (patch: Partial<ProductAttributes>) => void }) {
   const fields: Array<[keyof ProductAttributes, string]> = [
-    ["color", "Color"], ["size", "Net Weight / Size"], ["storage", "Packaging Size"], ["ram", "Net Weight"],
-    ["processor", "Ingredients / Material"], ["condition", "Product Form (legacy field)"],
+    ["color", "Color"], ["size", "Size"], ["condition", "Product Form"],
   ];
   return (
     <div className="grid gap-3 sm:grid-cols-2">
