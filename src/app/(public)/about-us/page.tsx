@@ -6,9 +6,9 @@ import { createSeoMetadata } from "@/lib/seo"
 
 export const metadata = createSeoMetadata({
   title: "About OrganoCity Pakistan",
-  description: "Learn about OrganoCity Pakistan, KPK: over 20 years supplying authentic Shilajit products, salt lamps, herbal products and natural products across Pakistan.",
+  description: "Learn about OrganoCity Pakistan, founded in 2018 by Ihsan ul Haq to provide authentic Himalayan pink salt, Shilajit and natural wellness products.",
   path: "/about-us",
-  keywords: ["OrganoCity Pakistan", "Natural Products Pakistan", "Shilajit Pakistan", "Himalayan Pink Salt Pakistan"],
+  keywords: ["OrganoCity Pakistan", "Ihsan ul Haq", "Natural Products Pakistan", "Shilajit Pakistan", "Himalayan Pink Salt Pakistan"],
 })
 
 export const dynamic = "force-dynamic";

@@ -11,7 +11,7 @@ import {
 } from "@esmate/shadcn/pkgs/lucide-react";
 
 const highlights = [
-  "20+ years of trusted service",
+  "Serving customers since 2018",
   "Carefully sourced natural products",
   "Specialists in Himalayan salt and Shilajit",
   "Secure packaging and nationwide delivery",
@@ -20,9 +20,9 @@ const highlights = [
 const values = [
   {
     icon: Award,
-    title: "20-Year Legacy",
+    title: "Growing Since 2018",
     description:
-      "Since 2006, OrganoCity has grown through honesty, dependable service, and a deep respect for Pakistan's natural resources.",
+      "Founded by Ihsan ul Haq, OrganoCity has grown through honesty, dependable service, and respect for Pakistan's natural resources.",
   },
   {
     icon: ShieldCheck,
@@ -55,7 +55,7 @@ export function AboutPageContent() {
           <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
             <div className="space-y-6 lg:col-span-7">
               <span className="inline-flex rounded-full border border-[#C6A24A]/50 bg-[#C6A24A]/15 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#b57910]">
-                Our 20+ Year Legacy
+                Our Story Since 2018
               </span>
 
               <h1 className="font-serif text-4xl font-extrabold leading-[1.1] tracking-tight text-gray-900 sm:text-5xl lg:text-6xl">
@@ -64,7 +64,7 @@ export function AboutPageContent() {
               </h1>
 
               <p className="max-w-2xl text-base leading-relaxed text-gray-700 sm:text-lg">
-                For more than two decades, OrganoCity has shared authentic Himalayan pink salt, pure Shilajit, herbal products, and natural wellness essentials with families across Pakistan.
+                OrganoCity connects nature&apos;s purity with everyday wellness through authentic Himalayan pink salt, pure Shilajit, herbal products, and carefully selected natural essentials.
               </p>
 
               <div className="flex flex-wrap gap-4 pt-2">
@@ -109,13 +109,13 @@ export function AboutPageContent() {
                   How We Started
                 </span>
                 <h2 className="mt-4 font-serif text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
-                  A trusted name in natural products since 2006.
+                  Built on trust, quality, and consistency.
                 </h2>
               </div>
 
               <div className="space-y-6 text-base leading-relaxed text-gray-600 sm:text-lg">
                 <p>
-                  OrganoCity began with a simple vision: make authentic natural products from Pakistan easier to discover, understand, and trust.
+                  Founded in 2018 by <strong className="font-semibold text-gray-900">Ihsan ul Haq</strong>, OrganoCity began with a simple belief: nature&apos;s purest offerings deserve to reach people who value authenticity.
                 </p>
                 <p>
                   Starting with Himalayan pink salt and traditional wellness products, he built the business around one enduring principle: <strong className="font-semibold text-gray-900">absolute authenticity</strong>. Every customer deserves honest information, thoughtful service, and products selected with care.
@@ -140,15 +140,15 @@ export function AboutPageContent() {
                 <div className="absolute right-0 top-0 h-16 w-16 rounded-tr-3xl border-r-2 border-t-2 border-[#C6A24A]" />
                 <h3 className="mb-4 font-serif text-2xl font-bold text-[#ea580c]">Our Commitment</h3>
                 <blockquote className="mb-6 text-base leading-relaxed italic text-gray-700 sm:text-lg">
-                  &ldquo;OrganoCity is more than a store. It is our promise to share the natural richness of Pakistan with honesty, care, and respect—from the source to every customer&apos;s home.&rdquo;
+                  &ldquo;We are committed to genuine Himalayan pink salt and wellness essentials, handled responsibly and delivered with purity, care, and customer trust at the center.&rdquo;
                 </blockquote>
                 <div className="flex items-center gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#C6A24A] bg-[#f6a45d]/20 text-[#ea580c]">
                     <Users className="h-6 w-6" />
                   </div>
                   <div>
-                    <p className="text-base font-bold text-gray-950">The OrganoCity Team</p>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-[#b57910]">Serving Pakistan Since 2006</p>
+                    <p className="text-base font-bold text-gray-950">Ihsan ul Haq</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[#b57910]">Founder — OrganoCity</p>
                   </div>
                 </div>
               </div>
