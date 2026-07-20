@@ -135,7 +135,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
                 </h1>
 
                 {slide.description && (
-                  <p className="mt-5 max-w-lg text-base font-medium leading-7 text-black sm:text-lg">
+                  <p className="relative isolate mt-5 max-w-lg text-base font-medium leading-7 text-black before:absolute before:-inset-x-3 before:-inset-y-2 before:-z-10 before:bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.3)_0%,rgba(255,255,255,0.14)_58%,transparent_82%)] before:blur-[2px] sm:text-lg">
                     {slide.description}
                   </p>
                 )}
