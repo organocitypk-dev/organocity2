@@ -303,6 +303,7 @@ export function ProductSingle({ data }: Props) {
 
             <ProductInfoPanel
               title={selectedTitle}
+              shortDescription={data.description}
               priceBlock={priceBlock}
               reviewStats={visibleReviewStats}
               inventory={inventory}
@@ -330,10 +331,7 @@ export function ProductSingle({ data }: Props) {
             getWhatsAppHref={getVariantWhatsAppHref}
           />
 
-          <ProductDescriptionSection
-            description={data.description}
-            descriptionHtml={data.descriptionHtml}
-          />
+          <ProductDescriptionSection descriptionHtml={data.descriptionHtml} />
 
           <ProductInformationGrid
             packagingSizes={data.packagingSizes}

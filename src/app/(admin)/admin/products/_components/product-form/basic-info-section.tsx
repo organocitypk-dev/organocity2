@@ -38,8 +38,14 @@ export function BasicInfoSection({
             {subcategories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </div>
-        <textarea value={values.description ?? ""} onChange={(e) => setValues((v) => ({ ...v, description: e.target.value }))} rows={4} className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm transition-all focus:border-[#f6a45d] focus:outline-none focus:ring-2 focus:ring-[#f6a45d]/50" placeholder="Product Description" />
-        <textarea value={values.descriptionHtml ?? ""} onChange={(e) => setValues((v) => ({ ...v, descriptionHtml: e.target.value }))} rows={4} className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 font-mono text-sm transition-all focus:border-[#f6a45d] focus:outline-none focus:ring-2 focus:ring-[#f6a45d]/50" placeholder="HTML Description (optional)" />
+        <label className="block text-sm font-semibold text-gray-800">
+          Short Description
+          <textarea value={values.description ?? ""} onChange={(e) => setValues((v) => ({ ...v, description: e.target.value }))} rows={4} className="mt-1.5 w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm font-normal transition-all focus:border-[#f6a45d] focus:outline-none focus:ring-2 focus:ring-[#f6a45d]/50" placeholder="Write a short paragraph shown beside the product name" />
+        </label>
+        <label className="block text-sm font-semibold text-gray-800">
+          Detailed Description (HTML)
+          <textarea value={values.descriptionHtml ?? ""} onChange={(e) => setValues((v) => ({ ...v, descriptionHtml: e.target.value }))} rows={6} className="mt-1.5 w-full resize-y rounded-lg border border-gray-300 px-4 py-3 font-mono text-sm font-normal transition-all focus:border-[#f6a45d] focus:outline-none focus:ring-2 focus:ring-[#f6a45d]/50" placeholder="Add the detailed product description using HTML" />
+        </label>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <input value={values.productType ?? ""} onChange={(e) => setValues((v) => ({ ...v, productType: e.target.value }))} className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm transition-all focus:border-[#f6a45d] focus:outline-none focus:ring-2 focus:ring-[#f6a45d]/50" placeholder="Product Type" />
           <input value={values.vendor ?? ""} onChange={(e) => setValues((v) => ({ ...v, vendor: e.target.value }))} className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm transition-all focus:border-[#f6a45d] focus:outline-none focus:ring-2 focus:ring-[#f6a45d]/50" placeholder="Vendor" />

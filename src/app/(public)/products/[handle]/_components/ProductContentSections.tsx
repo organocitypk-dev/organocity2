@@ -14,31 +14,26 @@ type RelatedProduct = {
 };
 
 export function ProductDescriptionSection({
-  description,
   descriptionHtml,
 }: {
-  description?: string | null;
   descriptionHtml?: string | null;
 }) {
   const hasDescriptionHtml = Boolean(descriptionHtml?.trim());
-  const hasDescription = Boolean(description?.trim());
 
   return (
     <section className="rounded-2xl border border-orange-200/80 bg-white p-5 shadow-sm sm:p-6">
       <div className="max-w-4xl">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-700">Overview</p>
-        <h2 className="mt-2 font-serif text-2xl font-extrabold text-gray-950 sm:text-3xl">Product Description</h2>
+        <h2 className="mt-2 font-serif text-2xl font-extrabold text-gray-950 sm:text-3xl">Detailed Description</h2>
         <div className="mt-4">
           {hasDescriptionHtml ? (
             <div
               className="prose prose-sm max-w-none text-gray-700"
               dangerouslySetInnerHTML={{ __html: descriptionHtml || "" }}
             />
-          ) : hasDescription ? (
-            <p className="whitespace-pre-line text-sm leading-7 text-gray-700">{description}</p>
           ) : (
             <p className="text-sm text-gray-700">
-              This product is ready for consultation. Contact OrganoCity for detailed specifications.
+              Detailed product information will be added here soon.
             </p>
           )}
         </div>
