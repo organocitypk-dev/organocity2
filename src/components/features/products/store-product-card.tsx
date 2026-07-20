@@ -272,7 +272,7 @@ export function StoreProductCard({
       >
         {/* Current image — slides out to the left once a new image starts coming in */}
         <div
-          className={`absolute inset-0 transition-transform duration-700 ease-in-out will-change-transform group-hover:scale-110 ${
+          className={`absolute inset-0 transition-transform duration-700 ease-in-out will-change-transform ${
             incomingImg && slideIn ? "-translate-x-full" : "translate-x-0"
           }`}
         >
@@ -282,7 +282,7 @@ export function StoreProductCard({
               alt={title}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              className="object-contain p-5"
+              className="scale-105 object-contain p-2 transition-transform duration-700 ease-out group-hover:scale-125"
               onError={() =>
                 setFailedImages((current) =>
                   current.includes(currentImg) ? current : [...current, currentImg]
@@ -295,7 +295,7 @@ export function StoreProductCard({
         {/* Incoming image — starts fully off-screen to the right, glides in slowly */}
         {incomingImg && (
           <div
-            className={`absolute inset-0 transition-transform duration-700 ease-in-out will-change-transform group-hover:scale-110 ${
+            className={`absolute inset-0 transition-transform duration-700 ease-in-out will-change-transform ${
               slideIn ? "translate-x-0" : "translate-x-full"
             }`}
           >
@@ -304,7 +304,7 @@ export function StoreProductCard({
               alt={title}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              className="object-contain p-5"
+              className="scale-105 object-contain p-2 transition-transform duration-700 ease-out group-hover:scale-125"
               onError={() =>
                 setFailedImages((current) =>
                   current.includes(incomingImg) ? current : [...current, incomingImg]
