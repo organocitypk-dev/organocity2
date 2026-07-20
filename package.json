@@ -6,7 +6,7 @@
   "scripts": {
     "start": "next start",
     "dev": "esmate task dev",
-    "build": "prisma generate && prisma migrate deploy && next build",
+    "build": "prisma generate && next build",
     "fix": "esmate task fix",
     "check": "esmate task check",
     "db:migrate": "prisma migrate dev --name replace_shopify_backend",
@@ -64,7 +64,6 @@
     },
     "build": [
       "prisma generate",
-      "prisma migrate deploy",
       "next build"
     ],
     "fix": [
