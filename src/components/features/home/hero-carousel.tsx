@@ -120,7 +120,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
             >
               <div className="w-full max-w-xl">
                 {slide.eyebrow && (
-                  <span className="mb-4 inline-flex items-center rounded-full border border-orange-300/80 bg-white/70 px-4 py-1.5 text-xs font-bold uppercase tracking-normal text-orange-700 shadow-sm backdrop-blur-sm">
+                  <span className="mb-4 inline-flex items-center rounded-full border border-[#1E6332]/40 bg-white/70 px-4 py-1.5 text-xs font-bold uppercase tracking-normal text-[#1E6332] shadow-sm backdrop-blur-sm">
                     {slide.eyebrow}
                   </span>
                 )}
@@ -128,14 +128,14 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
                 <h1 className="max-w-xl font-serif text-4xl font-extrabold leading-tight tracking-normal text-gray-950 sm:text-5xl lg:text-6xl">
                   <span>{slide.title}</span>
                   {slide.titleHighlight && (
-                    <span className="block text-[#ea580c]">
+                    <span className="block text-[#1E6332]">
                       {slide.titleHighlight}
                     </span>
                   )}
                 </h1>
 
                 {slide.description && (
-                  <p className="mt-5 max-w-lg text-base font-medium leading-7 text-gray-700 sm:text-lg">
+                  <p className="mt-5 max-w-lg text-base font-medium leading-7 text-black sm:text-lg">
                     {slide.description}
                   </p>
                 )}
@@ -146,7 +146,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
                       <Link
                         href={slide.ctaPrimaryHref || "#"}
                         tabIndex={isActive ? 0 : -1}
-                        className="group inline-flex min-h-10 items-center justify-center gap-1.5 whitespace-nowrap rounded-md bg-orange-500 px-3 text-xs font-bold text-white shadow-[0_14px_30px_rgba(249,115,22,0.28)] transition-all duration-300 hover:-translate-y-1 hover:bg-orange-600 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-300 sm:min-h-12 sm:gap-2 sm:px-6 sm:text-sm"
+                        className="group inline-flex min-h-10 items-center justify-center gap-1.5 whitespace-nowrap rounded-md bg-[#1E6332] px-3 text-xs font-bold text-white shadow-[0_14px_30px_rgba(30,99,50,0.24)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#174f28] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#1E6332]/30 sm:min-h-12 sm:gap-2 sm:px-6 sm:text-sm"
                       >
                         {slide.ctaPrimaryLabel}
                         <span
@@ -162,7 +162,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
                       <Link
                         href={slide.ctaSecondaryHref || "#"}
                         tabIndex={isActive ? 0 : -1}
-                        className="inline-flex min-h-10 items-center justify-center whitespace-nowrap rounded-md border border-orange-200 bg-white/75 px-3 text-xs font-bold text-slate-800 shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-300 sm:min-h-12 sm:px-6 sm:text-sm"
+                        className="inline-flex min-h-10 items-center justify-center whitespace-nowrap rounded-md border border-[#1E6332]/35 bg-white/75 px-3 text-xs font-bold text-[#1E6332] shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#1E6332]/30 sm:min-h-12 sm:px-6 sm:text-sm"
                       >
                         {slide.ctaSecondaryLabel}
                       </Link>
@@ -181,7 +181,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
             type="button"
             onClick={prev}
             aria-label="Previous slide"
-            className="group absolute left-0 top-1/2 z-30 flex h-16 w-10 -translate-y-1/2 items-center justify-center rounded-r-xl bg-black/10 text-white transition-all duration-300 hover:bg-black/20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-300 sm:h-20 sm:w-12 lg:h-24 lg:w-14"
+            className="group absolute left-0 top-1/2 z-30 flex h-16 w-10 -translate-y-1/2 items-center justify-center rounded-r-xl bg-black/10 text-white transition-all duration-300 hover:bg-black/20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#1E6332]/30 sm:h-20 sm:w-12 lg:h-24 lg:w-14"
           >
             <ChevronLeft className="h-6 w-6 transition-transform duration-300 group-hover:-translate-x-1 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />
           </button>
@@ -190,7 +190,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
             type="button"
             onClick={next}
             aria-label="Next slide"
-            className="group absolute right-0 top-1/2 z-30 flex h-16 w-10 -translate-y-1/2 items-center justify-center rounded-l-xl bg-black/10 text-white transition-all duration-300 hover:bg-black/20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-300 sm:h-20 sm:w-12 lg:h-24 lg:w-14"
+            className="group absolute right-0 top-1/2 z-30 flex h-16 w-10 -translate-y-1/2 items-center justify-center rounded-l-xl bg-black/10 text-white transition-all duration-300 hover:bg-black/20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#1E6332]/30 sm:h-20 sm:w-12 lg:h-24 lg:w-14"
           >
             <ChevronRight className="h-6 w-6 transition-transform duration-300 group-hover:translate-x-1 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />
           </button>
@@ -214,9 +214,9 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
                 aria-label={`Go to slide ${index + 1}`}
                 aria-selected={isActive}
                 onClick={() => goTo(index)}
-                className={`h-2 rounded-full shadow-sm transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-orange-300 sm:h-2.5 ${
+                className={`h-2 rounded-full shadow-sm transition-all duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#1E6332]/30 sm:h-2.5 ${
                   isActive
-                    ? "w-12 bg-orange-500 sm:w-16"
+                    ? "w-12 bg-[#1E6332] sm:w-16"
                     : "w-8 bg-white/70 hover:bg-white sm:w-11"
                 }`}
               />
