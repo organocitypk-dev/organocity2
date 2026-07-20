@@ -12,6 +12,7 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { initiateCheckout } from "@/lib/pixel";
+import { calculateDiscountedUnitPrice, type WholesaleDiscountTier } from "@/lib/product-discounts";
 
 type MoneyV2 = {
   amount: string;
@@ -22,6 +23,8 @@ type ProductData = {
   id: string;
   handle: string;
   title: string;
+  generalDiscountPercent?: number;
+  wholesaleDiscounts?: WholesaleDiscountTier[];
   variants: {
     nodes: Array<{
       id: string;
@@ -68,6 +71,10 @@ type CartLine = {
       title: string;
     };
     price: MoneyV2;
+    basePrice?: MoneyV2;
+    generalDiscountPercent?: number;
+    wholesaleDiscounts?: WholesaleDiscountTier[];
+    discountPercent?: number;
   };
 };
 
@@ -81,6 +88,8 @@ type CartContextValue = {
       title?: string;
       price?: { amount: string; currencyCode: string };
       imageUrl?: string;
+      generalDiscountPercent?: number;
+      wholesaleDiscounts?: WholesaleDiscountTier[];
     }>,
   ) => Promise<void>;
   removeLine: (lineId: string) => void;
@@ -113,6 +122,24 @@ function calculateLineTotal(price: MoneyV2, quantity: number): MoneyV2 {
   return {
     amount: (Number(price.amount) * quantity).toFixed(2),
     currencyCode: price.currencyCode,
+  };
+}
+
+function getLinePrice(
+  basePrice: MoneyV2,
+  quantity: number,
+  generalDiscountPercent?: number,
+  wholesaleDiscounts?: WholesaleDiscountTier[],
+) {
+  const pricing = calculateDiscountedUnitPrice(
+    Number(basePrice.amount),
+    quantity,
+    generalDiscountPercent,
+    wholesaleDiscounts,
+  );
+  return {
+    unitPrice: { amount: pricing.unitPrice.toFixed(2), currencyCode: basePrice.currencyCode },
+    discountPercent: pricing.discountPercent,
   };
 }
 
@@ -211,6 +238,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         let image = null;
         let price = { amount: "0", currencyCode: "PKR" };
         let title = "";
+        let generalDiscountPercent = incomingLine.generalDiscountPercent || 0;
+        let wholesaleDiscounts = incomingLine.wholesaleDiscounts || [];
 
         if (incomingLine.title) {
           title = incomingLine.title;
@@ -226,6 +255,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
             null;
           price = variant.price;
           title = product.title;
+          generalDiscountPercent = product.generalDiscountPercent || 0;
+          wholesaleDiscounts = product.wholesaleDiscounts || [];
         } else if (simpleProduct) {
           image = simpleProduct.image || null;
           price = simpleProduct.price;
@@ -240,18 +271,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
         if (existingLine) {
           existingLine.quantity += incomingLine.quantity;
-          existingLine.cost.totalAmount = calculateLineTotal(
-            existingLine.merchandise.price,
-            existingLine.quantity,
-          );
+          const basePrice = existingLine.merchandise.basePrice || existingLine.merchandise.price;
+          const nextPricing = getLinePrice(basePrice, existingLine.quantity, existingLine.merchandise.generalDiscountPercent, existingLine.merchandise.wholesaleDiscounts);
+          existingLine.merchandise.price = nextPricing.unitPrice;
+          existingLine.merchandise.discountPercent = nextPricing.discountPercent;
+          existingLine.cost.totalAmount = calculateLineTotal(nextPricing.unitPrice, existingLine.quantity);
           continue;
         }
+
+        const linePricing = getLinePrice(price, incomingLine.quantity, generalDiscountPercent, wholesaleDiscounts);
 
         nextLines.push({
           id: effectiveId,
           quantity: incomingLine.quantity,
           cost: {
-            totalAmount: calculateLineTotal(price, incomingLine.quantity),
+            totalAmount: calculateLineTotal(linePricing.unitPrice, incomingLine.quantity),
           },
           merchandise: {
             id: effectiveId,
@@ -267,7 +301,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
               handle: product?.handle || simpleProduct?.handle || incomingLine.merchandiseId,
               title: title,
             },
-            price: price,
+            price: linePricing.unitPrice,
+            basePrice: price,
+            generalDiscountPercent,
+            wholesaleDiscounts,
+            discountPercent: linePricing.discountPercent,
           },
         });
       }
@@ -289,19 +327,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
       current.map((line) => {
         if (line.id === lineId) {
           const newQuantity = quantity;
-          const pricePerUnit = {
-            amount: (Number(line.cost.totalAmount.amount) / line.quantity).toFixed(2),
-            currencyCode: line.cost.totalAmount.currencyCode,
-          };
+          const basePrice = line.merchandise.basePrice || line.merchandise.price;
+          const nextPricing = getLinePrice(basePrice, newQuantity, line.merchandise.generalDiscountPercent, line.merchandise.wholesaleDiscounts);
           return {
             ...line,
             quantity: newQuantity,
             cost: {
-              totalAmount: {
-                amount: (Number(pricePerUnit.amount) * newQuantity).toFixed(2),
-                currencyCode: pricePerUnit.currencyCode,
-              },
+              totalAmount: calculateLineTotal(nextPricing.unitPrice, newQuantity),
             },
+            merchandise: { ...line.merchandise, price: nextPricing.unitPrice, discountPercent: nextPricing.discountPercent },
           };
         }
         return line;

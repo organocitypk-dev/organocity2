@@ -21,6 +21,7 @@ export function CheckoutOrderSummary({ cart, subtotal, paymentMethod }: { cart: 
         <div className="min-w-0 flex-1">
           <Link href={`/products/${line.merchandise.product.handle}`} className="line-clamp-2 text-sm font-bold text-[#1a1308] hover:text-[#c86f2d]">{line.merchandise.product.title}</Link>
           <p className="mt-1 text-sm font-extrabold text-[#c86f2d]">Rs. {Number(line.cost.totalAmount.amount).toLocaleString()}</p>
+          {line.merchandise.discountPercent ? <p className="mt-1 text-xs font-bold text-green-700">{line.merchandise.discountPercent}% quantity discount applied</p> : null}
           <div className="mt-2 flex items-center justify-between gap-2">
             <div className="inline-flex items-center rounded-lg border border-[#C6A24A]/25 bg-[#fcf5e8]">
               <button type="button" aria-label="Decrease quantity" onClick={() => cart.updateQuantity(line.id, line.quantity - 1)} className="p-1.5 text-[#5A5E55] hover:text-[#1a1308]"><Minus className="h-3.5 w-3.5" /></button>

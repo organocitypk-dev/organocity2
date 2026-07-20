@@ -10,6 +10,11 @@ const productSchema = z.object({
   descriptionHtml: z.string().optional(),
   price: z.number().min(0, "Price must be positive"),
   compareAtPrice: z.number().optional(),
+  generalDiscountPercent: z.number().min(0).max(100).default(0),
+  wholesaleDiscounts: z.array(z.object({
+    minQuantity: z.number().int().min(2),
+    discountPercent: z.number().min(0.01).max(100),
+  })).default([]),
   sku: z.string().optional(),
   inventory: z.number().int().min(0, "Inventory must be non-negative"),
   availableForSale: z.boolean().default(true),

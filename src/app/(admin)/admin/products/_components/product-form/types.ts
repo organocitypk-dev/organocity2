@@ -48,6 +48,8 @@ export type ProductFormValues = ProductAttributes & {
   descriptionHtml?: string;
   price: number;
   compareAtPrice?: number | null;
+  generalDiscountPercent: number;
+  wholesaleDiscounts: Array<{ minQuantity: number; discountPercent: number }>;
   sku?: string;
   inventory: number;
   availableForSale: boolean;

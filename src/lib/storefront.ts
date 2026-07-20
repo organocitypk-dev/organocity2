@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSitePage } from "@/lib/site-settings";
 import type { Prisma } from "@prisma/client";
+import { normalizeWholesaleDiscounts, type WholesaleDiscountTier } from "@/lib/product-discounts";
 
 const DEFAULT_CURRENCY = "PKR";
 const DEFAULT_PAGE_SIZE = 12;
@@ -40,6 +41,8 @@ type ProductNode = {
   title: string;
   description: string | null;
   descriptionHtml: string | null;
+  generalDiscountPercent: number;
+  wholesaleDiscounts: WholesaleDiscountTier[];
   seo: {
     title: string;
     description: string;
@@ -236,6 +239,8 @@ async function buildProductNode(product: {
   descriptionHtml: string | null;
   price: number;
   compareAtPrice: number | null;
+  generalDiscountPercent: number;
+  wholesaleDiscounts: Prisma.JsonValue;
   sku: string | null;
   inventory: number;
   availableForSale: boolean;
@@ -274,6 +279,8 @@ async function buildProductNode(product: {
     title: product.title,
     description: product.description,
     descriptionHtml: product.descriptionHtml,
+    generalDiscountPercent: product.generalDiscountPercent,
+    wholesaleDiscounts: normalizeWholesaleDiscounts(product.wholesaleDiscounts),
     seo: {
       title: product.seoTitle ?? product.title,
       description: product.seoDescription ?? product.description ?? product.title,
@@ -395,6 +402,8 @@ export async function getProduct(handle: string) {
       descriptionHtml: true,
       price: true,
       compareAtPrice: true,
+      generalDiscountPercent: true,
+      wholesaleDiscounts: true,
       sku: true,
       inventory: true,
       availableForSale: true,

@@ -116,6 +116,11 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                             </div>
 
                              <div className="flex flex-wrap gap-1">
+                               {line?.merchandise?.discountPercent ? (
+                                 <Badge className="rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-bold text-white hover:bg-orange-500">
+                                   {line.merchandise.discountPercent}% discount applied
+                                 </Badge>
+                               ) : null}
                                {line?.merchandise?.selectedOptions?.map((option) => (
                                  <Badge
                                    key={option?.name}

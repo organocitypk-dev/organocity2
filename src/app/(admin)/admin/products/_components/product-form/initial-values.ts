@@ -7,6 +7,8 @@ export const defaultProductValues: ProductFormValues = {
   descriptionHtml: "",
   price: 0,
   compareAtPrice: null,
+  generalDiscountPercent: 0,
+  wholesaleDiscounts: [],
   sku: "",
   inventory: 0,
   availableForSale: true,

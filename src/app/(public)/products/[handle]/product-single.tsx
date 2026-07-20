@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { ProductProvider, useCart } from "@/lib/commerce";
 import { addToCart as trackAddToCart, initiateCheckout, viewContent } from "@/lib/pixel";
 import { useVariantSelector } from "@/hooks/use-variant-selector";
+import { calculateDiscountedUnitPrice, normalizeWholesaleDiscounts } from "@/lib/product-discounts";
 
 import { getProductSingle } from "./service";
 import { ProductGallerySection } from "./_components/ProductGallerySection";
@@ -38,6 +39,35 @@ interface Props {
   data: Awaited<ReturnType<typeof getProductSingle>>;
 }
 
+function DiscountOffersStrip({
+  generalDiscountPercent,
+  wholesaleDiscounts,
+}: {
+  generalDiscountPercent: number;
+  wholesaleDiscounts: Array<{ minQuantity: number; discountPercent: number }>;
+}) {
+  const offers = [
+    ...(generalDiscountPercent > 0 ? [`${generalDiscountPercent}% OFF on this product`] : []),
+    ...wholesaleDiscounts.map(
+      (tier) => `${tier.discountPercent}% OFF on ${tier.minQuantity}+ items`,
+    ),
+  ];
+
+  if (!offers.length) return null;
+
+  return (
+    <div className="overflow-hidden rounded-lg border border-orange-200 bg-orange-50 py-2 text-orange-900 shadow-sm" aria-label="Available discount offers">
+      <div className="animate-scroll flex w-max min-w-full items-center whitespace-nowrap">
+        {[...offers, ...offers].map((offer, index) => (
+          <span key={`${offer}-${index}`} className="flex items-center px-5 text-xs font-extrabold uppercase tracking-wide sm:text-sm">
+            <span className="mr-5 text-[#f28a32]">●</span>{offer}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function ProductSingle({ data }: Props) {
   const router = useRouter();
   const { linesAdd } = useCart();
@@ -48,6 +78,10 @@ export function ProductSingle({ data }: Props) {
   const [buyLoading, setBuyLoading] = useState(false);
   const [wishlisted, setWishlisted] = useState(false);
   const [selectedPackagingSize, setSelectedPackagingSize] = useState(data.packagingSizes[0] || "");
+  const wholesaleDiscounts = useMemo(
+    () => normalizeWholesaleDiscounts(data.wholesaleDiscounts),
+    [data.wholesaleDiscounts],
+  );
 
   const defaultVariantId = useMemo(() => {
     return data.variants?.nodes.find((variant) => variant.availableForSale)?.id || data.variants?.nodes[0]?.id;
@@ -131,27 +165,35 @@ export function ProductSingle({ data }: Props) {
 
   const displayPrice = useMemo(() => {
     const selectedPrice = getSelectedPrice();
+    const pricing = calculateDiscountedUnitPrice(
+      selectedPrice,
+      quantity,
+      data.generalDiscountPercent,
+      wholesaleDiscounts,
+    );
 
     return {
-      amount: selectedPrice.toFixed(2),
+      amount: pricing.unitPrice.toFixed(2),
       currencyCode: selectedVariant?.price.currencyCode || data.priceRange?.minVariantPrice?.currencyCode || "PKR",
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.priceRange?.minVariantPrice?.currencyCode, selectedVariant, variantId]);
+  }, [data.generalDiscountPercent, data.priceRange?.minVariantPrice?.currencyCode, quantity, selectedVariant, variantId, wholesaleDiscounts]);
 
   const priceBlock: PriceBlock | null = useMemo(() => {
     if (!displayPrice) return null;
 
     const price = parseFloat(displayPrice.amount);
-    const compareAt = selectedVariant?.compareAtPrice
+    const basePrice = getSelectedPrice();
+    const configuredCompareAt = selectedVariant?.compareAtPrice
       ? parseFloat(selectedVariant.compareAtPrice.amount)
       : null;
+    const compareAt = price < basePrice ? Math.max(basePrice, configuredCompareAt || 0) : configuredCompareAt;
     const hasDiscount = compareAt !== null && compareAt > price;
     const savedAmount = hasDiscount ? compareAt - price : 0;
     const savedPct = hasDiscount ? Math.round((savedAmount / compareAt) * 100) : 0;
 
     return { hasDiscount, savedAmount, savedPct, displayPrice, compareAt };
-  }, [displayPrice, selectedVariant?.compareAtPrice]);
+  }, [displayPrice, selectedVariant?.compareAtPrice, quantity]);
 
   const selectedLabel = getSelectedDisplayLabel();
   const selectedPriceLabel = formatMoney(displayPrice.amount, displayPrice.currencyCode);
@@ -184,7 +226,7 @@ export function ProductSingle({ data }: Props) {
         description: `${quantity} x ${selectedTitle}${selectedLabel ? ` (${selectedLabel})` : ""}`,
         icon: <ShoppingCart className="h-4 w-4" />,
       });
-      const price = getSelectedPrice();
+      const price = Number(displayPrice.amount);
       trackAddToCart({
         content_ids: [data.id],
         contents: [{ id: data.id, quantity, item_price: price, variant: selectedLabel || selectedTitle }],
@@ -242,7 +284,7 @@ export function ProductSingle({ data }: Props) {
     setBuyLoading(true);
     try {
       await linesAdd([{ merchandiseId, quantity }]);
-      const price = getSelectedPrice();
+      const price = Number(displayPrice.amount);
       trackAddToCart({
         content_ids: [data.id],
         contents: [{ id: data.id, quantity, item_price: price, variant: selectedLabel || selectedTitle }],
@@ -289,6 +331,11 @@ export function ProductSingle({ data }: Props) {
             <ChevronRight className="h-3 w-3 shrink-0 opacity-60" />
             <span className="max-w-[16rem] truncate font-medium text-[#0a0a0a]">{data.title}</span>
           </nav>
+
+          <DiscountOffersStrip
+            generalDiscountPercent={data.generalDiscountPercent}
+            wholesaleDiscounts={wholesaleDiscounts}
+          />
 
           <div className="grid w-full min-w-0 grid-cols-1 items-stretch gap-4 sm:gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
             <ProductGallerySection
@@ -348,7 +395,7 @@ export function ProductSingle({ data }: Props) {
 
           <ProductFaqs faqs={data.faqs} />
 
-          {data.wholesaleQuoteEnabled ? (
+          {data.wholesaleQuoteEnabled || wholesaleDiscounts.length > 0 ? (
             <WholesaleQuoteSection
               productName={data.title}
               productId={data.id}
@@ -356,6 +403,7 @@ export function ProductSingle({ data }: Props) {
               selectedOption={[selectedLabel, selectedPackagingSize ? `Packaging: ${selectedPackagingSize}` : ""].filter(Boolean).join(", ")}
               productUrl={url}
               whatsappNumber={whatsAppNumber}
+              discountTiers={wholesaleDiscounts}
             />
           ) : null}
 

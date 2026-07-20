@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { calculateDiscountedUnitPrice } from "@/lib/product-discounts";
 
 const orderSchema = z.object({
   productId: z.string().min(1),
@@ -24,7 +25,7 @@ export async function POST(request: Request) {
 
     const product = await prisma.product.findUnique({
       where: { id: input.productId },
-      select: { id: true, title: true, price: true, featuredImage: true, images: true, status: true },
+      select: { id: true, title: true, price: true, featuredImage: true, images: true, status: true, generalDiscountPercent: true, wholesaleDiscounts: true },
     });
     if (!product || product.status !== "ACTIVE") {
       return NextResponse.json({ error: "Product not available" }, { status: 400 });
@@ -34,7 +35,10 @@ export async function POST(request: Request) {
       ? ((product.images as unknown[]).find((x): x is string => typeof x === "string") ?? null)
       : null;
 
+    const pricing = calculateDiscountedUnitPrice(product.price, input.quantity, product.generalDiscountPercent, product.wholesaleDiscounts);
     const subtotal = product.price * input.quantity;
+    const discountedSubtotal = pricing.unitPrice * input.quantity;
+    const discount = Math.round((subtotal - discountedSubtotal) * 100) / 100;
     const order = await prisma.order.create({
       data: {
         orderNumber: generateOrderNumber(),
@@ -50,13 +54,16 @@ export async function POST(request: Request) {
           {
             productId: product.id,
             title: product.title,
-            price: product.price,
+            price: pricing.unitPrice,
+            originalPrice: product.price,
+            discountPercent: pricing.discountPercent,
             quantity: input.quantity,
             image: product.featuredImage || firstImage,
           },
         ],
         subtotal,
-        total: subtotal,
+        discount,
+        total: discountedSubtotal,
         paymentMethod: "cod",
         paymentStatus: "pending",
         orderStatus: "pending",

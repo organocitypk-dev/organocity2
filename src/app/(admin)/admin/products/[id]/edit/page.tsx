@@ -32,6 +32,8 @@ export default function EditProductPage() {
           descriptionHtml: data.descriptionHtml ?? "",
           price: data.price ?? 0,
           compareAtPrice: data.compareAtPrice ?? null,
+          generalDiscountPercent: data.generalDiscountPercent ?? 0,
+          wholesaleDiscounts: Array.isArray(data.wholesaleDiscounts) ? data.wholesaleDiscounts : [],
           sku: data.sku ?? "",
           inventory: data.inventory ?? 0,
           availableForSale: data.availableForSale ?? true,

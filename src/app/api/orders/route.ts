@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { calculateOrderPricing } from "@/lib/order-pricing";
+import { calculateDiscountedUnitPrice } from "@/lib/product-discounts";
 
 const orderCreateSchema = z.object({
   customerName: z.string().min(1),
@@ -59,13 +60,15 @@ export async function POST(request: Request) {
         status: true,
         featuredImage: true,
         images: true,
+        generalDiscountPercent: true,
+        wholesaleDiscounts: true,
       },
     });
 
     const productById = new Map(products.map((p) => [p.id, p]));
     const variations = await prisma.productVariation.findMany({
       where: { id: { in: ids }, active: true, product: { status: "ACTIVE", availableForSale: true } },
-      include: { product: { select: { title: true, featuredImage: true } } },
+      include: { product: { select: { title: true, featuredImage: true, generalDiscountPercent: true, wholesaleDiscounts: true } } },
     });
     const variationById = new Map(variations.map((variation) => [variation.id, variation]));
 
@@ -81,7 +84,8 @@ export async function POST(request: Request) {
       }
       if (variation) {
         const images = Array.isArray(variation.images) ? (variation.images as unknown[]).filter((image): image is string => typeof image === "string") : [];
-        return { productId: variation.id, title: `${variation.product.title} - ${variation.name}`, price: variation.price, quantity: item.quantity, image: images[0] ?? variation.product.featuredImage ?? null, variationId: variation.id };
+        const pricing = calculateDiscountedUnitPrice(variation.price, item.quantity, variation.product.generalDiscountPercent, variation.product.wholesaleDiscounts);
+        return { productId: variation.id, title: `${variation.product.title} - ${variation.name}`, price: pricing.unitPrice, originalPrice: variation.price, discountPercent: pricing.discountPercent, quantity: item.quantity, image: images[0] ?? variation.product.featuredImage ?? null, variationId: variation.id };
       }
       if (!product) throw new Error("Product is not available.");
       // if (product.inventory < item.quantity) {
@@ -91,21 +95,25 @@ export async function POST(request: Request) {
         ? (product.images as unknown[]).filter((x): x is string => typeof x === "string")
         : [];
 
+      const pricing = calculateDiscountedUnitPrice(product.price, item.quantity, product.generalDiscountPercent, product.wholesaleDiscounts);
       return {
         productId: product.id,
         title: product.title,
-        price: product.price,
+        price: pricing.unitPrice,
+        originalPrice: product.price,
+        discountPercent: pricing.discountPercent,
         quantity: item.quantity,
         image: product.featuredImage ?? images[0] ?? null,
       };
     });
 
-    const subtotal = enrichedItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
-    const pricing = calculateOrderPricing(subtotal, input.paymentMethod === "cod");
+    const subtotal = enrichedItems.reduce((sum, i) => sum + i.originalPrice * i.quantity, 0);
+    const discountedSubtotal = enrichedItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    const discount = Math.round((subtotal - discountedSubtotal) * 100) / 100;
+    const pricing = calculateOrderPricing(discountedSubtotal, input.paymentMethod === "cod");
     const shippingCost = pricing.shippingCost;
     const tax = pricing.tax;
-    const discount = 0;
-    const total = pricing.total - discount;
+    const total = pricing.total;
 
     if (input.paymentMethod === "cod" && total > COD_LIMIT) throw new Error(`Cash on delivery is only available for orders up to Rs. ${COD_LIMIT.toLocaleString()}.`);
     if (input.paymentMethod === "jazzcash" && total > JAZZCASH_LIMIT) throw new Error(`JazzCash is only available for orders up to Rs. ${JAZZCASH_LIMIT.toLocaleString()}. Please use bank transfer or bank cash deposit.`);

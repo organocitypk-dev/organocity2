@@ -111,6 +111,7 @@ export function WholesaleQuoteSection({
   selectedOption,
   productUrl,
   whatsappNumber,
+  discountTiers,
 }: {
   productName: string;
   productId: string;
@@ -118,6 +119,7 @@ export function WholesaleQuoteSection({
   selectedOption?: string;
   productUrl: string;
   whatsappNumber: string;
+  discountTiers?: Array<{ minQuantity: number; discountPercent: number }>;
 }) {
   const message = [
     `Assalamualaikum, I would like to request wholesale pricing for ${productName}.`,
@@ -135,6 +137,15 @@ export function WholesaleQuoteSection({
           <span className="inline-flex items-center gap-2 rounded-full bg-[#C6A24A]/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#f6d985]"><PackageCheck className="h-4 w-4" /> Bulk &amp; business supply</span>
           <h2 className="mt-4 font-serif text-2xl font-extrabold sm:text-3xl">Request a Wholesale Quote</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-white/75">Tell us your required quantity and delivery location. Our team will respond with availability, packaging options, and wholesale pricing.</p>
+          {discountTiers?.length ? (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {discountTiers.map((tier) => (
+                <span key={tier.minQuantity} className="rounded-full border border-[#f6d985]/30 bg-[#C6A24A]/15 px-3 py-1.5 text-xs font-bold text-[#f6d985]">
+                  {tier.discountPercent}% off on {tier.minQuantity}+ items
+                </span>
+              ))}
+            </div>
+          ) : null}
         </div>
         <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
           <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#f6a45d] px-5 py-3 text-sm font-bold text-[#1a1308] hover:bg-[#ffb66f]"><MessageCircle className="h-4 w-4" /> Request on WhatsApp</a>

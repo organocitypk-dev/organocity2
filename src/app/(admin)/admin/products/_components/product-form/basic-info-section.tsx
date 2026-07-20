@@ -24,6 +24,29 @@ export function BasicInfoSection({
           <input type="number" min={0} step="0.01" value={values.price} onChange={(e) => setValues((v) => ({ ...v, price: Number(e.target.value) }))} className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm transition-all focus:border-[#f6a45d] focus:outline-none focus:ring-2 focus:ring-[#f6a45d]/50" placeholder="Price" required />
           <input type="number" min={0} step="0.01" value={values.compareAtPrice ?? ""} onChange={(e) => setValues((v) => ({ ...v, compareAtPrice: e.target.value ? Number(e.target.value) : null }))} className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm transition-all focus:border-[#f6a45d] focus:outline-none focus:ring-2 focus:ring-[#f6a45d]/50" placeholder="Compare at Price" />
         </div>
+        <div className="space-y-4 rounded-xl border border-orange-200 bg-orange-50/60 p-4">
+          <div>
+            <h3 className="text-sm font-bold text-gray-900">Product Discounts</h3>
+            <p className="mt-1 text-xs text-gray-600">The best eligible percentage is applied automatically. Discounts do not stack.</p>
+          </div>
+          <label className="block text-sm font-semibold text-gray-800">
+            General discount (%)
+            <input type="number" min={0} max={100} step="0.01" value={values.generalDiscountPercent} onChange={(e) => setValues((v) => ({ ...v, generalDiscountPercent: Math.min(100, Math.max(0, Number(e.target.value))) }))} className="mt-1.5 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-normal focus:border-[#f6a45d] focus:outline-none focus:ring-2 focus:ring-[#f6a45d]/50" placeholder="e.g. 10" />
+          </label>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-3">
+              <div><p className="text-sm font-semibold text-gray-800">Wholesale quantity discounts</p><p className="text-xs text-gray-500">Example: 5 items = 15%, 10 items = 20%</p></div>
+              <button type="button" onClick={() => setValues((v) => ({ ...v, wholesaleDiscounts: [...v.wholesaleDiscounts, { minQuantity: 5, discountPercent: 10 }] }))} className="shrink-0 rounded-lg bg-[#f6a45d] px-3 py-2 text-xs font-bold text-white hover:bg-[#e86f0c]">Add tier</button>
+            </div>
+            {values.wholesaleDiscounts.map((tier, index) => (
+              <div key={index} className="grid grid-cols-[1fr_1fr_auto] gap-2">
+                <input aria-label={`Wholesale tier ${index + 1} minimum quantity`} type="number" min={2} step={1} value={tier.minQuantity} onChange={(e) => setValues((v) => ({ ...v, wholesaleDiscounts: v.wholesaleDiscounts.map((item, itemIndex) => itemIndex === index ? { ...item, minQuantity: Math.max(2, Number(e.target.value)) } : item) }))} className="min-w-0 rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="Quantity" />
+                <input aria-label={`Wholesale tier ${index + 1} discount percentage`} type="number" min={0.01} max={100} step="0.01" value={tier.discountPercent} onChange={(e) => setValues((v) => ({ ...v, wholesaleDiscounts: v.wholesaleDiscounts.map((item, itemIndex) => itemIndex === index ? { ...item, discountPercent: Math.min(100, Math.max(0.01, Number(e.target.value))) } : item) }))} className="min-w-0 rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="Discount %" />
+                <button type="button" aria-label={`Remove wholesale tier ${index + 1}`} onClick={() => setValues((v) => ({ ...v, wholesaleDiscounts: v.wholesaleDiscounts.filter((_, itemIndex) => itemIndex !== index) }))} className="rounded-lg border border-red-200 px-3 text-sm font-bold text-red-600 hover:bg-red-50">Remove</button>
+              </div>
+            ))}
+          </div>
+        </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <input type="number" min={0} step="1" value={values.inventory} onChange={(e) => setValues((v) => ({ ...v, inventory: Number(e.target.value) }))} className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm transition-all focus:border-[#f6a45d] focus:outline-none focus:ring-2 focus:ring-[#f6a45d]/50" placeholder="Inventory Quantity" />
           <input value={values.sku ?? ""} onChange={(e) => setValues((v) => ({ ...v, sku: e.target.value }))} className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm transition-all focus:border-[#f6a45d] focus:outline-none focus:ring-2 focus:ring-[#f6a45d]/50" placeholder="SKU" />
