@@ -231,15 +231,15 @@ export function ProductsFiltered({
   const pagedOtherRows = otherRows.filter((row) => row.products.length > 0);
 
   const selectClassName =
-    "h-9 w-full appearance-auto rounded-md border border-[#C6A24A]/30 bg-[#fcf5e8] px-2 text-xs font-semibold normal-case tracking-normal text-[#0a0a0a] outline-none transition-all duration-200 hover:border-[#C6A24A]/60 focus:border-[#f6a45d] focus:ring-2 focus:ring-[#f6a45d]/20";
+    "storefront-filter-select h-9 w-full min-w-0 appearance-none truncate rounded-md border border-[#C6A24A]/30 bg-[#fcf5e8] py-0 pl-2 pr-6 text-[10px] font-semibold normal-case tracking-normal text-[#0a0a0a] outline-none transition-all duration-200 hover:border-[#C6A24A]/60 focus:border-[#f6a45d] focus:ring-2 focus:ring-[#f6a45d]/20 sm:text-xs";
   const priceInputClassName =
     "h-9 min-w-0 rounded-md border border-[#C6A24A]/30 bg-white px-2 text-xs font-semibold text-[#0a0a0a] outline-none transition-all duration-200 placeholder:text-[#5A5E55]/60 focus:border-[#f6a45d] focus:ring-2 focus:ring-[#f6a45d]/20";
 
   return (
     <section className="min-w-0 space-y-5">
       <div className="border-b border-[#C6A24A]/20 pb-3">
-        <div className="scrollbar-hide flex w-full snap-x snap-mandatory items-end gap-2 overflow-x-auto overscroll-x-contain scroll-smooth sm:justify-end">
-          <label className="grid w-32 shrink-0 snap-start gap-1 text-[9px] font-bold uppercase tracking-wide text-[#5A5E55] sm:w-36 sm:text-[10px]">
+        <div className="grid w-full grid-cols-3 items-end gap-1.5 sm:flex sm:justify-end sm:gap-2">
+          <label className="grid min-w-0 gap-1 text-[8px] font-bold uppercase tracking-wide text-[#5A5E55] sm:w-36 sm:text-[10px]">
             Category
             <select
               value={selectedCategoryId}
@@ -255,7 +255,7 @@ export function ProductsFiltered({
             </select>
           </label>
 
-          <label className="grid w-36 shrink-0 snap-start gap-1 text-[9px] font-bold uppercase tracking-wide text-[#5A5E55] sm:w-40 sm:text-[10px]">
+          <label className="grid min-w-0 gap-1 text-[8px] font-bold uppercase tracking-wide text-[#5A5E55] sm:w-40 sm:text-[10px]">
             Price Range
             <select
               value={priceRange}
@@ -273,7 +273,7 @@ export function ProductsFiltered({
           </label>
 
           {priceRange === "custom" ? (
-            <fieldset className="grid w-44 shrink-0 snap-start gap-1 sm:w-48">
+            <fieldset className="order-last col-span-3 grid min-w-0 gap-1 sm:w-48 sm:shrink-0">
               <legend className="text-[9px] font-bold uppercase tracking-wide text-[#5A5E55] sm:text-[10px]">
                 Your Range (PKR)
               </legend>
@@ -302,7 +302,7 @@ export function ProductsFiltered({
             </fieldset>
           ) : null}
 
-          <label className="grid w-32 shrink-0 snap-start gap-1 text-[9px] font-bold uppercase tracking-wide text-[#5A5E55] sm:w-36 sm:text-[10px]">
+          <label className="grid min-w-0 gap-1 text-[8px] font-bold uppercase tracking-wide text-[#5A5E55] sm:w-36 sm:text-[10px]">
             Sort By
             <select
               value={sortBy}
