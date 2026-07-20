@@ -88,23 +88,23 @@ export function CategoriesSection({ categories }: { categories: Category[] }) {
   return (
     <section className="storefront-categories relative z-20 mt-6 bg-white lg:mx-auto lg:max-w-7xl">
          
-      <div className="flex gap-6 overflow-hidden relative">
-        <div className="animate-scroll scrollbar-hide flex gap-6 px-2 sm:px-3 lg:px-4">
+      <div className="relative flex gap-8 overflow-hidden">
+        <div className="animate-scroll scrollbar-hide flex gap-8 px-2 sm:gap-9 sm:px-3 lg:gap-10 lg:px-4">
            {[...mainCategories, ...mainCategories].map((category, idx) => (
              <Link
                key={`${category.id}-${idx}`}
                href="/products"
                className="group flex flex-col items-center flex-shrink-0"
              >
-              <div className="relative h-24 w-24 overflow-hidden rounded-2xl sm:h-28 sm:w-28 lg:h-32 lg:w-32">
+              <div className="relative h-32 w-32 overflow-hidden rounded-2xl sm:h-40 sm:w-40 lg:h-48 lg:w-48">
                 <Image
                   src={category.image || FALLBACK_IMAGE}
                   alt={category.name}
                   fill
-                  className="object-contain transition-transform duration-300 group-hover:scale-110"
+                  className="object-contain transition-transform duration-700 ease-out group-hover:scale-150"
                 />
               </div>
-               <span className="mt-2 sm:mt-3 text-center text-xs font-bold uppercase text-gray-800">{category.name}</span>
+               <span className="mt-3 text-center text-sm font-bold uppercase text-gray-800">{category.name}</span>
               </Link>
             ))}
           </div>
