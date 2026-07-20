@@ -114,6 +114,8 @@ export function ProductsFiltered({
   const initialCategory = categoryNodes.find((category) => category.slug === initialCategorySlug);
   const [selectedCategoryId, setSelectedCategoryId] = useState(initialCategory?.id || "");
   const [priceRange, setPriceRange] = useState("all");
+  const [customMinPrice, setCustomMinPrice] = useState("");
+  const [customMaxPrice, setCustomMaxPrice] = useState("");
   const [sortBy, setSortBy] = useState("featured");
 
   const categoryById = useMemo(
@@ -162,10 +164,16 @@ export function ProductsFiltered({
   const filteredProducts = useMemo(() => {
     const products = initialProducts.filter((product) => {
       const price = Number(product.price || 0);
-      if (priceRange === "under-50000") return price < 50000;
-      if (priceRange === "50000-100000") return price >= 50000 && price <= 100000;
-      if (priceRange === "100000-200000") return price > 100000 && price <= 200000;
-      if (priceRange === "over-200000") return price > 200000;
+      if (priceRange === "under-1000") return price < 1000;
+      if (priceRange === "1000-3000") return price >= 1000 && price <= 3000;
+      if (priceRange === "3000-5000") return price > 3000 && price <= 5000;
+      if (priceRange === "5000-10000") return price > 5000 && price <= 10000;
+      if (priceRange === "over-10000") return price > 10000;
+      if (priceRange === "custom") {
+        const minimum = customMinPrice === "" ? null : Number(customMinPrice);
+        const maximum = customMaxPrice === "" ? null : Number(customMaxPrice);
+        return (minimum === null || price >= minimum) && (maximum === null || price <= maximum);
+      }
       return true;
     });
 
@@ -175,7 +183,7 @@ export function ProductsFiltered({
       if (sortBy === "name") return a.title.localeCompare(b.title);
       return 0;
     });
-  }, [initialProducts, priceRange, sortBy]);
+  }, [customMaxPrice, customMinPrice, initialProducts, priceRange, sortBy]);
 
   const selectedProducts = useMemo(() => {
     if (!selectedCategoryIds) return filteredProducts;
@@ -223,13 +231,15 @@ export function ProductsFiltered({
   const pagedOtherRows = otherRows.filter((row) => row.products.length > 0);
 
   const selectClassName =
-    "h-10 w-full appearance-auto rounded-lg border border-[#C6A24A]/30 bg-[#fcf5e8] px-2.5 text-xs font-semibold normal-case tracking-normal text-[#0a0a0a] outline-none transition-all duration-200 hover:border-[#C6A24A]/60 focus:border-[#f6a45d] focus:ring-2 focus:ring-[#f6a45d]/20 sm:px-3 sm:text-sm";
+    "h-9 w-full appearance-auto rounded-md border border-[#C6A24A]/30 bg-[#fcf5e8] px-2 text-xs font-semibold normal-case tracking-normal text-[#0a0a0a] outline-none transition-all duration-200 hover:border-[#C6A24A]/60 focus:border-[#f6a45d] focus:ring-2 focus:ring-[#f6a45d]/20";
+  const priceInputClassName =
+    "h-9 min-w-0 rounded-md border border-[#C6A24A]/30 bg-white px-2 text-xs font-semibold text-[#0a0a0a] outline-none transition-all duration-200 placeholder:text-[#5A5E55]/60 focus:border-[#f6a45d] focus:ring-2 focus:ring-[#f6a45d]/20";
 
   return (
     <section className="min-w-0 space-y-5">
-      <div className="border-b border-[#C6A24A]/20 pb-4">
-        <div className="scrollbar-hide flex w-full snap-x snap-mandatory items-end gap-2 overflow-x-auto overscroll-x-contain scroll-smooth sm:justify-end sm:gap-3">
-          <label className="grid w-36 shrink-0 snap-start gap-1 text-[10px] font-bold uppercase tracking-wide text-[#5A5E55] sm:w-44 sm:text-xs">
+      <div className="border-b border-[#C6A24A]/20 pb-3">
+        <div className="scrollbar-hide flex w-full snap-x snap-mandatory items-end gap-2 overflow-x-auto overscroll-x-contain scroll-smooth sm:justify-end">
+          <label className="grid w-32 shrink-0 snap-start gap-1 text-[9px] font-bold uppercase tracking-wide text-[#5A5E55] sm:w-36 sm:text-[10px]">
             Category
             <select
               value={selectedCategoryId}
@@ -245,33 +255,65 @@ export function ProductsFiltered({
             </select>
           </label>
 
-          <label className="grid w-40 shrink-0 snap-start gap-1 text-[10px] font-bold uppercase tracking-wide text-[#5A5E55] sm:w-48 sm:text-xs">
-          Price Range
-          <select
-            value={priceRange}
-            onChange={(event) => setPriceRange(event.target.value)}
-            className={selectClassName}
-          >
-            <option value="all">All Prices</option>
-            <option value="under-50000">Under PKR 50,000</option>
-            <option value="50000-100000">PKR 50,000–100,000</option>
-            <option value="100000-200000">PKR 100,000–200,000</option>
-            <option value="over-200000">Over PKR 200,000</option>
-          </select>
+          <label className="grid w-36 shrink-0 snap-start gap-1 text-[9px] font-bold uppercase tracking-wide text-[#5A5E55] sm:w-40 sm:text-[10px]">
+            Price Range
+            <select
+              value={priceRange}
+              onChange={(event) => setPriceRange(event.target.value)}
+              className={selectClassName}
+            >
+              <option value="all">All Prices</option>
+              <option value="under-1000">Under PKR 1,000</option>
+              <option value="1000-3000">PKR 1,000–3,000</option>
+              <option value="3000-5000">PKR 3,000–5,000</option>
+              <option value="5000-10000">PKR 5,000–10,000</option>
+              <option value="over-10000">Over PKR 10,000</option>
+              <option value="custom">Custom Range</option>
+            </select>
           </label>
 
-          <label className="grid w-36 shrink-0 snap-start gap-1 text-[10px] font-bold uppercase tracking-wide text-[#5A5E55] sm:w-44 sm:text-xs">
-          Sort By
-          <select
-            value={sortBy}
-            onChange={(event) => setSortBy(event.target.value)}
-            className={selectClassName}
-          >
-            <option value="featured">Featured</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-            <option value="name">Name: A to Z</option>
-          </select>
+          {priceRange === "custom" ? (
+            <fieldset className="grid w-44 shrink-0 snap-start gap-1 sm:w-48">
+              <legend className="text-[9px] font-bold uppercase tracking-wide text-[#5A5E55] sm:text-[10px]">
+                Your Range (PKR)
+              </legend>
+              <div className="grid grid-cols-2 gap-1.5">
+                <input
+                  type="number"
+                  min="0"
+                  inputMode="numeric"
+                  value={customMinPrice}
+                  onChange={(event) => setCustomMinPrice(event.target.value)}
+                  placeholder="Min"
+                  aria-label="Minimum price in PKR"
+                  className={priceInputClassName}
+                />
+                <input
+                  type="number"
+                  min="0"
+                  inputMode="numeric"
+                  value={customMaxPrice}
+                  onChange={(event) => setCustomMaxPrice(event.target.value)}
+                  placeholder="Max"
+                  aria-label="Maximum price in PKR"
+                  className={priceInputClassName}
+                />
+              </div>
+            </fieldset>
+          ) : null}
+
+          <label className="grid w-32 shrink-0 snap-start gap-1 text-[9px] font-bold uppercase tracking-wide text-[#5A5E55] sm:w-36 sm:text-[10px]">
+            Sort By
+            <select
+              value={sortBy}
+              onChange={(event) => setSortBy(event.target.value)}
+              className={selectClassName}
+            >
+              <option value="featured">Featured</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="name">Name: A to Z</option>
+            </select>
           </label>
         </div>
       </div>
