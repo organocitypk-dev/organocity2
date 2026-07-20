@@ -1,12 +1,11 @@
-const CACHE_NAME = 'organocity-v1';
+const CACHE_NAME = 'organocity-v2';
 const OFFLINE_URL = '/offline.html';
 
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
   '/offline.html',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
+  '/icons/icon.svg',
 ];
 
 self.addEventListener('install', (event) => {
@@ -67,7 +66,7 @@ self.addEventListener('fetch', (event) => {
         return networkResponse;
       }).catch(() => {
         if (event.request.destination === 'image') {
-          return caches.match('/icons/icon-192x192.png');
+          return caches.match('/icons/icon.svg');
         }
       });
     })
