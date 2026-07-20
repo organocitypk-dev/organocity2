@@ -113,7 +113,7 @@ const [recentProducts, collectionProducts] = await Promise.all([
       where: { status: "ACTIVE" },
       orderBy: { updatedAt: "desc" },
       take: 40,
-      select: { id: true, handle: true, title: true, price: true, compareAtPrice: true, featuredImage: true, images: true, tags: true, categoryId: true, subcategoryId: true, isFeatured: true, createdAt: true, updatedAt: true },
+      select: { id: true, handle: true, title: true, price: true, compareAtPrice: true, featuredImage: true, images: true, tags: true, categoryId: true, subcategoryId: true, isFeatured: true, displayOrder: true, createdAt: true, updatedAt: true },
     }),
     [],
   ),
@@ -125,7 +125,7 @@ const [recentProducts, collectionProducts] = await Promise.all([
             status: "ACTIVE",
             handle: { in: collectionProductHandles },
           },
-          select: { id: true, handle: true, title: true, price: true, compareAtPrice: true, featuredImage: true, images: true, tags: true, categoryId: true, subcategoryId: true, isFeatured: true, createdAt: true, updatedAt: true },
+          select: { id: true, handle: true, title: true, price: true, compareAtPrice: true, featuredImage: true, images: true, tags: true, categoryId: true, subcategoryId: true, isFeatured: true, displayOrder: true, createdAt: true, updatedAt: true },
         }),
         [],
       )

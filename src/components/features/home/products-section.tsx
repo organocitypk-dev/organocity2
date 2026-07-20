@@ -29,6 +29,7 @@ interface Product {
   categoryId: string | null;
   subcategoryId: string | null;
   isFeatured: boolean;
+  displayOrder?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -254,11 +255,17 @@ export function ProductsSection({ categories, products, collections }: { categor
   const featuredRows = mainCategories
     .map((category) => {
       const categoryIds = new Set([category.id, ...(subcategoryIdsByParentId.get(category.id) || [])]);
-      const rowProducts = featuredProducts.filter(
-        (product) =>
-          (product.categoryId && categoryIds.has(product.categoryId)) ||
-          (product.subcategoryId && categoryIds.has(product.subcategoryId)),
-      );
+      const rowProducts = featuredProducts
+        .filter(
+          (product) =>
+            (product.categoryId && categoryIds.has(product.categoryId)) ||
+            (product.subcategoryId && categoryIds.has(product.subcategoryId)),
+        )
+        .sort(
+          (a, b) =>
+            (a.displayOrder ?? 9999) - (b.displayOrder ?? 9999) ||
+            a.title.localeCompare(b.title),
+        );
 
       return { category, products: rowProducts };
     })
