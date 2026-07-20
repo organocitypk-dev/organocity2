@@ -118,7 +118,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
                   : "pointer-events-none translate-y-5 opacity-0"
               }`}
             >
-              <div className="w-full max-w-xl rounded-2xl bg-white/70 p-4 shadow-sm backdrop-blur-sm sm:rounded-none sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none">
+              <div className="relative isolate w-full max-w-xl before:absolute before:-inset-x-5 before:-inset-y-4 before:-z-10 before:bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.34)_0%,rgba(255,255,255,0.2)_45%,rgba(255,255,255,0.08)_65%,transparent_82%)] before:blur-sm sm:before:-inset-x-8 sm:before:-inset-y-6">
                 {slide.eyebrow && (
                   <span className="mb-4 inline-flex items-center rounded-full border border-[#1E6332]/40 bg-white/70 px-4 py-1.5 text-xs font-bold uppercase tracking-normal text-[#1E6332] shadow-sm backdrop-blur-sm">
                     {slide.eyebrow}
