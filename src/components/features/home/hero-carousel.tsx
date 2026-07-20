@@ -128,7 +128,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
                 <h1 className="max-w-xl font-serif text-4xl font-extrabold leading-tight tracking-normal text-gray-950 sm:text-5xl lg:text-6xl">
                   <span>{slide.title}</span>
                   {slide.titleHighlight && (
-                    <span className="block text-[#1E6332]">
+                    <span className="block text-[#e86f0c]">
                       {slide.titleHighlight}
                     </span>
                   )}
@@ -146,7 +146,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
                       <Link
                         href={slide.ctaPrimaryHref || "#"}
                         tabIndex={isActive ? 0 : -1}
-                        className="group inline-flex min-h-10 items-center justify-center gap-1.5 whitespace-nowrap rounded-md bg-[#1E6332] px-3 text-xs font-bold text-white shadow-[0_14px_30px_rgba(30,99,50,0.24)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#174f28] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#1E6332]/30 sm:min-h-12 sm:gap-2 sm:px-6 sm:text-sm"
+                        className="group inline-flex min-h-10 items-center justify-center gap-1.5 whitespace-nowrap rounded-md bg-[#f28a32] px-3 text-xs font-bold text-white shadow-[0_14px_30px_rgba(232,111,12,0.34)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#df650d] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#f6a45d]/45 sm:min-h-12 sm:gap-2 sm:px-6 sm:text-sm"
                       >
                         {slide.ctaPrimaryLabel}
                         <span
