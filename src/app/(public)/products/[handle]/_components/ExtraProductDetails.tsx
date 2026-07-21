@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { Maximize2, X } from "@esmate/shadcn/pkgs/lucide-react";
 
 type ExtraProductDetail = {
   id: string;
@@ -75,13 +76,29 @@ function AutoplayYouTubeVideo({ videoId, title }: { videoId: string; title: stri
 }
 
 export function ExtraProductDetails({ details }: { details: ExtraProductDetail[] }) {
+  const [fullImage, setFullImage] = useState<{ url: string; alt: string } | null>(null);
   const visibleDetails = details.filter((detail) => detail.title?.trim() || detail.description?.trim() || detail.image?.trim() || getYouTubeId(detail.videoUrl));
+
+  useEffect(() => {
+    if (!fullImage) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setFullImage(null);
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [fullImage]);
 
   if (!visibleDetails.length) {
     return null;
   }
 
   return (
+    <>
     <section className="overflow-hidden rounded-2xl border border-orange-200/80 bg-[linear-gradient(135deg,rgba(255,247,237,0.96),rgba(255,255,255,0.9))] p-4 shadow-sm sm:p-6">
       <div className="mx-auto max-w-3xl text-center">
         <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-700">Product Highlights</p>
@@ -115,6 +132,15 @@ export function ExtraProductDetails({ details }: { details: ExtraProductDetail[]
                     className="object-cover"
                     sizes="(max-width: 1024px) 100vw, 50vw"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setFullImage({ url: detail.image!, alt: detail.title || "Product detail" })}
+                    className="absolute bottom-3 right-3 z-10 inline-flex items-center gap-2 rounded-full bg-black/75 px-3 py-2 text-xs font-bold text-white shadow-lg backdrop-blur-sm transition hover:bg-black focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    aria-label={`View full image for ${detail.title || "product detail"}`}
+                  >
+                    <Maximize2 className="h-4 w-4" />
+                    View full image
+                  </button>
                 </div>
               ) : null}
               <div className={`flex flex-col justify-center p-5 sm:p-7 lg:p-8 ${!hasMedia ? "lg:col-span-2" : mediaOnRight ? "lg:order-1" : "lg:order-2"}`}>
@@ -133,5 +159,30 @@ export function ExtraProductDetails({ details }: { details: ExtraProductDetail[]
         })}
       </div>
     </section>
+    {fullImage ? (
+      <div
+        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-3 backdrop-blur-sm sm:p-8"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Full product detail image"
+        onClick={() => setFullImage(null)}
+      >
+        <button
+          type="button"
+          onClick={() => setFullImage(null)}
+          className="absolute right-4 top-4 z-10 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white text-gray-950 shadow-lg transition hover:bg-orange-50"
+          aria-label="Close full image"
+        >
+          <X className="h-6 w-6" />
+        </button>
+        <img
+          src={fullImage.url}
+          alt={fullImage.alt}
+          className="max-h-full max-w-full rounded-xl object-contain shadow-2xl"
+          onClick={(event) => event.stopPropagation()}
+        />
+      </div>
+    ) : null}
+    </>
   );
 }
