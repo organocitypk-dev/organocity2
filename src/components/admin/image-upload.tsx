@@ -27,9 +27,11 @@ export function AdminImageUpload({
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [deletingUrl, setDeletingUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function uploadFiles(files: FileList) {
     setUploading(true);
+    setError(null);
     try {
       const uploadedUrls: string[] = [];
       for (const file of Array.from(files)) {
@@ -54,6 +56,8 @@ export function AdminImageUpload({
       } else {
         onChangeMany?.([...(values || []), ...uploadedUrls]);
       }
+    } catch (uploadError) {
+      setError(uploadError instanceof Error ? uploadError.message : "Upload failed");
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = "";
@@ -64,6 +68,7 @@ export function AdminImageUpload({
     if (!url || deletingUrl) return;
 
     setDeletingUrl(url);
+    setError(null);
     try {
       const res = await fetch("/api/upload", {
         method: "DELETE",
@@ -80,6 +85,8 @@ export function AdminImageUpload({
       } else {
         onChangeMany?.((values || []).filter((item) => item !== url));
       }
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Delete failed");
     } finally {
       setDeletingUrl(null);
     }
@@ -110,6 +117,8 @@ export function AdminImageUpload({
           {uploading ? "Uploading..." : mode === "single" ? "Upload image" : "Upload images"}
         </button>
       </div>
+
+      {error ? <p role="alert" className="text-xs font-medium text-red-600">{error}</p> : null}
 
       {mode === "single" && value ? (
         <div className="relative h-24 w-24 overflow-hidden rounded-lg border border-gray-200">

@@ -74,10 +74,9 @@ function DetailCard({
         <Input label="Title" value={detail.title} onChange={(value) => updateDetail(detail.id, "title", value)} placeholder="e.g., Performance tuned for creators" />
         <label className="block text-xs text-[#5A5E55]">Rich Text Description<textarea value={detail.description} onChange={(e) => updateDetail(detail.id, "description", e.target.value)} className="mt-1.5 w-full resize-y rounded-lg border border-gray-300 px-4 py-2.5 text-sm leading-6 transition-all focus:border-[#f6a45d] focus:outline-none focus:ring-2 focus:ring-[#f6a45d]/50" rows={5} placeholder="Add product story, bullet-style lines, warranty notes, specs, or usage details..." /></label>
         <div className="grid gap-3 md:grid-cols-2">
-          <label className="block text-xs text-[#5A5E55]">
-            Image (optional)
+          <div className="block text-xs text-[#5A5E55]">
             <AdminImageUpload
-              label="Detail image"
+              label="Image (optional)"
               folder="organocity/products/details"
               usedIn="product_detail"
               value={detail.image}
@@ -86,7 +85,7 @@ function DetailCard({
                 if (url) updateDetail(detail.id, "videoUrl", "");
               }}
             />
-          </label>
+          </div>
           <div>
             <Input
               label="YouTube video URL (optional)"
