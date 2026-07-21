@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X } from "@esmate/shadcn/pkgs/lucide-react";
 
 type UploadMode = "single" | "multiple";
@@ -28,8 +28,18 @@ export function AdminImageUpload({
   const [uploading, setUploading] = useState(false);
   const [deletingUrl, setDeletingUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (localPreview) URL.revokeObjectURL(localPreview);
+    };
+  }, [localPreview]);
 
   async function uploadFiles(files: FileList) {
+    if (mode === "single" && files[0]) {
+      setLocalPreview(URL.createObjectURL(files[0]));
+    }
     setUploading(true);
     setError(null);
     try {
@@ -57,6 +67,7 @@ export function AdminImageUpload({
         onChangeMany?.([...(values || []), ...uploadedUrls]);
       }
     } catch (uploadError) {
+      setLocalPreview(null);
       setError(uploadError instanceof Error ? uploadError.message : "Upload failed");
     } finally {
       setUploading(false);
@@ -120,12 +131,15 @@ export function AdminImageUpload({
 
       {error ? <p role="alert" className="text-xs font-medium text-red-600">{error}</p> : null}
 
-      {mode === "single" && value ? (
+      {mode === "single" && (localPreview || value) ? (
         <div className="relative h-24 w-24 overflow-hidden rounded-lg border border-gray-200">
-          <img src={value} alt="Uploaded preview" className="h-full w-full object-cover" />
+          <img src={localPreview || value} alt="Uploaded preview" className="h-full w-full object-cover" />
           <button
             type="button"
-            onClick={() => void deleteUploadedImage(value)}
+            onClick={() => {
+              if (value) void deleteUploadedImage(value);
+              setLocalPreview(null);
+            }}
             disabled={deletingUrl === value}
             className="absolute right-1 top-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-white shadow hover:bg-red-700 disabled:opacity-60"
             aria-label="Delete image"

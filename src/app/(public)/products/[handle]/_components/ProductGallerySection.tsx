@@ -18,6 +18,7 @@ type ProductGallerySectionProps = {
   onSelectImage: (image: GalleryImage) => void;
   onToggleWishlist: () => void;
   wishlistActive: boolean;
+  highestDiscount: { discountPercent: number; minQuantity: number } | null;
 };
 
 export function ProductGallerySection({
@@ -27,6 +28,7 @@ export function ProductGallerySection({
   onSelectImage,
   onToggleWishlist,
   wishlistActive,
+  highestDiscount,
 }: ProductGallerySectionProps) {
   return (
     <div className="h-full min-w-0 space-y-4 rounded-2xl border border-orange-100/80 bg-white/45 p-2 sm:p-4">
@@ -56,6 +58,19 @@ export function ProductGallerySection({
         >
           <Heart className={`h-4 w-4 ${wishlistActive ? "fill-[#C6A24A] text-[#C6A24A]" : "text-[#0a0a0a]"}`} />
         </Button>
+
+        {highestDiscount ? (
+          <div className="absolute left-3 top-3 z-10 -rotate-2 rounded-2xl border-2 border-white/80 bg-[linear-gradient(135deg,#f97316,#dc2626)] px-3 py-2 text-center text-white shadow-[0_10px_24px_rgba(220,38,38,0.3)] sm:px-4">
+            <div className="text-xl font-black leading-none sm:text-2xl">
+              {highestDiscount.discountPercent}% OFF
+            </div>
+            <div className="mt-1 text-[9px] font-bold uppercase tracking-wider text-white/90 sm:text-[10px]">
+              {highestDiscount.minQuantity > 1
+                ? `For ${highestDiscount.minQuantity}+ items`
+                : "For 1 item"}
+            </div>
+          </div>
+        ) : null}
 
       </div>
 

@@ -178,6 +178,21 @@ export function ProductSingle({ data }: Props) {
     );
   }, [data.generalDiscountPercent, wholesaleDiscounts]);
 
+  const appliedDiscount = useMemo(() => {
+    const eligibleOffers = [
+      ...(data.generalDiscountPercent > 0
+        ? [{ discountPercent: data.generalDiscountPercent, minQuantity: 1 }]
+        : []),
+      ...wholesaleDiscounts.filter((tier) => quantity >= tier.minQuantity),
+    ];
+
+    return eligibleOffers.reduce<(typeof eligibleOffers)[number] | null>(
+      (highest, offer) =>
+        !highest || offer.discountPercent > highest.discountPercent ? offer : highest,
+      null,
+    );
+  }, [data.generalDiscountPercent, quantity, wholesaleDiscounts]);
+
   const selectedLabel = getSelectedDisplayLabel();
   const selectedPriceLabel = formatMoney(displayPrice.amount, displayPrice.currencyCode);
   const whatsAppNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "923171707418";
@@ -292,6 +307,7 @@ export function ProductSingle({ data }: Props) {
               onSelectImage={setCurrentImage}
               onToggleWishlist={toggleWishlist}
               wishlistActive={wishlisted}
+              highestDiscount={highestDiscount}
             />
 
             <ProductInfoPanel
@@ -312,7 +328,7 @@ export function ProductSingle({ data }: Props) {
               onAddToCart={addToCart}
               onBuyNow={buyNow}
               whatsAppHref={whatsAppHref}
-              highestDiscount={highestDiscount}
+              appliedDiscount={appliedDiscount}
             />
           </div>
 

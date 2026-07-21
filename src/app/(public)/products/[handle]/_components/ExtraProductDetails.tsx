@@ -111,6 +111,7 @@ export function ExtraProductDetails({ details }: { details: ExtraProductDetail[]
                     src={detail.image}
                     alt={detail.title || "Product detail"}
                     fill
+                    unoptimized
                     className="object-cover"
                     sizes="(max-width: 1024px) 100vw, 50vw"
                   />

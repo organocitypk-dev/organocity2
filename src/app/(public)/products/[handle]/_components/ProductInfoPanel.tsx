@@ -41,7 +41,7 @@ type ProductInfoPanelProps = {
   onAddToCart: () => Promise<void>;
   onBuyNow: () => Promise<void>;
   whatsAppHref: string;
-  highestDiscount: { discountPercent: number; minQuantity: number } | null;
+  appliedDiscount: { discountPercent: number; minQuantity: number } | null;
 };
 
 export function ProductInfoPanel({
@@ -62,7 +62,7 @@ export function ProductInfoPanel({
   onAddToCart,
   onBuyNow,
   whatsAppHref,
-  highestDiscount,
+  appliedDiscount,
 }: ProductInfoPanelProps) {
   const limitedStock = inventory === null ? 7 : Math.max(1, Math.min(inventory, 9));
   const viewerCount = 18 + (title.length % 24);
@@ -77,20 +77,20 @@ export function ProductInfoPanel({
 
   return (
     <aside className="relative h-full min-w-0 overflow-hidden rounded-2xl border border-orange-200/80 bg-[linear-gradient(135deg,rgba(255,247,237,0.96),rgba(255,255,255,0.92))] px-3 pb-4 pt-3.5 shadow-[0_18px_45px_rgba(26,19,8,0.08)] sm:min-h-[32rem] sm:px-4 sm:pb-5 sm:pt-4 lg:min-h-[36rem]">
-      {highestDiscount ? (
+      {appliedDiscount ? (
         <div className="absolute right-3 top-3 z-10 rotate-2 rounded-2xl border-2 border-white/80 bg-[linear-gradient(135deg,#f97316,#dc2626)] px-3 py-2 text-center text-white shadow-[0_10px_24px_rgba(220,38,38,0.3)] sm:right-4 sm:top-4 sm:px-4">
           <div className="text-xl font-black leading-none sm:text-2xl">
-            {highestDiscount.discountPercent}% OFF
+            {appliedDiscount.discountPercent}% OFF
           </div>
           <div className="mt-1 text-[9px] font-bold uppercase tracking-wider text-white/90 sm:text-[10px]">
-            {highestDiscount.minQuantity > 1
-              ? `On ${highestDiscount.minQuantity}+ items`
-              : "On this item"}
+            {appliedDiscount.minQuantity > 1
+              ? `Applied at ${appliedDiscount.minQuantity}+ items`
+              : "General · 1 item"}
           </div>
         </div>
       ) : null}
       <div className="flex h-full min-w-0 flex-col gap-2.5 sm:overflow-y-auto sm:pr-1">
-        <div className={`flex flex-wrap items-center gap-1.5 ${highestDiscount ? "pr-28 sm:pr-36" : ""}`}>
+        <div className={`flex flex-wrap items-center gap-1.5 ${appliedDiscount ? "pr-28 sm:pr-36" : ""}`}>
           <Badge className="rounded-full bg-[#12372a] px-2.5 py-0.5 text-[11px] text-white hover:bg-[#12372a]">
             In Stock
           </Badge>
@@ -145,11 +145,6 @@ export function ProductInfoPanel({
                     <span className="text-2xl font-extrabold leading-none text-orange-600 sm:text-[1.7rem]">
                       {formatMoney(priceBlock.displayPrice.amount, priceBlock.displayPrice.currencyCode)}
                     </span>
-                    {priceBlock.hasDiscount ? (
-                      <Badge className="rounded-full bg-orange-500 px-2 py-0.5 text-[11px] text-white hover:bg-orange-500">
-                        {priceBlock.savedPct}% OFF
-                      </Badge>
-                    ) : null}
                   </div>
                   <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px] font-bold text-gray-700">
                     <span className="rounded-full bg-orange-50 px-2 py-0.5 text-orange-700">Only {limitedStock} left</span>
