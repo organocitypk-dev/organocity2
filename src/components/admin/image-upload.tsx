@@ -5,6 +5,61 @@ import { X } from "@esmate/shadcn/pkgs/lucide-react";
 
 type UploadMode = "single" | "multiple";
 
+const MAX_UPLOAD_BYTES = 900_000;
+const MAX_IMAGE_DIMENSION = 1600;
+
+async function prepareImageForUpload(file: File) {
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Please select a valid image file.");
+  }
+  if (file.size <= MAX_UPLOAD_BYTES) return file;
+
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, MAX_IMAGE_DIMENSION / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+  const context = canvas.getContext("2d");
+  if (!context) {
+    bitmap.close();
+    throw new Error("This image could not be prepared for upload.");
+  }
+
+  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+
+  let compressed: Blob | null = null;
+  for (const quality of [0.8, 0.68, 0.56, 0.44]) {
+    compressed = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, "image/webp", quality),
+    );
+    if (compressed && compressed.size <= MAX_UPLOAD_BYTES) break;
+  }
+
+  if (!compressed) throw new Error("This image could not be compressed for upload.");
+  const filename = file.name.replace(/\.[^.]+$/, "") || "image";
+  return new File([compressed], `${filename}.webp`, { type: "image/webp" });
+}
+
+async function readUploadResponse(response: Response) {
+  const responseText = await response.text();
+  let data: { error?: string; secure_url?: string; url?: string } = {};
+  try {
+    data = responseText ? JSON.parse(responseText) : {};
+  } catch {
+    if (!response.ok) {
+      throw new Error(
+        response.status === 413 || /request entity|too large/i.test(responseText)
+          ? "The image is too large to upload. Please try a smaller image."
+          : responseText.trim() || "Upload failed",
+      );
+    }
+    throw new Error("The upload server returned an invalid response.");
+  }
+  if (!response.ok) throw new Error(data.error || "Upload failed");
+  return data;
+}
+
 export function AdminImageUpload({
   label,
   folder,
@@ -45,8 +100,9 @@ export function AdminImageUpload({
     try {
       const uploadedUrls: string[] = [];
       for (const file of Array.from(files)) {
+        const preparedFile = await prepareImageForUpload(file);
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append("file", preparedFile);
         formData.append("folder", folder);
         formData.append("usedIn", usedIn);
 
@@ -54,11 +110,10 @@ export function AdminImageUpload({
           method: "POST",
           body: formData,
         });
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data?.error || "Upload failed");
-        }
-        uploadedUrls.push(data.secure_url || data.url);
+        const data = await readUploadResponse(res);
+        const uploadedUrl = data.secure_url || data.url;
+        if (!uploadedUrl) throw new Error("The upload completed without an image URL.");
+        uploadedUrls.push(uploadedUrl);
       }
 
       if (mode === "single") {

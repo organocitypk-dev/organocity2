@@ -78,19 +78,12 @@ export function ProductInfoPanel({
   return (
     <aside className="relative h-full min-w-0 overflow-hidden rounded-2xl border border-orange-200/80 bg-[linear-gradient(135deg,rgba(255,247,237,0.96),rgba(255,255,255,0.92))] px-3 pb-4 pt-3.5 shadow-[0_18px_45px_rgba(26,19,8,0.08)] sm:min-h-[32rem] sm:px-4 sm:pb-5 sm:pt-4 lg:min-h-[36rem]">
       {appliedDiscount ? (
-        <div className="absolute right-3 top-3 z-10 rotate-2 rounded-2xl border-2 border-white/80 bg-[linear-gradient(135deg,#f97316,#dc2626)] px-3 py-2 text-center text-white shadow-[0_10px_24px_rgba(220,38,38,0.3)] sm:right-4 sm:top-4 sm:px-4">
-          <div className="text-xl font-black leading-none sm:text-2xl">
-            {appliedDiscount.discountPercent}% OFF
-          </div>
-          <div className="mt-1 text-[9px] font-bold uppercase tracking-wider text-white/90 sm:text-[10px]">
-            {appliedDiscount.minQuantity > 1
-              ? `Applied at ${appliedDiscount.minQuantity}+ items`
-              : "General · 1 item"}
-          </div>
+        <div className="absolute right-3 top-3 z-10 rounded-full border border-white/80 bg-orange-600 px-2.5 py-1 text-center text-white shadow-md sm:right-4 sm:top-4">
+          <div className="text-xs font-black leading-none sm:text-sm">{appliedDiscount.discountPercent}% OFF</div>
         </div>
       ) : null}
       <div className="flex h-full min-w-0 flex-col gap-2.5 sm:overflow-y-auto sm:pr-1">
-        <div className={`flex flex-wrap items-center gap-1.5 ${appliedDiscount ? "pr-28 sm:pr-36" : ""}`}>
+        <div className={`flex flex-wrap items-center gap-1.5 ${appliedDiscount ? "pr-20 sm:pr-24" : ""}`}>
           <Badge className="rounded-full bg-[#12372a] px-2.5 py-0.5 text-[11px] text-white hover:bg-[#12372a]">
             In Stock
           </Badge>
