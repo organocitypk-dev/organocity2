@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Badge } from "@esmate/shadcn/components/ui/badge";
 import { Button } from "@esmate/shadcn/components/ui/button";
 import { Skeleton } from "@esmate/shadcn/components/ui/skeleton";
 import { Heart } from "@esmate/shadcn/pkgs/lucide-react";
@@ -19,7 +18,6 @@ type ProductGallerySectionProps = {
   onSelectImage: (image: GalleryImage) => void;
   onToggleWishlist: () => void;
   wishlistActive: boolean;
-  discountBadge?: { hasDiscount: boolean; savedPct: number } | null;
 };
 
 export function ProductGallerySection({
@@ -29,7 +27,6 @@ export function ProductGallerySection({
   onSelectImage,
   onToggleWishlist,
   wishlistActive,
-  discountBadge,
 }: ProductGallerySectionProps) {
   return (
     <div className="h-full min-w-0 space-y-4 rounded-2xl border border-orange-100/80 bg-white/45 p-2 sm:p-4">
@@ -60,13 +57,6 @@ export function ProductGallerySection({
           <Heart className={`h-4 w-4 ${wishlistActive ? "fill-[#C6A24A] text-[#C6A24A]" : "text-[#0a0a0a]"}`} />
         </Button>
 
-        {discountBadge?.hasDiscount && (
-          <div className="absolute left-3 top-3">
-            <Badge className="bg-[#C6A24A] px-2 py-1 text-xs font-semibold text-[#0a0a0a] shadow">
-              -{discountBadge.savedPct}%
-            </Badge>
-          </div>
-        )}
       </div>
 
       <div className="w-full overflow-x-auto px-0.5">

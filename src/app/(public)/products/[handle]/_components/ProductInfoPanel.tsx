@@ -41,6 +41,7 @@ type ProductInfoPanelProps = {
   onAddToCart: () => Promise<void>;
   onBuyNow: () => Promise<void>;
   whatsAppHref: string;
+  highestDiscount: { discountPercent: number; minQuantity: number } | null;
 };
 
 export function ProductInfoPanel({
@@ -61,6 +62,7 @@ export function ProductInfoPanel({
   onAddToCart,
   onBuyNow,
   whatsAppHref,
+  highestDiscount,
 }: ProductInfoPanelProps) {
   const limitedStock = inventory === null ? 7 : Math.max(1, Math.min(inventory, 9));
   const viewerCount = 18 + (title.length % 24);
@@ -74,9 +76,21 @@ export function ProductInfoPanel({
           : "text-2xl sm:text-3xl lg:text-[2.2rem]";
 
   return (
-    <aside className="h-full min-w-0 overflow-hidden rounded-2xl border border-orange-200/80 bg-[linear-gradient(135deg,rgba(255,247,237,0.96),rgba(255,255,255,0.92))] px-3 pb-4 pt-3.5 shadow-[0_18px_45px_rgba(26,19,8,0.08)] sm:min-h-[32rem] sm:px-4 sm:pb-5 sm:pt-4 lg:min-h-[36rem]">
+    <aside className="relative h-full min-w-0 overflow-hidden rounded-2xl border border-orange-200/80 bg-[linear-gradient(135deg,rgba(255,247,237,0.96),rgba(255,255,255,0.92))] px-3 pb-4 pt-3.5 shadow-[0_18px_45px_rgba(26,19,8,0.08)] sm:min-h-[32rem] sm:px-4 sm:pb-5 sm:pt-4 lg:min-h-[36rem]">
+      {highestDiscount ? (
+        <div className="absolute right-3 top-3 z-10 rotate-2 rounded-2xl border-2 border-white/80 bg-[linear-gradient(135deg,#f97316,#dc2626)] px-3 py-2 text-center text-white shadow-[0_10px_24px_rgba(220,38,38,0.3)] sm:right-4 sm:top-4 sm:px-4">
+          <div className="text-xl font-black leading-none sm:text-2xl">
+            {highestDiscount.discountPercent}% OFF
+          </div>
+          <div className="mt-1 text-[9px] font-bold uppercase tracking-wider text-white/90 sm:text-[10px]">
+            {highestDiscount.minQuantity > 1
+              ? `On ${highestDiscount.minQuantity}+ items`
+              : "On this item"}
+          </div>
+        </div>
+      ) : null}
       <div className="flex h-full min-w-0 flex-col gap-2.5 sm:overflow-y-auto sm:pr-1">
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className={`flex flex-wrap items-center gap-1.5 ${highestDiscount ? "pr-28 sm:pr-36" : ""}`}>
           <Badge className="rounded-full bg-[#12372a] px-2.5 py-0.5 text-[11px] text-white hover:bg-[#12372a]">
             In Stock
           </Badge>

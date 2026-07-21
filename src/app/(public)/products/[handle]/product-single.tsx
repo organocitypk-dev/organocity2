@@ -14,12 +14,9 @@ import { calculateDiscountedUnitPrice, normalizeWholesaleDiscounts } from "@/lib
 import { getProductSingle } from "./service";
 import { ProductGallerySection } from "./_components/ProductGallerySection";
 import { ProductInfoPanel } from "./_components/ProductInfoPanel";
-import { ProductVariantsSection, type VariantCardItem } from "./_components/ProductVariantsSection";
 import { ExtraProductDetails } from "./_components/ExtraProductDetails";
 import {
   ProductFaqs,
-  ProductInformationGrid,
-  ProductSpecifications,
   WholesaleQuoteSection,
 } from "./_components/ProductStructuredSections";
 import {
@@ -39,35 +36,6 @@ interface Props {
   data: Awaited<ReturnType<typeof getProductSingle>>;
 }
 
-function DiscountOffersStrip({
-  generalDiscountPercent,
-  wholesaleDiscounts,
-}: {
-  generalDiscountPercent: number;
-  wholesaleDiscounts: Array<{ minQuantity: number; discountPercent: number }>;
-}) {
-  const offers = [
-    ...(generalDiscountPercent > 0 ? [`${generalDiscountPercent}% OFF on this product`] : []),
-    ...wholesaleDiscounts.map(
-      (tier) => `${tier.discountPercent}% OFF on ${tier.minQuantity}+ items`,
-    ),
-  ];
-
-  if (!offers.length) return null;
-
-  return (
-    <div className="overflow-hidden rounded-lg border border-orange-200 bg-orange-50 py-2 text-orange-900 shadow-sm" aria-label="Available discount offers">
-      <div className="animate-scroll flex w-max min-w-full items-center whitespace-nowrap">
-        {[...offers, ...offers].map((offer, index) => (
-          <span key={`${offer}-${index}`} className="flex items-center px-5 text-xs font-extrabold uppercase tracking-wide sm:text-sm">
-            <span className="mr-5 text-[#f28a32]">●</span>{offer}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export function ProductSingle({ data }: Props) {
   const router = useRouter();
   const { linesAdd } = useCart();
@@ -77,7 +45,7 @@ export function ProductSingle({ data }: Props) {
   const [url, setUrl] = useState("");
   const [buyLoading, setBuyLoading] = useState(false);
   const [wishlisted, setWishlisted] = useState(false);
-  const [selectedPackagingSize, setSelectedPackagingSize] = useState(data.packagingSizes[0] || "");
+  const selectedPackagingSize = data.packagingSizes[0] || "";
   const wholesaleDiscounts = useMemo(
     () => normalizeWholesaleDiscounts(data.wholesaleDiscounts),
     [data.wholesaleDiscounts],
@@ -87,7 +55,7 @@ export function ProductSingle({ data }: Props) {
     return data.variants?.nodes.find((variant) => variant.availableForSale)?.id || data.variants?.nodes[0]?.id;
   }, [data.variants?.nodes]);
 
-  const { variantId, options, selectOption, selectVariant } = useVariantSelector(data, defaultVariantId);
+  const { variantId, options, selectOption } = useVariantSelector(data, defaultVariantId);
 
   const selectedVariant = useMemo(() => {
     return data.variants?.nodes.find((variant) => variant.id === variantId) || data.variants?.nodes[0] || null;
@@ -195,6 +163,21 @@ export function ProductSingle({ data }: Props) {
     return { hasDiscount, savedAmount, savedPct, displayPrice, compareAt };
   }, [displayPrice, selectedVariant?.compareAtPrice, quantity]);
 
+  const highestDiscount = useMemo(() => {
+    const offers = [
+      ...(data.generalDiscountPercent > 0
+        ? [{ discountPercent: data.generalDiscountPercent, minQuantity: 1 }]
+        : []),
+      ...wholesaleDiscounts,
+    ];
+
+    return offers.reduce<(typeof offers)[number] | null>(
+      (highest, offer) =>
+        !highest || offer.discountPercent > highest.discountPercent ? offer : highest,
+      null,
+    );
+  }, [data.generalDiscountPercent, wholesaleDiscounts]);
+
   const selectedLabel = getSelectedDisplayLabel();
   const selectedPriceLabel = formatMoney(displayPrice.amount, displayPrice.currencyCode);
   const whatsAppNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "923171707418";
@@ -240,37 +223,6 @@ export function ProductSingle({ data }: Props) {
     } catch {
       toast.error("Failed to add to cart");
     }
-  };
-
-  const addVariantCardToCart = async (variant: VariantCardItem) => {
-    try {
-      await linesAdd([{ merchandiseId: variant.id, quantity: 1 }]);
-      toast.success("Added to cart", { description: variant.name || data.title, icon: <ShoppingCart className="h-4 w-4" /> });
-      const price = parseFloat(variant.price.amount);
-      trackAddToCart({
-        content_ids: [data.id],
-        contents: [{ id: data.id, quantity: 1, item_price: price, variant: variant.name }],
-        content_name: data.title,
-        content_category: data.productType || undefined,
-        content_type: "product",
-        value: price,
-        currency: "PKR",
-        num_items: 1,
-      });
-    } catch {
-      toast.error("Failed to add to cart");
-    }
-  };
-
-  const getVariantWhatsAppHref = (variant: VariantCardItem) => {
-    const optionsLabel = variant.selectedOptions.map((option) => `${option.name}: ${option.value}`).join(", ");
-    return `https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(buildWhatsAppOrderMessage({
-      title: variant.name || data.title,
-      price: formatMoney(variant.price.amount, variant.price.currencyCode),
-      quantity: 1,
-      selectedOptions: optionsLabel,
-      url,
-    }))}`;
   };
 
   const buyNow = async () => {
@@ -332,11 +284,6 @@ export function ProductSingle({ data }: Props) {
             <span className="max-w-[16rem] truncate font-medium text-[#0a0a0a]">{data.title}</span>
           </nav>
 
-          <DiscountOffersStrip
-            generalDiscountPercent={data.generalDiscountPercent}
-            wholesaleDiscounts={wholesaleDiscounts}
-          />
-
           <div className="grid w-full min-w-0 grid-cols-1 items-stretch gap-4 sm:gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
             <ProductGallerySection
               title={selectedTitle}
@@ -345,7 +292,6 @@ export function ProductSingle({ data }: Props) {
               onSelectImage={setCurrentImage}
               onToggleWishlist={toggleWishlist}
               wishlistActive={wishlisted}
-              discountBadge={priceBlock?.hasDiscount ? { hasDiscount: true, savedPct: priceBlock.savedPct } : null}
             />
 
             <ProductInfoPanel
@@ -366,34 +312,13 @@ export function ProductSingle({ data }: Props) {
               onAddToCart={addToCart}
               onBuyNow={buyNow}
               whatsAppHref={whatsAppHref}
+              highestDiscount={highestDiscount}
             />
           </div>
 
-          <ProductVariantsSection
-            variants={data.variants.nodes.filter((variant) => variant.id !== data.id)}
-            selectedId={selectedVariant?.id}
-            fallbackImage={data.featuredImage?.url || undefined}
-            onSelect={selectVariant}
-            onAddToCart={addVariantCardToCart}
-            getWhatsAppHref={getVariantWhatsAppHref}
-          />
-
           <ProductDescriptionSection descriptionHtml={data.descriptionHtml} />
 
-          <ProductInformationGrid
-            packagingSizes={data.packagingSizes}
-            netWeight={data.netWeight}
-            origin={data.origin}
-            shelfLife={data.shelfLife}
-            selectedPackagingSize={selectedPackagingSize}
-            onSelectPackagingSize={setSelectedPackagingSize}
-          />
-
           <ExtraProductDetails details={data.details || []} />
-
-          <ProductSpecifications specifications={data.specifications} />
-
-          <ProductFaqs faqs={data.faqs} />
 
           {data.wholesaleQuoteEnabled || wholesaleDiscounts.length > 0 ? (
             <WholesaleQuoteSection
@@ -407,9 +332,11 @@ export function ProductSingle({ data }: Props) {
             />
           ) : null}
 
-          <ProductReviewsSection productHandle={productHandle} />
+          <ProductFaqs faqs={data.faqs} />
 
           <RelatedProductsSection products={data.recommendations || []} />
+
+          <ProductReviewsSection productHandle={productHandle} />
         </div>
       </section>
     </ProductProvider>
