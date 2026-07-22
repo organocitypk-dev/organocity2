@@ -222,6 +222,12 @@ export function WholesaleQuoteSection({
           ) : null}
         </div>
         <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
+          <Link
+            href="/wholesale"
+            className="inline-flex items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-bold text-[#1a1308] hover:bg-[#fcf5e8]"
+          >
+            View Wholesale Program
+          </Link>
           <a
             href={whatsappHref}
             target="_blank"

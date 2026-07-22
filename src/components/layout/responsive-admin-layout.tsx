@@ -40,6 +40,7 @@ export function useAdminNav() {
 const navItems = [
   { href: "/admin/dashboard", icon: FiGrid, label: "Dashboard" },
   { href: "/admin/products", icon: FiPackage, label: "Products" },
+  { href: "/admin/wholesale", icon: FiShoppingBag, label: "Wholesale Page" },
   { href: "/admin/categories", icon: FiFolder, label: "Categories" },
   { href: "/admin/collections", icon: FiShoppingBag, label: "Collections" },
   { href: "/admin/orders", icon: FiShoppingBag, label: "Orders" },

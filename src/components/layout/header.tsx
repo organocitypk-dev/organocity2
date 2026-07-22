@@ -29,6 +29,7 @@ import { search as trackSearch } from "@/lib/pixel";
 const mainMenuItems = [
   { text: "Home", href: "/" },
   { text: "Products", href: "/products" },
+  { text: "Wholesale", href: "/wholesale" },
   { text: "Accessories", href: "/category/accessories" },
   { text: "Deals", href: "/collections/hot-deals" },
   { text: "About", href: "/about-us" },
@@ -399,6 +400,17 @@ export function Header() {
               }`}
             >
               About
+            </Link>
+          </div>
+
+          <div className="relative">
+            <Link
+              href="/wholesale"
+              className={`text-sm font-semibold transition-colors hover:text-[#b57910] ${
+                isActive("/wholesale") ? "text-[#8a5b00]" : "text-[#1a1308]"
+              }`}
+            >
+              Wholesale
             </Link>
           </div>
 
