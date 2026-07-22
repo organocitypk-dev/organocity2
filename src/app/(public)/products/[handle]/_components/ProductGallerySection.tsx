@@ -73,7 +73,7 @@ export function ProductGallerySection({
               alt={currentImage.altText || title}
               fill
               priority
-              className="animate-[fadeIn_350ms_ease-out] object-cover transition-transform duration-700 ease-out group-hover/gallery:scale-[1.08]"
+              className="animate-[fadeIn_350ms_ease-out] object-contain p-1.5 transition-transform duration-700 ease-out group-hover/gallery:scale-[1.04] sm:p-2"
               sizes="(max-width: 768px) 100vw, 50vw"
             />
             <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/10 via-transparent to-black/5" />
