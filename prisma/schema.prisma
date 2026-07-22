@@ -106,7 +106,25 @@ model AdminUser {
   name                   String?
   passwordChangedAt      DateTime?
   passwordChangeRequests PasswordChangeRequest[]
+  adminAccountRequests   AdminAccountRequest[]
   createdAt              DateTime                @default(now())
+}
+
+model AdminAccountRequest {
+  id            String    @id @default(cuid())
+  requestedById String
+  requestedBy   AdminUser @relation(fields: [requestedById], references: [id], onDelete: Cascade)
+  action        String
+  targetAdminId String?
+  newEmail      String
+  passwordHash String?
+  otpHash       String
+  expiresAt     DateTime
+  attempts      Int       @default(0)
+  createdAt     DateTime  @default(now())
+
+  @@index([requestedById, createdAt])
+  @@index([expiresAt])
 }
 
 model PasswordChangeRequest {

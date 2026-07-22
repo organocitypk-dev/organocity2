@@ -2,6 +2,7 @@
 
 import { AccountPanel, Message, PasswordPanel } from "./_components/profile-panels";
 import { useProfile } from "./_components/use-profile";
+import { AdminAccountsPanel } from "./_components/admin-accounts-panel";
 
 export default function ProfilePage() {
   const state = useProfile();
@@ -14,6 +15,7 @@ export default function ProfilePage() {
       <div className="max-w-2xl space-y-6">
         <AccountPanel name={state.name} setName={state.setName} email={state.email} saving={state.saving} onSave={state.handleUpdateProfile} />
         <PasswordPanel currentPassword={state.currentPassword} setCurrentPassword={state.setCurrentPassword} newPassword={state.newPassword} setNewPassword={state.setNewPassword} confirmPassword={state.confirmPassword} setConfirmPassword={state.setConfirmPassword} otp={state.otp} setOtp={state.setOtp} requestId={state.requestId} emailHint={state.emailHint} saving={state.saving} onRequest={state.handleRequestPasswordChange} onVerify={state.handleVerifyPasswordChange} onRestart={state.restartPasswordChange} />
+        <AdminAccountsPanel />
       </div>
     </div>
   );

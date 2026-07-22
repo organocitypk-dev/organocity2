@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { AdminAuthError, requireAdmin } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
-import { sendPasswordChangeOtp } from "@/lib/security-email";
+import { getAdminSecurityEmail, sendSecurityOtp } from "@/lib/security-email";
 
 const OTP_LIFETIME_MS = 10 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
@@ -56,12 +56,13 @@ export async function POST(request: Request) {
         } }),
       ]);
       try {
-        await sendPasswordChangeOtp(admin.email, otp);
+        await sendSecurityOtp(otp, "password change");
       } catch (error) {
         await prisma.passwordChangeRequest.delete({ where: { id: requestId } }).catch(() => null);
         throw error;
       }
-      return NextResponse.json({ success: true, requestId, emailHint: admin.email.replace(/(^.).*(@.*$)/, "$1***$2") });
+      const securityEmail = getAdminSecurityEmail();
+      return NextResponse.json({ success: true, requestId, emailHint: securityEmail.replace(/(^.).*(@.*$)/, "$1***$2") });
     }
 
     if (body.action === "verify") {
