@@ -59,6 +59,13 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
+        if (token.id) {
+          const currentAdmin = await prisma.adminUser.findUnique({ where: { id: String(token.id) }, select: { email: true, name: true } });
+          if (currentAdmin) {
+            session.user.email = currentAdmin.email;
+            session.user.name = currentAdmin.name ?? currentAdmin.email;
+          }
+        }
       }
       session.authIssuedAt = typeof token.iat === "number" ? token.iat : undefined;
       return session;

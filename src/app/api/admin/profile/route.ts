@@ -5,12 +5,7 @@ import { requireAdmin } from "@/lib/admin-auth";
 export async function GET() {
   try {
     const { admin } = await requireAdmin();
-    const adminUser = await prisma.adminUser.findUnique({
-      where: { email: admin.email },
-      select: { id: true, email: true, name: true, createdAt: true },
-    });
-    if (!adminUser) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    return NextResponse.json({ admin: adminUser });
+    return NextResponse.json({ admin: { id: admin.id, email: admin.email, name: admin.name, createdAt: admin.createdAt } });
   } catch (error: unknown) {
     return NextResponse.json({ error: (error as Error).message }, { status: 401 });
   }
@@ -21,7 +16,7 @@ export async function PUT(request: Request) {
     const { admin } = await requireAdmin();
     const body = await request.json();
     const adminUser = await prisma.adminUser.update({
-      where: { email: admin.email },
+      where: { id: admin.id },
       data: { name: body.name },
     });
     return NextResponse.json(adminUser);

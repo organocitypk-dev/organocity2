@@ -15,12 +15,15 @@ export class AdminAuthError extends Error {
 export async function requireAdmin() {
   const session = await getServerSession(authOptions);
 
+  const adminId = session?.user?.id;
   const email = session?.user?.email;
-  if (!email) {
+  if (!adminId && !email) {
     throw new AdminAuthError("Unauthorized", 401);
   }
 
-  const admin = await prisma.adminUser.findUnique({ where: { email } });
+  const admin = adminId
+    ? await prisma.adminUser.findUnique({ where: { id: adminId } })
+    : await prisma.adminUser.findUnique({ where: { email: email! } });
   if (!admin) {
     throw new AdminAuthError("Unauthorized", 401);
   }

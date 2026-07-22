@@ -7,8 +7,9 @@ import { prisma } from "@/lib/prisma";
 async function getAdminUser() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.email) return null;
-    return prisma.adminUser.findUnique({ where: { email: session.user.email } });
+    if (session?.user?.id) return prisma.adminUser.findUnique({ where: { id: session.user.id } });
+    if (session?.user?.email) return prisma.adminUser.findUnique({ where: { email: session.user.email } });
+    return null;
   } catch {
     return null;
   }
