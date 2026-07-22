@@ -1,4 +1,7 @@
-import { FiLock, FiSave } from "react-icons/fi";
+"use client";
+
+import { useState } from "react";
+import { FiEye, FiEyeOff, FiLock, FiSave } from "react-icons/fi";
 
 export function Message({ message }: { message: string }) {
   if (!message) return null;
@@ -48,5 +51,8 @@ export function PasswordPanel(props: {
 }
 
 function Input({ label, value, onChange, type = "text", disabled }: { label: string; value: string; onChange?: (value: string) => void; type?: string; disabled?: boolean }) {
-  return <label className="block text-sm font-medium text-gray-700">{label}<input type={type} value={value} disabled={disabled} autoComplete={type === "password" ? "new-password" : undefined} onChange={(e) => onChange?.(e.target.value)} className={`mt-1 w-full rounded-lg border px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-[#C6A24A] ${disabled ? "border-gray-200 bg-gray-50 text-gray-500" : "border-gray-300"}`} /></label>;
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const isPassword = type === "password";
+
+  return <label className="block text-sm font-medium text-gray-700">{label}<span className="relative mt-1 block"><input type={isPassword && passwordVisible ? "text" : type} value={value} disabled={disabled} autoComplete={isPassword ? "new-password" : undefined} onChange={(e) => onChange?.(e.target.value)} className={`w-full rounded-lg border px-3 py-2 ${isPassword ? "pr-11" : ""} focus:border-transparent focus:ring-2 focus:ring-[#C6A24A] ${disabled ? "border-gray-200 bg-gray-50 text-gray-500" : "border-gray-300"}`} />{isPassword && <button type="button" onClick={() => setPasswordVisible((visible) => !visible)} aria-label={passwordVisible ? `Hide ${label.toLowerCase()}` : `Show ${label.toLowerCase()}`} aria-pressed={passwordVisible} className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-gray-500 hover:text-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#C6A24A]">{passwordVisible ? <FiEyeOff className="h-5 w-5" /> : <FiEye className="h-5 w-5" />}</button>}</span></label>;
 }
