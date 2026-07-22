@@ -118,6 +118,25 @@
   }
 }
 
+@keyframes certificate-logo-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.certificate-logo-marquee {
+  animation: certificate-logo-marquee 28s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .certificate-logo-marquee {
+    animation-play-state: paused;
+  }
+}
+
 .animate-kenburns {
   animation: kenburns 7s ease-out forwards;
 }

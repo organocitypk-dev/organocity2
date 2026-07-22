@@ -32,6 +32,7 @@ const mainMenuItems = [
   { text: "Accessories", href: "/category/accessories" },
   { text: "Deals", href: "/collections/hot-deals" },
   { text: "About", href: "/about-us" },
+  { text: "Certificates", href: "/certificates" },
   { text: "Contact", href: "/contact" },
 ];
 
@@ -409,6 +410,17 @@ export function Header() {
               }`}
             >
               Contact
+            </Link>
+          </div>
+
+          <div className="relative">
+            <Link
+              href="/certificates"
+              className={`text-sm font-semibold transition-colors hover:text-[#b57910] ${
+                isActive("/certificates") ? "text-[#8a5b00]" : "text-[#1a1308]"
+              }`}
+            >
+              Certificates
             </Link>
           </div>
 

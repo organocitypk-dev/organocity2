@@ -8,50 +8,50 @@ datasource db {
 }
 
 model Product {
-  id               String   @id @default(cuid())
-  handle           String   @unique
-  title            String
-  description      String?
-  descriptionHtml  String?
-  price            Float
-  compareAtPrice   Float?
-  generalDiscountPercent Float @default(0)
-  wholesaleDiscounts Json @default("[]")
-  sku              String?
-  inventory        Int      @default(0)
-  availableForSale Boolean  @default(true)
-  status           String   @default("ACTIVE")
-  seoTitle         String?
-  seoDescription   String?
-  images           Json     @default("[]")
-  featuredImage    String?
-  productType      String?
-  categoryId       String?
-  subcategoryId    String?
-  vendor           String   @default("OrganoCity")
-  tags             Json     @default("[]")
-  collectionIds    Json     @default("[]")
-  isFeatured       Boolean  @default(false)
-  displayOrder     Int      @default(9999)
-  details          Json     @default("[]")
-  certificates     Json     @default("[]")
-  packagingSizes   Json     @default("[]")
-  netWeight        String?
-  origin           String?
-  shelfLife        String?
-  faqs             Json     @default("[]")
-  wholesaleQuoteEnabled Boolean @default(false)
-  color            String?
-  size             String?
-  storage          String?
-  ram              String?
-  processor        String?
-  condition        String?
-  specifications   Json     @default("{}")
-  customAttributes Json     @default("{}")
-  variations       ProductVariation[]
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                     String             @id @default(cuid())
+  handle                 String             @unique
+  title                  String
+  description            String?
+  descriptionHtml        String?
+  price                  Float
+  compareAtPrice         Float?
+  generalDiscountPercent Float              @default(0)
+  wholesaleDiscounts     Json               @default("[]")
+  sku                    String?
+  inventory              Int                @default(0)
+  availableForSale       Boolean            @default(true)
+  status                 String             @default("ACTIVE")
+  seoTitle               String?
+  seoDescription         String?
+  images                 Json               @default("[]")
+  featuredImage          String?
+  productType            String?
+  categoryId             String?
+  subcategoryId          String?
+  vendor                 String             @default("OrganoCity")
+  tags                   Json               @default("[]")
+  collectionIds          Json               @default("[]")
+  isFeatured             Boolean            @default(false)
+  displayOrder           Int                @default(9999)
+  details                Json               @default("[]")
+  certificates           Json               @default("[]")
+  packagingSizes         Json               @default("[]")
+  netWeight              String?
+  origin                 String?
+  shelfLife              String?
+  faqs                   Json               @default("[]")
+  wholesaleQuoteEnabled  Boolean            @default(false)
+  color                  String?
+  size                   String?
+  storage                String?
+  ram                    String?
+  processor              String?
+  condition              String?
+  specifications         Json               @default("{}")
+  customAttributes       Json               @default("{}")
+  variations             ProductVariation[]
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
 
   @@index([displayOrder])
 }
@@ -115,99 +115,99 @@ model SiteSetting {
 }
 
 model Order {
-  id              String      @id @default(cuid())
-  orderNumber     String      @unique
-  customerName    String
-  customerEmail   String
-  customerPhone   String?
-  customerAddress Json        // { line1, line2, city, state, pincode, country }
-  items           Json        // array of { productId, title, price, quantity, image }
-  subtotal        Float
-  shippingCost    Float       @default(0)
-  tax             Float       @default(0)
-  total           Float
-  discount        Float       @default(0)
-  couponCode      String?
-  paymentMethod   String      @default("pending")
-  paymentStatus   String      @default("pending")
-  paymentProofUrl String?
-  transactionReference String?
+  id                      String    @id @default(cuid())
+  orderNumber             String    @unique
+  customerName            String
+  customerEmail           String
+  customerPhone           String?
+  customerAddress         Json // { line1, line2, city, state, pincode, country }
+  items                   Json // array of { productId, title, price, quantity, image }
+  subtotal                Float
+  shippingCost            Float     @default(0)
+  tax                     Float     @default(0)
+  total                   Float
+  discount                Float     @default(0)
+  couponCode              String?
+  paymentMethod           String    @default("pending")
+  paymentStatus           String    @default("pending")
+  paymentProofUrl         String?
+  transactionReference    String?
   confirmationEmailSentAt DateTime?
-  orderStatus     String      @default("pending")
-  notes           String?
-  trackingNumber  String?
-  trackingUrl     String?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  orderStatus             String    @default("pending")
+  notes                   String?
+  trackingNumber          String?
+  trackingUrl             String?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
 }
 
 model Inquiry {
-  id              String      @id @default(cuid())
-  name            String
-  email           String
-  phone           String?
-  subject         String
-  message         String
-  type            String      @default("contact")
-  status          String      @default("unread")
-  adminNote       String?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  type      String   @default("contact")
+  status    String   @default("unread")
+  adminNote String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Category {
-  id              String      @id @default(cuid())
-  name            String      @unique
-  slug            String      @unique
-  description     String?
-  image           String?
-  parentId        String?
-  order           Int         @default(0)
-  featured        Boolean     @default(false)
-  seoTitle        String?
-  seoDescription  String?
-  productIds      Json        @default("[]")
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id             String   @id @default(cuid())
+  name           String   @unique
+  slug           String   @unique
+  description    String?
+  image          String?
+  parentId       String?
+  order          Int      @default(0)
+  featured       Boolean  @default(false)
+  seoTitle       String?
+  seoDescription String?
+  productIds     Json     @default("[]")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model BlogPost {
-  id              String      @id @default(cuid())
-  title           String
-  slug            String      @unique
-  excerpt         String?
-  content         String?
-  featuredImage   String?
-  categoryId      String?
-  author          String
-  status          String      @default("draft")
-  publishedAt     DateTime?
-  seoTitle        String?
-  seoDescription  String?
-  tags            Json        @default("[]")
-  views           Int         @default(0)
-  isFeatured      Boolean     @default(false)
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id             String    @id @default(cuid())
+  title          String
+  slug           String    @unique
+  excerpt        String?
+  content        String?
+  featuredImage  String?
+  categoryId     String?
+  author         String
+  status         String    @default("draft")
+  publishedAt    DateTime?
+  seoTitle       String?
+  seoDescription String?
+  tags           Json      @default("[]")
+  views          Int       @default(0)
+  isFeatured     Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
 
 model Review {
-  id              String      @id @default(cuid())
-  authorName      String
-  authorEmail     String?
-  authorImage     String?
-  rating          Int         @default(5)
-  content         String
-  productId       String?
-  productHandle   String?
-  isFeatured      Boolean     @default(false)
-  status          String      @default("pending") // pending, approved, rejected
+  id                 String   @id @default(cuid())
+  authorName         String
+  authorEmail        String?
+  authorImage        String?
+  rating             Int      @default(5)
+  content            String
+  productId          String?
+  productHandle      String?
+  isFeatured         Boolean  @default(false)
+  status             String   @default("pending") // pending, approved, rejected
   isVerifiedPurchase Boolean  @default(false)
-  helpfulCount    Int         @default(0)
-  images          Json        @default("[]")
-  adminNote       String?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  helpfulCount       Int      @default(0)
+  images             Json     @default("[]")
+  adminNote          String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   @@index([productId])
   @@index([status])
@@ -215,15 +215,25 @@ model Review {
 }
 
 model Certificate {
-  id            String      @id @default(cuid())
-  name          String
-  image         String
-  description   String?
-  order         Int         @default(0)
-  isActive      Boolean     @default(true)
-  isVerifiedBy  Boolean    @default(false)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id                String    @id @default(cuid())
+  title             String    @map("name")
+  certificateImage  String    @map("image")
+  shortDescription  String?   @map("description")
+  displayOrder      Int       @default(0) @map("order")
+  active            Boolean   @default(true) @map("isActive")
+  featured          Boolean   @default(false) @map("isVerifiedBy")
+  organizationName  String    @default("OrganoCity Verified Organization")
+  organizationLogo  String    @default("")
+  orientation       String    @default("LANDSCAPE")
+  issueDate         DateTime  @default(now())
+  expiryDate        DateTime?
+  certificateNumber String?
+  verificationUrl   String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([active, displayOrder])
+  @@index([featured])
 }
 
 model HeroSlide {
@@ -249,15 +259,15 @@ model HeroSlide {
 }
 
 model HomepageSection {
-  id              String      @id @default(cuid())
-  sectionKey      String      @unique
-  title           String?
-  subtitle        String?
-  content         Json?
-  order           Int         @default(0)
-  isActive        Boolean     @default(true)
-  image           String?
-  updatedAt       DateTime    @updatedAt
+  id         String   @id @default(cuid())
+  sectionKey String   @unique
+  title      String?
+  subtitle   String?
+  content    Json?
+  order      Int      @default(0)
+  isActive   Boolean  @default(true)
+  image      String?
+  updatedAt  DateTime @updatedAt
 }
 
 enum VideoPlatform {
@@ -279,24 +289,24 @@ enum VideoFormat {
 }
 
 model Video {
-  id              String         @id @default(cuid())
-  title           String
-  description     String?
-  thumbnail       String?
-  videoUrl        String
-  embedUrl        String?
-  platform        VideoPlatform
-  placement       VideoPlacement @default(VIDEOS_PAGE)
-  format          VideoFormat    @default(LANDSCAPE)
-  buttonText      String?
-  buttonUrl       String?
-  featured        Boolean        @default(false)
-  active          Boolean        @default(true)
-  displayOrder    Int            @default(0)
-  seoTitle        String?
-  seoDescription  String?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  id             String         @id @default(cuid())
+  title          String
+  description    String?
+  thumbnail      String?
+  videoUrl       String
+  embedUrl       String?
+  platform       VideoPlatform
+  placement      VideoPlacement @default(VIDEOS_PAGE)
+  format         VideoFormat    @default(LANDSCAPE)
+  buttonText     String?
+  buttonUrl      String?
+  featured       Boolean        @default(false)
+  active         Boolean        @default(true)
+  displayOrder   Int            @default(0)
+  seoTitle       String?
+  seoDescription String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
   @@index([platform])
   @@index([placement])
@@ -306,22 +316,22 @@ model Video {
 }
 
 model NavigationMenu {
-  id              String      @id @default(cuid())
-  location        String      @unique
-  items           Json
-  updatedAt       DateTime    @updatedAt
+  id        String   @id @default(cuid())
+  location  String   @unique
+  items     Json
+  updatedAt DateTime @updatedAt
 }
 
 model MediaAsset {
-  id              String      @id @default(cuid())
-  filename        String
-  url             String
-  publicId        String
-  type            String
-  size            Int
-  alt             String?
-  uploadedBy      String?
-  usedIn          String?
-  referenceId     String?
-  createdAt       DateTime    @default(now())
+  id          String   @id @default(cuid())
+  filename    String
+  url         String
+  publicId    String
+  type        String
+  size        Int
+  alt         String?
+  uploadedBy  String?
+  usedIn      String?
+  referenceId String?
+  createdAt   DateTime @default(now())
 }

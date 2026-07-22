@@ -48,7 +48,7 @@ export const metadata = createSeoMetadata({
 });
 
 export default async function Page() {
-   const [categories, featuredCollections, featuredBlogs, homeVideos] = await Promise.all([
+   const [categories, featuredCollections, featuredBlogs, homeVideos, certificates] = await Promise.all([
      safeHomeQuery(
        "categories",
        () => prisma.category.findMany({
@@ -91,6 +91,15 @@ export default async function Page() {
         where: { active: true, placement: "HOMEPAGE" },
         orderBy: [{ featured: "desc" }, { displayOrder: "asc" }, { createdAt: "desc" }],
         take: 8,
+      }),
+      [],
+    ),
+    safeHomeQuery(
+      "certificate organizations",
+      () => prisma.certificate.findMany({
+        where: { active: true, organizationLogo: { not: "" } },
+        orderBy: [{ featured: "desc" }, { displayOrder: "asc" }],
+        select: { id: true, title: true, organizationName: true, organizationLogo: true },
       }),
       [],
     ),
@@ -152,6 +161,7 @@ return (
             collections={homeCollections}
             featuredBlogs={featuredBlogs}
             homeVideos={homeVideos.map(serializeVideo)}
+            certificates={certificates}
           />
       </div>
     </>

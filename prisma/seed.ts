@@ -448,33 +448,33 @@ async function main() {
 
   const certificates = [
     {
-      name: "Authorized Dealer",
-      image: "https://placehold.co/200x200?text=Authorized",
-      description: "Official authorized dealer for major laptop brands.",
-      order: 1,
+      title: "Authorized Dealer",
+      certificateImage: "https://placehold.co/200x200?text=Authorized",
+      shortDescription: "Official authorized dealer for major laptop brands.",
+      displayOrder: 1,
     },
     {
-      name: "Genuine Products",
-      image: "https://placehold.co/200x200?text=Genuine",
-      description: "100% authentic products with manufacturer warranty.",
-      order: 2,
+      title: "Genuine Products",
+      certificateImage: "https://placehold.co/200x200?text=Genuine",
+      shortDescription: "100% authentic products with manufacturer warranty.",
+      displayOrder: 2,
     },
     {
-      name: "Warranty Support",
-      image: "https://placehold.co/200x200?text=Warranty",
-      description: "Full warranty support on all laptops and accessories.",
-      order: 3,
+      title: "Warranty Support",
+      certificateImage: "https://placehold.co/200x200?text=Warranty",
+      shortDescription: "Full warranty support on all laptops and accessories.",
+      displayOrder: 3,
     },
     {
-      name: "Secure Checkout",
-      image: "https://placehold.co/200x200?text=Secure",
-      description: "Safe and secure payment processing.",
-      order: 4,
+      title: "Secure Checkout",
+      certificateImage: "https://placehold.co/200x200?text=Secure",
+      shortDescription: "Safe and secure payment processing.",
+      displayOrder: 4,
     },
   ];
 
   for (const cert of certificates) {
-    await prisma.certificate.create({ data: { ...cert, isActive: true } });
+    await prisma.certificate.create({ data: { ...cert, active: true } });
   }
 
   await prisma.homepageSection.create({

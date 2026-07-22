@@ -1,104 +1,39 @@
-"use client";
-
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import Link from "next/link";
 
-interface Certificate {
+export type CertificateLogo = {
   id: string;
-  name: string;
-  image: string;
-  isVerifiedBy: boolean;
-}
+  title: string;
+  organizationName: string;
+  organizationLogo: string;
+};
 
-interface CertificationsSliderProps {
-  initialData?: Certificate[];
-}
-
-export function CertificationsSlider({ initialData }: CertificationsSliderProps) {
-  const [certificates, setCertificates] = useState<Certificate[]>([]);
-  const [verifiedByCerts, setVerifiedByCerts] = useState<Certificate[]>([]);
-
-  useEffect(() => {
-    if (initialData && initialData.length > 0) {
-      const verified = initialData.filter(c => c.isVerifiedBy);
-      const others = initialData.filter(c => !c.isVerifiedBy);
-      setVerifiedByCerts(verified);
-      setCertificates(others);
-    }
-  }, [initialData]);
-
-  const staticCerts = [
-    { name: "Authorized Dealer", image: "https://placehold.co/120x120?text=Authorized" },
-    { name: "Genuine Products", image: "https://placehold.co/120x120?text=Genuine" },
-    { name: "Warranty Support", image: "https://placehold.co/120x120?text=Warranty" },
-    { name: "Secure Checkout", image: "https://placehold.co/120x120?text=Secure" },
-  ];
-
-  const displayVerified = verifiedByCerts.length > 0 ? verifiedByCerts : [];
-  const displayCerts = certificates.length > 0 ? certificates : staticCerts;
+export function CertificationsSlider({ certificates }: { certificates: CertificateLogo[] }) {
+  const logos = certificates.filter((certificate) => certificate.organizationLogo);
+  if (!logos.length) return null;
+  const repeatedLogos = [...logos, ...logos];
 
   return (
-    <section className="bg-[#fcf5e8] py-16">
-      <div className="mx-auto mb-10 max-w-7xl px-6 text-center">
-        <h2 className="text-3xl font-bold text-[#0a0a0a] sm:text-4xl">
-          Our Trusted Quality Certifications
-        </h2>
-        <p className="mx-auto mt-4 max-w-3xl text-lg text-[#5A5E55]">
-          Certified for quality and authenticity. OrganoCity delivers genuine products with full manufacturer warranty.
-        </p>
+    <section className="overflow-hidden bg-[#fcf5e8] py-12 sm:py-14" aria-labelledby="verified-organizations-title">
+      <div className="mx-auto mb-8 max-w-7xl px-5 text-center">
+        <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#9a6911]">Trusted credentials</p>
+        <h2 id="verified-organizations-title" className="mt-2 font-serif text-2xl font-extrabold text-[#1a1308] sm:text-3xl">Verified By Organizations</h2>
+        <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-[#5A5E55]">Explore the independent organizations and credentials that support our commitment to quality and authenticity.</p>
       </div>
 
-      {displayVerified.length > 0 && (
-        <div className="mx-auto mb-10 max-w-4xl px-6">
-          <div className="bg-white rounded-xl p-8 text-center shadow-sm">
-            <h3 className="text-lg font-semibold text-[#0a0a0a] mb-6">Verified By</h3>
-            <div className="flex flex-wrap justify-center gap-8 items-center">
-              {displayVerified.map((cert, index) => (
-                <div key={index} className="flex flex-col items-center gap-2">
-                  <div className="relative h-16 w-16 overflow-hidden rounded-lg bg-white shadow-sm">
-                    <Image
-                      src={cert.image}
-                      alt={cert.name}
-                      fill
-                      sizes="64px"
-                      className="object-contain p-2"
-                    />
-                  </div>
-                  <span className="text-xs font-medium text-[#5A5E55]">{cert.name}</span>
-                </div>
-              ))}
-            </div>
+      <Link href="/certificates" className="group block" aria-label="View all OrganoCity certificates">
+        <div className="relative overflow-hidden">
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-[#fcf5e8] to-transparent sm:w-28" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-[#fcf5e8] to-transparent sm:w-28" />
+          <div className="certificate-logo-marquee flex w-max items-center gap-8 pr-8 sm:gap-12 sm:pr-12">
+            {repeatedLogos.map((certificate, index) => (
+              <div key={`${certificate.id}-${index}`} className="flex h-24 w-40 shrink-0 items-center justify-center rounded-xl bg-white/80 px-5 transition group-hover:bg-white sm:h-28 sm:w-48">
+                <Image src={certificate.organizationLogo} alt={`${certificate.organizationName} logo`} width={150} height={72} className="max-h-16 w-auto max-w-full object-contain grayscale transition duration-300 group-hover:grayscale-0" />
+              </div>
+            ))}
           </div>
         </div>
-      )}
-
-      <div className="relative w-full overflow-hidden">
-        <div className="absolute left-0 top-0 z-10 h-full w-24 bg-gradient-to-r from-[#fcf5e8] to-transparent" />
-        <div className="absolute right-0 top-0 z-10 h-full w-24 bg-gradient-to-l from-[#fcf5e8] to-transparent" />
-
-        <div className="flex w-max animate-[certification-marquee_30s_linear_infinite] gap-14">
-          {[...displayCerts, ...displayCerts].map((cert, index) => (
-            <div
-              key={index}
-              className="flex min-w-[140px] flex-col items-center gap-3 opacity-70 transition hover:opacity-100"
-            >
-              <div className="relative h-24 w-24 overflow-hidden rounded-xl bg-white shadow-sm">
-                <Image
-                  src={cert.image}
-                  alt={cert.name}
-                  fill
-                  sizes="96px"
-                  className="object-contain p-3"
-                />
-              </div>
-
-              <span className="text-sm font-medium text-[#5A5E55]">
-                {cert.name}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
+      </Link>
     </section>
   );
 }

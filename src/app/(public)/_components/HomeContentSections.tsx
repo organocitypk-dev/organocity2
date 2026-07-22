@@ -4,10 +4,26 @@ import { FeaturedBlogSection } from "@/components/features/home/featured-blog-se
 import { CustomerVoicesSection } from "@/components/features/home/customer-voices-section";
 import { FeaturedVideoSection } from "@/components/features/videos/featured-video-section";
 import type { PublicVideo } from "@/lib/video-utils";
+import { CertificationsSlider, type CertificateLogo } from "@/components/features/certifications/certifications-slider";
 
 type HomeContentSectionsProps = {
   categories: Array<{ id: string; name: string; slug: string; image: string | null; parentId?: string | null; order?: number }>;
-  products: Array<any>;
+  products: Array<{
+    id: string;
+    handle: string;
+    title: string;
+    price: number | null;
+    compareAtPrice: number | null;
+    featuredImage: string | null;
+    images: unknown;
+    tags: unknown;
+    categoryId: string | null;
+    subcategoryId: string | null;
+    isFeatured: boolean;
+    displayOrder?: number;
+    createdAt?: Date;
+    updatedAt?: Date;
+  }>;
   collections: Array<{ id: string; handle: string; title: string; image: string | null; isFeatured?: boolean; productHandles?: string[] }>;
   featuredBlogs: Array<{
     id: string;
@@ -19,6 +35,7 @@ type HomeContentSectionsProps = {
     content?: string | null;
   }>;
   homeVideos: PublicVideo[];
+  certificates: CertificateLogo[];
 };
 
 export function HomeContentSections({
@@ -27,6 +44,7 @@ export function HomeContentSections({
   collections,
   featuredBlogs,
   homeVideos,
+  certificates,
 }: HomeContentSectionsProps) {
   return (
     <>
@@ -39,6 +57,7 @@ export function HomeContentSections({
       />
       <CollectionsSection collections={collections} />
       <WhyChooseUsSection />
+      <CertificationsSlider certificates={certificates} />
       <FeaturedBlogSection articles={featuredBlogs} />
       <CustomerVoicesSection />
     </>

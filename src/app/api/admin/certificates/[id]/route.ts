@@ -1,16 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-auth";
-
-const certificateSchema = z.object({
-  name: z.string().min(1),
-  image: z.string().min(1),
-  description: z.string().optional(),
-  order: z.number().default(0),
-  isActive: z.boolean().default(true),
-  isVerifiedBy: z.boolean().default(false),
-});
+import { certificateInputSchema } from "@/lib/certificates";
+import { z } from "zod";
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -29,7 +21,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     await requireAdmin();
     const { id } = await params;
     const body = await request.json();
-    const validated = certificateSchema.parse(body);
+    const validated = certificateInputSchema.parse(body);
     const certificate = await prisma.certificate.update({ where: { id }, data: validated });
     return NextResponse.json(certificate);
   } catch (error: unknown) {
