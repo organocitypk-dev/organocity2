@@ -50,18 +50,17 @@ export function ProductGallerySection({
   return (
     <div className="h-full min-w-0 space-y-4 rounded-2xl border border-orange-100/80 bg-white/45 p-2 sm:p-4">
       <div
-        className="relative mx-auto aspect-square w-full max-w-md touch-pan-y overflow-hidden rounded-xl border border-[#C6A24A]/20 bg-[#f4f1e8] shadow-md"
-        onPointerDown={(event) => {
-          dragStartX.current = event.clientX;
-          event.currentTarget.setPointerCapture(event.pointerId);
+        className="group/gallery relative mx-auto aspect-square w-full touch-pan-y overflow-hidden rounded-xl border border-[#C6A24A]/20 bg-[#f4f1e8] shadow-md"
+        onTouchStart={(event) => {
+          dragStartX.current = event.touches[0]?.clientX ?? null;
         }}
-        onPointerUp={(event) => {
+        onTouchEnd={(event) => {
           if (dragStartX.current === null) return;
-          const distance = event.clientX - dragStartX.current;
+          const distance = (event.changedTouches[0]?.clientX ?? dragStartX.current) - dragStartX.current;
           dragStartX.current = null;
           if (Math.abs(distance) >= 40) moveImage(distance < 0 ? 1 : -1);
         }}
-        onPointerCancel={() => {
+        onTouchCancel={() => {
           dragStartX.current = null;
         }}
       >
@@ -74,7 +73,7 @@ export function ProductGallerySection({
               alt={currentImage.altText || title}
               fill
               priority
-              className="animate-[fadeIn_250ms_ease-out] object-contain p-2 transition-transform duration-300 hover:scale-[1.03] sm:p-4"
+              className="animate-[fadeIn_350ms_ease-out] object-cover transition-transform duration-700 ease-out group-hover/gallery:scale-[1.08]"
               sizes="(max-width: 768px) 100vw, 50vw"
             />
             <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/10 via-transparent to-black/5" />
@@ -139,6 +138,7 @@ export function ProductGallerySection({
         <div className="flex w-max min-w-full max-w-md justify-start gap-2 pb-2 sm:mx-auto">
           {images.map((img) => (
             <button
+              type="button"
               key={img.id}
               onClick={() => onSelectImage(img)}
               className={`relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border-2 bg-[#f4f1e8] sm:h-16 sm:w-16 ${

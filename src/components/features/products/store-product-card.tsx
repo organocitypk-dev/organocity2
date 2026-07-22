@@ -108,15 +108,9 @@ export function StoreProductCard({
   productId,
 }: ProductCardProps) {
   const [loading, setLoading] = useState(false);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [failedImages, setFailedImages] = useState<string[]>([]);
   const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
   const { linesAdd } = useCart();
-
-  // ── Slide transition state ──
-  const [currentImg, setCurrentImg] = useState<string | null>(null);
-  const [incomingImg, setIncomingImg] = useState<string | null>(null);
-  const [slideIn, setSlideIn] = useState(false);
 
   const productImages = useMemo(() => {
     const urls = [featuredImageUrl, ...(imageUrls || [])]
@@ -130,8 +124,8 @@ export function StoreProductCard({
     return urls.length > 0 ? urls : [FALLBACK_IMAGE];
   }, [featuredImageUrl, imageUrls, failedImages]);
 
-  const displayImageIndex = activeImageIndex % productImages.length;
-  const displayImage = productImages[displayImageIndex] || FALLBACK_IMAGE;
+  const firstImage = productImages[0] || FALLBACK_IMAGE;
+  const hoverImage = productImages[1] || null;
 
   const effectiveVariantId = variantId || productId;
 
@@ -167,47 +161,8 @@ export function StoreProductCard({
   }, [handle]);
 
   useEffect(() => {
-    setActiveImageIndex(0);
     setFailedImages([]);
   }, [featuredImageUrl, imageUrls]);
-
-  // ── Slide transition: new image glides in from the right, old one glides out to the left ──
-  useEffect(() => {
-    // First image ever — just set it, no animation needed.
-    if (currentImg === null) {
-      setCurrentImg(displayImage);
-      return;
-    }
-    if (displayImage === currentImg || displayImage === incomingImg) return;
-
-    setIncomingImg(displayImage);
-    setSlideIn(false);
-
-    // Kick the animation off on the next paint so the browser registers the
-    // starting (off-screen) position before we transition to the ending
-    // position — otherwise it can appear to "snap" instead of sliding.
-    const raf = requestAnimationFrame(() => {
-      // Force a layout read so the browser commits the starting transform
-      // before we flip the class that starts the transition.
-      void document.body.offsetHeight;
-      setSlideIn(true);
-    });
-
-    // Match this to the transition duration below (ms). Kept in sync with
-    // the Tailwind `duration-700` class used on the sliding layers.
-    const SLIDE_DURATION = 700;
-    const timeout = setTimeout(() => {
-      setCurrentImg(displayImage);
-      setIncomingImg(null);
-      setSlideIn(false);
-    }, SLIDE_DURATION);
-
-    return () => {
-      cancelAnimationFrame(raf);
-      clearTimeout(timeout);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [displayImage]);
 
   // ── Add to cart ──
   const handleAddToCart = async () => {
@@ -276,59 +231,34 @@ export function StoreProductCard({
       {/* ── Product image ──────────────────────────────────── */}
       <Link
         href={`/products/${handle}`}
-        className="block relative aspect-square w-full overflow-hidden bg-white"
-        onMouseEnter={() => {
-          if (productImages.length > 1) setActiveImageIndex(1);
-        }}
-        onMouseLeave={() => setActiveImageIndex(0)}
+        className="group/image relative block aspect-square w-full overflow-hidden bg-white"
       >
-        {/* Current image — slides out to the left once a new image starts coming in */}
-        <div
-          className={`absolute inset-0 transition-transform duration-700 ease-in-out will-change-transform ${
-            incomingImg && slideIn ? "-translate-x-full" : "translate-x-0"
-          }`}
-        >
-          {currentImg && (
-            <Image
-              src={currentImg}
-              alt={title}
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              className="scale-105 object-contain p-2 transition-transform duration-700 ease-out group-hover:scale-125"
-              onError={() =>
-                setFailedImages((current) =>
-                  current.includes(currentImg)
-                    ? current
-                    : [...current, currentImg],
-                )
-              }
-            />
-          )}
-        </div>
-
-        {/* Incoming image — starts fully off-screen to the right, glides in slowly */}
-        {incomingImg && (
-          <div
-            className={`absolute inset-0 transition-transform duration-700 ease-in-out will-change-transform ${
-              slideIn ? "translate-x-0" : "translate-x-full"
-            }`}
-          >
-            <Image
-              src={incomingImg}
-              alt={title}
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              className="scale-105 object-contain p-2 transition-transform duration-700 ease-out group-hover:scale-125"
-              onError={() =>
-                setFailedImages((current) =>
-                  current.includes(incomingImg)
-                    ? current
-                    : [...current, incomingImg],
-                )
-              }
-            />
-          </div>
-        )}
+        <Image
+          src={firstImage}
+          alt={title}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          className="scale-105 object-contain p-2 opacity-100 transition-opacity duration-1000 ease-in-out md:group-hover/image:opacity-0"
+          onError={() =>
+            setFailedImages((current) =>
+              current.includes(firstImage) ? current : [...current, firstImage],
+            )
+          }
+        />
+        {hoverImage ? (
+          <Image
+            src={hoverImage}
+            alt={`${title} alternate view`}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="scale-105 object-contain p-2 opacity-0 transition-opacity duration-1000 ease-in-out md:group-hover/image:opacity-100"
+            onError={() =>
+              setFailedImages((current) =>
+                current.includes(hoverImage) ? current : [...current, hoverImage],
+              )
+            }
+          />
+        ) : null}
       </Link>
 
       {/* ── Card body ─────────────────────────────────────── */}

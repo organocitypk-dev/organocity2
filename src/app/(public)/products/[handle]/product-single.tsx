@@ -473,25 +473,11 @@ export function ProductSingle({ data }: Props) {
 
           <ExtraProductDetails details={data.details || []} />
 
+          <ProductFaqs faqs={data.faqs} />
+
           <RelatedProductsSection products={data.recommendations || []} />
 
-          {data.faqs.length > 0 ? (
-            <section className="rounded-2xl border border-[#C6A24A]/20 bg-white p-5 sm:p-6">
-              <div className="grid min-w-0 gap-8 md:grid-cols-2 md:gap-10">
-                <div className="order-2 min-w-0 md:order-1">
-                  <ProductReviewsSection
-                    productHandle={productHandle}
-                    embedded
-                  />
-                </div>
-                <div className="order-1 min-w-0 md:order-2 md:border-l md:border-[#C6A24A]/20 md:pl-8">
-                  <ProductFaqs faqs={data.faqs} embedded />
-                </div>
-              </div>
-            </section>
-          ) : (
-            <ProductReviewsSection productHandle={productHandle} />
-          )}
+          <ProductReviewsSection productHandle={productHandle} />
         </div>
       </section>
     </ProductProvider>
