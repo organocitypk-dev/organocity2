@@ -100,11 +100,27 @@ model Collection {
 }
 
 model AdminUser {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String?
-  createdAt DateTime @default(now())
+  id                     String                  @id @default(cuid())
+  email                  String                  @unique
+  password               String
+  name                   String?
+  passwordChangedAt      DateTime?
+  passwordChangeRequests PasswordChangeRequest[]
+  createdAt              DateTime                @default(now())
+}
+
+model PasswordChangeRequest {
+  id           String    @id @default(cuid())
+  adminId      String
+  admin        AdminUser @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  otpHash      String
+  passwordHash String
+  expiresAt    DateTime
+  attempts     Int       @default(0)
+  createdAt    DateTime  @default(now())
+
+  @@index([adminId, createdAt])
+  @@index([expiresAt])
 }
 
 model SiteSetting {
@@ -326,7 +342,7 @@ model MediaAsset {
   id          String   @id @default(cuid())
   filename    String
   url         String
-  publicId    String
+  publicId    String   @unique
   type        String
   size        Int
   alt         String?

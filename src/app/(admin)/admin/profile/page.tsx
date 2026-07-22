@@ -13,7 +13,7 @@ export default function ProfilePage() {
       <Message message={state.message} />
       <div className="max-w-2xl space-y-6">
         <AccountPanel name={state.name} setName={state.setName} email={state.email} saving={state.saving} onSave={state.handleUpdateProfile} />
-        <PasswordPanel currentPassword={state.currentPassword} setCurrentPassword={state.setCurrentPassword} newPassword={state.newPassword} setNewPassword={state.setNewPassword} confirmPassword={state.confirmPassword} setConfirmPassword={state.setConfirmPassword} saving={state.saving} onChangePassword={state.handleChangePassword} />
+        <PasswordPanel currentPassword={state.currentPassword} setCurrentPassword={state.setCurrentPassword} newPassword={state.newPassword} setNewPassword={state.setNewPassword} confirmPassword={state.confirmPassword} setConfirmPassword={state.setConfirmPassword} otp={state.otp} setOtp={state.setOtp} requestId={state.requestId} emailHint={state.emailHint} saving={state.saving} onRequest={state.handleRequestPasswordChange} onVerify={state.handleVerifyPasswordChange} onRestart={state.restartPasswordChange} />
       </div>
     </div>
   );

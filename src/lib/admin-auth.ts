@@ -25,6 +25,11 @@ export async function requireAdmin() {
     throw new AdminAuthError("Unauthorized", 401);
   }
 
+  const issuedAt = Number(session.authIssuedAt ?? 0);
+  if (admin.passwordChangedAt && issuedAt && issuedAt * 1000 < admin.passwordChangedAt.getTime()) {
+    throw new AdminAuthError("Session expired. Please sign in again.", 401);
+  }
+
   return { session, admin };
 }
 

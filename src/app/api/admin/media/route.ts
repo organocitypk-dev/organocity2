@@ -1,19 +1,33 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/admin-auth";
-import { uploadImage } from "@/lib/cloudinary";
+import { AdminAuthError, requireAdmin } from "@/lib/admin-auth";
+import { listAllImages, uploadImage } from "@/lib/cloudinary";
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     await requireAdmin();
-    const { searchParams } = new URL(request.url);
-    const usedIn = searchParams.get("usedIn") || "";
-    const where: any = {};
-    if (usedIn) where.usedIn = usedIn;
-    const media = await prisma.mediaAsset.findMany({ where, orderBy: { createdAt: "desc" } });
+    const cloudImages = await listAllImages();
+    await Promise.all(cloudImages.map((image) => prisma.mediaAsset.upsert({
+      where: { publicId: image.publicId },
+      update: { url: image.url, size: image.bytes, type: `image/${image.format}` },
+      create: {
+        filename: image.filename,
+        url: image.url,
+        publicId: image.publicId,
+        type: `image/${image.format}`,
+        size: image.bytes,
+        usedIn: "cloudinary",
+        createdAt: new Date(image.createdAt),
+      },
+    })));
+    const cloudIds = cloudImages.map((image) => image.publicId);
+    const media = cloudIds.length
+      ? await prisma.mediaAsset.findMany({ where: { publicId: { in: cloudIds } }, orderBy: { createdAt: "desc" } })
+      : [];
     return NextResponse.json({ media });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 401 });
+  } catch (error: unknown) {
+    const status = error instanceof AdminAuthError ? error.status : 500;
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Unable to load Cloudinary media" }, { status });
   }
 }
 
@@ -47,7 +61,8 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ media }, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const status = error instanceof AdminAuthError ? error.status : 500;
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Upload failed" }, { status });
   }
 }

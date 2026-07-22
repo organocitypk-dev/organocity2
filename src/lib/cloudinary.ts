@@ -15,6 +15,42 @@ export interface UploadResult {
   bytes: number;
 }
 
+export interface CloudinaryImage {
+  publicId: string;
+  url: string;
+  filename: string;
+  format: string;
+  bytes: number;
+  createdAt: string;
+}
+
+export async function listAllImages(): Promise<CloudinaryImage[]> {
+  const images: CloudinaryImage[] = [];
+  let nextCursor: string | undefined;
+
+  do {
+    const result = await cloudinary.api.resources({
+      resource_type: "image",
+      type: "upload",
+      max_results: 500,
+      next_cursor: nextCursor,
+    });
+    for (const resource of result.resources ?? []) {
+      images.push({
+        publicId: resource.public_id,
+        url: resource.secure_url,
+        filename: `${resource.public_id.split("/").pop()}.${resource.format}`,
+        format: resource.format,
+        bytes: resource.bytes,
+        createdAt: resource.created_at,
+      });
+    }
+    nextCursor = result.next_cursor;
+  } while (nextCursor);
+
+  return images;
+}
+
 export async function uploadImage(
   file: string | Buffer,
   folder: string = "organocity"

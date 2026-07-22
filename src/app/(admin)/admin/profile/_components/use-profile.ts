@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { signOut } from "next-auth/react";
 
 export function useProfile() {
   const [name, setName] = useState("");
@@ -8,6 +9,9 @@ export function useProfile() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  const [requestId, setRequestId] = useState("");
+  const [emailHint, setEmailHint] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -39,21 +43,41 @@ export function useProfile() {
     }
   }
 
-  async function handleChangePassword() {
+  async function handleRequestPasswordChange() {
     if (newPassword !== confirmPassword) return setMessage("Passwords don't match");
-    if (newPassword.length < 6) return setMessage("Password must be at least 6 characters");
+    if (newPassword.length < 10 || !/[a-z]/.test(newPassword) || !/[A-Z]/.test(newPassword) || !/\d/.test(newPassword)) return setMessage("Use 10+ characters with uppercase, lowercase, and a number");
     setSaving(true); setMessage("");
     try {
-      const res = await fetch("/api/admin/change-password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ currentPassword, newPassword }) });
+      const res = await fetch("/api/admin/change-password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "request", currentPassword, newPassword }) });
       const data = await res.json();
-      if (res.ok) { setMessage("Password changed!"); setCurrentPassword(""); setNewPassword(""); setConfirmPassword(""); }
-      else setMessage(data.error || "Failed to change password");
+      if (res.ok) { setRequestId(data.requestId); setEmailHint(data.emailHint); setMessage("Verification code sent"); }
+      else setMessage(data.error || "Failed to send verification code");
     } catch {
-      setMessage("Failed to change password");
+      setMessage("Failed to send verification code");
     } finally {
       setSaving(false);
     }
   }
 
-  return { name, setName, email, currentPassword, setCurrentPassword, newPassword, setNewPassword, confirmPassword, setConfirmPassword, loading, saving, message, handleUpdateProfile, handleChangePassword };
+  async function handleVerifyPasswordChange() {
+    if (otp.length !== 6) return setMessage("Enter the 6-digit verification code");
+    setSaving(true); setMessage("");
+    try {
+      const res = await fetch("/api/admin/change-password", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "verify", requestId, otp }) });
+      const data = await res.json();
+      if (!res.ok) return setMessage(data.error || "Verification failed");
+      setMessage("Password changed. Redirecting to sign in...");
+      await signOut({ callbackUrl: "/admin/login" });
+    } catch {
+      setMessage("Verification failed");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function restartPasswordChange() {
+    setRequestId(""); setOtp(""); setEmailHint(""); setMessage("");
+  }
+
+  return { name, setName, email, currentPassword, setCurrentPassword, newPassword, setNewPassword, confirmPassword, setConfirmPassword, otp, setOtp, requestId, emailHint, loading, saving, message, handleUpdateProfile, handleRequestPasswordChange, handleVerifyPasswordChange, restartPasswordChange };
 }

@@ -60,6 +60,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
       }
+      session.authIssuedAt = typeof token.iat === "number" ? token.iat : undefined;
       return session;
     },
   },
