@@ -1,7 +1,12 @@
 import Image from "next/image";
 import { Button } from "@esmate/shadcn/components/ui/button";
 import { Skeleton } from "@esmate/shadcn/components/ui/skeleton";
-import { Heart } from "@esmate/shadcn/pkgs/lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Heart,
+} from "@esmate/shadcn/pkgs/lucide-react";
+import { useRef } from "react";
 
 type GalleryImage = {
   id: string;
@@ -30,18 +35,46 @@ export function ProductGallerySection({
   wishlistActive,
   highestDiscount,
 }: ProductGallerySectionProps) {
+  const dragStartX = useRef<number | null>(null);
+  const currentIndex = currentImage
+    ? images.findIndex((image) => image.id === currentImage.id)
+    : 0;
+
+  const moveImage = (direction: -1 | 1) => {
+    if (images.length < 2) return;
+    const nextIndex =
+      (Math.max(0, currentIndex) + direction + images.length) % images.length;
+    onSelectImage(images[nextIndex]);
+  };
+
   return (
     <div className="h-full min-w-0 space-y-4 rounded-2xl border border-orange-100/80 bg-white/45 p-2 sm:p-4">
-      <div className="relative mx-auto aspect-square w-full max-w-md overflow-hidden rounded-xl border border-[#C6A24A]/20 bg-[#f4f1e8] shadow-md">
+      <div
+        className="relative mx-auto aspect-square w-full max-w-md touch-pan-y overflow-hidden rounded-xl border border-[#C6A24A]/20 bg-[#f4f1e8] shadow-md"
+        onPointerDown={(event) => {
+          dragStartX.current = event.clientX;
+          event.currentTarget.setPointerCapture(event.pointerId);
+        }}
+        onPointerUp={(event) => {
+          if (dragStartX.current === null) return;
+          const distance = event.clientX - dragStartX.current;
+          dragStartX.current = null;
+          if (Math.abs(distance) >= 40) moveImage(distance < 0 ? 1 : -1);
+        }}
+        onPointerCancel={() => {
+          dragStartX.current = null;
+        }}
+      >
         <div className="absolute inset-0 bg-[#f4f1e8]" />
         {currentImage ? (
           <>
             <Image
+              key={currentImage.id}
               src={currentImage.url}
               alt={currentImage.altText || title}
               fill
               priority
-              className="object-contain p-2 transition-transform duration-300 hover:scale-[1.03] sm:p-4"
+              className="animate-[fadeIn_250ms_ease-out] object-contain p-2 transition-transform duration-300 hover:scale-[1.03] sm:p-4"
               sizes="(max-width: 768px) 100vw, 50vw"
             />
             <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-white/10 via-transparent to-black/5" />
@@ -50,13 +83,42 @@ export function ProductGallerySection({
           <Skeleton className="h-full w-full" />
         )}
 
+        {images.length > 1 ? (
+          <>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                moveImage(-1);
+              }}
+              className="absolute left-2 top-1/2 z-20 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/85 text-gray-800 shadow-sm backdrop-blur-sm transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
+              aria-label="View previous product image"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                moveImage(1);
+              }}
+              className="absolute right-2 top-1/2 z-20 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/85 text-gray-800 shadow-sm backdrop-blur-sm transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
+              aria-label="View next product image"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </>
+        ) : null}
+
         <Button
           size="icon"
           variant="secondary"
           className="absolute right-3 top-3 h-8 w-8 bg-white/90 shadow-md backdrop-blur-sm hover:bg-white"
           onClick={onToggleWishlist}
         >
-          <Heart className={`h-4 w-4 ${wishlistActive ? "fill-[#C6A24A] text-[#C6A24A]" : "text-[#0a0a0a]"}`} />
+          <Heart
+            className={`h-4 w-4 ${wishlistActive ? "fill-[#C6A24A] text-[#C6A24A]" : "text-[#0a0a0a]"}`}
+          />
         </Button>
 
         {highestDiscount ? (
@@ -71,7 +133,6 @@ export function ProductGallerySection({
             </div>
           </div>
         ) : null}
-
       </div>
 
       <div className="w-full overflow-x-auto px-0.5">
@@ -86,7 +147,14 @@ export function ProductGallerySection({
                   : "border-transparent hover:border-[#f6a45d]/40"
               }`}
             >
-              <Image src={img.url} alt={img.altText || `${title} thumbnail`} fill className="object-cover" sizes="64px" loading="lazy" />
+              <Image
+                src={img.url}
+                alt={img.altText || `${title} thumbnail`}
+                fill
+                className="object-cover"
+                sizes="64px"
+                loading="lazy"
+              />
             </button>
           ))}
         </div>
