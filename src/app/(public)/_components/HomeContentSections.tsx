@@ -5,6 +5,13 @@ import { CustomerVoicesSection } from "@/components/features/home/customer-voice
 import { FeaturedVideoSection } from "@/components/features/videos/featured-video-section";
 import type { PublicVideo } from "@/lib/video-utils";
 import { CertificationsSlider, type CertificateLogo } from "@/components/features/certifications/certifications-slider";
+import {
+  HomepageFaqSection,
+  IsThisYouSection,
+  OurProcessSection,
+  PhilosophySection,
+  TrustStrip,
+} from "@/components/features/home/homepage-static-sections";
 
 type HomeContentSectionsProps = {
   categories: Array<{ id: string; name: string; slug: string; image: string | null; parentId?: string | null; order?: number }>;
@@ -48,18 +55,23 @@ export function HomeContentSections({
 }: HomeContentSectionsProps) {
   return (
     <>
+      <TrustStrip />
       <CategoriesSection categories={categories} />
       <ProductsSection categories={categories} products={products} collections={collections} />
+      <WhyChooseUsSection />
+      <OurProcessSection />
       <FeaturedVideoSection
         videos={homeVideos}
         heading="See the latest from OrganoCity"
         description="Watch featured product showcases, buying advice, and shop updates selected by the admin team."
       />
       <CollectionsSection collections={collections} />
-      <WhyChooseUsSection />
+      <PhilosophySection />
+      <IsThisYouSection />
+      <CustomerVoicesSection />
+      <HomepageFaqSection />
       <CertificationsSlider certificates={certificates} />
       <FeaturedBlogSection articles={featuredBlogs} />
-      <CustomerVoicesSection />
     </>
   );
 }

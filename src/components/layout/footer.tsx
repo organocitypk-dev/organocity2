@@ -21,7 +21,9 @@ export function Footer() {
             </Link>
 
             <p className="text-sm text-gray-600 leading-relaxed max-w-xs">
-              Authentic Himalayan pink salt, Shilajit, herbal products, and natural wellness essentials delivered across Pakistan.
+              OrganoCity supplies authentic Himalayan pink salt from Pakistan&apos;s natural salt ranges to retailers,
+              wholesalers, distributors, and wellness buyers worldwide, alongside Shilajit, black salt, salt lamps,
+              and selected herbal products.
             </p>
 
             <div className="flex space-x-4">

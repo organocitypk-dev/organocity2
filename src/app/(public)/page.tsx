@@ -3,6 +3,7 @@ import { serializeVideo } from "@/lib/video-utils";
 import { HomeHeroSection } from "./_components/HomeHeroSection";
 import { HomeContentSections } from "./_components/HomeContentSections";
 import { createSeoMetadata } from "@/lib/seo";
+import { homepageFaqItems } from "@/components/features/home/homepage-static-sections";
 
 export const revalidate = 300;
 
@@ -42,9 +43,9 @@ function parseStringArray(value: unknown): string[] {
 
 export const metadata = createSeoMetadata({
   title: "OrganoCity | Himalayan Pink Salt, Shilajit & Herbal Products",
-  description: "Shop authentic Himalayan pink salt, pure Shilajit, handcrafted salt lamps and natural herbal wellness products from OrganoCity Pakistan.",
+  description: "OrganoCity supplies authentic, mine-direct Himalayan pink salt from Pakistan, alongside Shilajit, black salt, salt lamps, and selected herbal products. Bulk, wholesale, export, and private-label options are available.",
   path: "/",
-  keywords: ["Natural Wellness Store Pakistan", "Buy Himalayan Pink Salt Online Pakistan", "OrganoCity Pakistan", "Himalayan Salt Lamps Pakistan", "Himalayan Shilajit Pakistan"],
+  keywords: ["Himalayan pink salt exporter Pakistan", "Mine-direct Himalayan pink salt", "Wholesale Himalayan pink salt supplier", "Private-label Himalayan salt Pakistan", "Himalayan Shilajit Pakistan", "Black salt supplier Pakistan", "Himalayan salt lamps Pakistan", "Natural products exporter Pakistan"],
 });
 
 export default async function Page() {
@@ -156,6 +157,18 @@ const homepageJsonLd = [
   websiteJsonLd,
   {
     "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: homepageFaqItems.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.schemaAnswer,
+      },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Featured OrganoCity products",
     numberOfItems: allProducts.length,
@@ -176,7 +189,6 @@ return (
           />
         <div className="flex flex-col bg-gray-50">
           <HomeHeroSection />
-          <h1 className="sr-only">OrganoCity – Pure Himalayan Wellness</h1>
 
           <HomeContentSections
             categories={categories}

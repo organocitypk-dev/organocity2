@@ -1,4 +1,3 @@
-import Testimonials from "@/components/features/home/testimonials";
 import { SectionHeading } from "@/components/shared/section-heading";
 
 export function CustomerVoicesSection() {
@@ -8,10 +7,11 @@ export function CustomerVoicesSection() {
         <SectionHeading
           eyebrow="Customer Voices"
           title="What Our Customers Say"
-          description="Trusted by buyers who value performance, reliability, and support."
+          description="Verified customer feedback will appear here when approved reviews are available."
         />
-        <div className="mt-10">
-          <Testimonials />
+        <div className="mx-auto mt-10 max-w-2xl rounded-3xl border border-dashed border-[#C6A24A]/40 bg-white p-8 text-center text-sm leading-relaxed text-gray-600">
+          {/* TODO: Add verified OrganoCity customer reviews from the database or approved Google Reviews integration. */}
+          No verified customer reviews are available to display yet.
         </div>
       </div>
     </section>
