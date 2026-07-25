@@ -15,6 +15,13 @@ type PolicyContent = {
   body: string;
 };
 
+type LegalPageContent = {
+  title: string;
+  description: string;
+  lastUpdated: string;
+  sections: Array<{ id: string; title: string; body: string }>;
+};
+
 type BlogArticle = {
   id: string;
   title: string;
@@ -54,6 +61,19 @@ export async function getPolicyContent(
 ): Promise<PolicyContent> {
   const value = await getSetting<PolicyContent>(key);
   return value ?? fallback;
+}
+
+export async function getLegalPageContent(
+  slug: string,
+  fallback: LegalPageContent,
+): Promise<LegalPageContent> {
+  try {
+    const value = await getSetting<LegalPageContent>(`legalPage:${slug}`);
+    return value ?? fallback;
+  } catch (error) {
+    console.warn(`Using fallback legal content for ${slug}:`, error);
+    return fallback;
+  }
 }
 
 export async function getSitePage(handle: string, fallback?: SitePage): Promise<SitePage> {

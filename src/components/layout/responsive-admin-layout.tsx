@@ -46,6 +46,7 @@ const navItems = [
   { href: "/admin/orders", icon: FiShoppingBag, label: "Orders" },
   { href: "/admin/inquiries", icon: FiMessageSquare, label: "Inquiries" },
   { href: "/admin/blog", icon: FiFileText, label: "Blog" },
+  { href: "/admin/legal-pages", icon: FiFileText, label: "Legal Pages" },
   { href: "/admin/videos", icon: FiVideo, label: "Videos" },
   { href: "/admin/homepage/section-management", icon: FiHome, label: "Homepage Sections" },
   { href: "/admin/media", icon: FiImage, label: "Media" },
@@ -88,7 +89,9 @@ export function AdminMobileNav() {
   );
 }
 
-function AdminSidebar({ admin, onClose, isMobile = false }: { admin: any; onClose?: () => void; isMobile?: boolean }) {
+type AdminIdentity = { name?: string | null; email?: string | null };
+
+function AdminSidebar({ admin, onClose, isMobile = false }: { admin: AdminIdentity; onClose?: () => void; isMobile?: boolean }) {
   const pathname = usePathname();
 
   return (
@@ -179,7 +182,7 @@ function AdminSidebar({ admin, onClose, isMobile = false }: { admin: any; onClos
   );
 }
 
-export function AdminMobileHeader({ admin }: { admin: any }) {
+export function AdminMobileHeader({ admin }: { admin: AdminIdentity }) {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -191,6 +194,7 @@ export function AdminMobileHeader({ admin }: { admin: any }) {
     if (pathname?.startsWith("/admin/orders")) return "Orders";
     if (pathname?.startsWith("/admin/inquiries")) return "Inquiries";
     if (pathname?.startsWith("/admin/blog")) return "Blog";
+    if (pathname?.startsWith("/admin/legal-pages")) return "Legal Pages";
     if (pathname?.startsWith("/admin/media")) return "Media";
     if (pathname?.startsWith("/admin/settings")) return "Settings";
     if (pathname?.startsWith("/admin/profile")) return "Profile";
@@ -248,7 +252,7 @@ export function ResponsiveAdminLayout({
   admin,
 }: {
   children: React.ReactNode;
-  admin: any;
+  admin: AdminIdentity;
 }) {
   return (
     <div className="min-h-screen bg-[#fcf5e8]">

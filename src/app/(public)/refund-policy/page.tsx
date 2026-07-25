@@ -1,12 +1,16 @@
 import { LegalPageLayout } from "@/components/legal/legal-page-layout";
-import { refundSections } from "@/components/legal/legal-page-content";
+import { legalPageDefaults } from "@/components/legal/legal-page-content";
 import { createSeoMetadata } from "@/lib/seo";
+import { getLegalPageContent } from "@/lib/site-settings";
 
-const description = "Refund and return guidance for eligible OrganoCity retail, wholesale, customized, and export purchases.";
-
-export const metadata = createSeoMetadata({ title: "Refund & Return Policy", description, path: "/refund-policy" });
 export const revalidate = 86400;
 
-export default function RefundPolicyPage() {
-  return <LegalPageLayout title="Refund & Return Policy" description={description} path="/refund-policy" lastUpdated="July 25, 2026" sections={refundSections} />;
+export async function generateMetadata() {
+  const data = await getLegalPageContent("refund-policy", legalPageDefaults["refund-policy"]);
+  return createSeoMetadata({ title: data.title, description: data.description, path: "/refund-policy" });
+}
+
+export default async function RefundPolicyPage() {
+  const data = await getLegalPageContent("refund-policy", legalPageDefaults["refund-policy"]);
+  return <LegalPageLayout data={data} path="/refund-policy" />;
 }

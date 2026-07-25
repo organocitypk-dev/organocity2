@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import Link from "next/link";
 import { ChevronRight, FileText, Mail } from "@esmate/shadcn/pkgs/lucide-react";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -15,24 +14,24 @@ export const legalPages = [
 export type LegalSection = {
   id: string;
   title: string;
-  content: ReactNode;
+  body: string;
 };
 
-type LegalPageLayoutProps = {
+export type LegalPageData = {
   title: string;
   description: string;
-  path: string;
   lastUpdated: string;
   sections: LegalSection[];
 };
 
 export function LegalPageLayout({
-  title,
-  description,
+  data,
   path,
-  lastUpdated,
-  sections,
-}: LegalPageLayoutProps) {
+}: {
+  data: LegalPageData;
+  path: string;
+}) {
+  const { title, description, lastUpdated, sections } = data;
   const schemas = [
     breadcrumbSchema([
       { name: "Home", path: "/" },
@@ -98,8 +97,10 @@ export function LegalPageLayout({
               {sections.map((section) => (
                 <section key={section.id} id={section.id} className="scroll-mt-28">
                   <h2 className="font-serif text-2xl font-bold text-gray-950 sm:text-3xl">{section.title}</h2>
-                  <div className="mt-4 space-y-4 text-base leading-7 text-gray-700 [&_a]:font-semibold [&_a]:text-[#9a6500] [&_a]:underline [&_li]:ml-5 [&_li]:list-disc">
-                    {section.content}
+                  <div className="mt-4 space-y-4 text-base leading-7 text-gray-700">
+                    {section.body.split(/\n{2,}/).map((paragraph) => (
+                      <p key={paragraph}>{paragraph}</p>
+                    ))}
                   </div>
                 </section>
               ))}

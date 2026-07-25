@@ -1,12 +1,16 @@
 import { LegalPageLayout } from "@/components/legal/legal-page-layout";
-import { privacySections } from "@/components/legal/legal-page-content";
+import { legalPageDefaults } from "@/components/legal/legal-page-content";
 import { createSeoMetadata } from "@/lib/seo";
+import { getLegalPageContent } from "@/lib/site-settings";
 
-const description = "How OrganoCity handles information for website visitors, retail customers, wholesale buyers, and international orders.";
-
-export const metadata = createSeoMetadata({ title: "Privacy Policy", description, path: "/privacy" });
 export const revalidate = 86400;
 
-export default function PrivacyPage() {
-  return <LegalPageLayout title="Privacy Policy" description={description} path="/privacy" lastUpdated="July 25, 2026" sections={privacySections} />;
+export async function generateMetadata() {
+  const data = await getLegalPageContent("privacy", legalPageDefaults.privacy);
+  return createSeoMetadata({ title: data.title, description: data.description, path: "/privacy" });
+}
+
+export default async function PrivacyPage() {
+  const data = await getLegalPageContent("privacy", legalPageDefaults.privacy);
+  return <LegalPageLayout data={data} path="/privacy" />;
 }

@@ -1,12 +1,16 @@
 import { LegalPageLayout } from "@/components/legal/legal-page-layout";
-import { disclaimerSections } from "@/components/legal/legal-page-content";
+import { legalPageDefaults } from "@/components/legal/legal-page-content";
 import { createSeoMetadata } from "@/lib/seo";
+import { getLegalPageContent } from "@/lib/site-settings";
 
-const description = "Important limitations concerning OrganoCity product information, natural variation, wellness content, and third-party material.";
-
-export const metadata = createSeoMetadata({ title: "Disclaimer", description, path: "/disclaimer" });
 export const revalidate = 86400;
 
-export default function DisclaimerPage() {
-  return <LegalPageLayout title="Disclaimer" description={description} path="/disclaimer" lastUpdated="July 25, 2026" sections={disclaimerSections} />;
+export async function generateMetadata() {
+  const data = await getLegalPageContent("disclaimer", legalPageDefaults.disclaimer);
+  return createSeoMetadata({ title: data.title, description: data.description, path: "/disclaimer" });
+}
+
+export default async function DisclaimerPage() {
+  const data = await getLegalPageContent("disclaimer", legalPageDefaults.disclaimer);
+  return <LegalPageLayout data={data} path="/disclaimer" />;
 }

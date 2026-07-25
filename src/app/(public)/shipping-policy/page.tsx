@@ -1,12 +1,16 @@
 import { LegalPageLayout } from "@/components/legal/legal-page-layout";
-import { shippingSections } from "@/components/legal/legal-page-content";
+import { legalPageDefaults } from "@/components/legal/legal-page-content";
 import { createSeoMetadata } from "@/lib/seo";
+import { getLegalPageContent } from "@/lib/site-settings";
 
-const description = "Shipping guidance for OrganoCity domestic, wholesale, private-label, and international export orders.";
-
-export const metadata = createSeoMetadata({ title: "Shipping Policy", description, path: "/shipping-policy" });
 export const revalidate = 86400;
 
-export default function ShippingPolicyPage() {
-  return <LegalPageLayout title="Shipping Policy" description={description} path="/shipping-policy" lastUpdated="July 25, 2026" sections={shippingSections} />;
+export async function generateMetadata() {
+  const data = await getLegalPageContent("shipping-policy", legalPageDefaults["shipping-policy"]);
+  return createSeoMetadata({ title: data.title, description: data.description, path: "/shipping-policy" });
+}
+
+export default async function ShippingPolicyPage() {
+  const data = await getLegalPageContent("shipping-policy", legalPageDefaults["shipping-policy"]);
+  return <LegalPageLayout data={data} path="/shipping-policy" />;
 }

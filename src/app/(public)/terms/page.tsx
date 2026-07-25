@@ -1,12 +1,16 @@
 import { LegalPageLayout } from "@/components/legal/legal-page-layout";
-import { termsSections } from "@/components/legal/legal-page-content";
+import { legalPageDefaults } from "@/components/legal/legal-page-content";
 import { createSeoMetadata } from "@/lib/seo";
+import { getLegalPageContent } from "@/lib/site-settings";
 
-const description = "Terms governing OrganoCity retail, wholesale, private-label, and export orders for Himalayan salt and natural products.";
-
-export const metadata = createSeoMetadata({ title: "Terms & Conditions", description, path: "/terms" });
 export const revalidate = 86400;
 
-export default function TermsPage() {
-  return <LegalPageLayout title="Terms & Conditions" description={description} path="/terms" lastUpdated="July 25, 2026" sections={termsSections} />;
+export async function generateMetadata() {
+  const data = await getLegalPageContent("terms", legalPageDefaults.terms);
+  return createSeoMetadata({ title: data.title, description: data.description, path: "/terms" });
+}
+
+export default async function TermsPage() {
+  const data = await getLegalPageContent("terms", legalPageDefaults.terms);
+  return <LegalPageLayout data={data} path="/terms" />;
 }
