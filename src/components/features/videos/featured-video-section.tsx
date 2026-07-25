@@ -9,10 +9,12 @@ export function FeaturedVideoSection({
   videos,
   heading,
   description,
+  singleAtATime = false,
 }: {
   videos: PublicVideo[];
   heading: string;
   description: string;
+  singleAtATime?: boolean;
 }) {
   if (!videos.length) return null;
 
@@ -34,7 +36,7 @@ export function FeaturedVideoSection({
             </Link>
           </div>
         </div>
-        <SharedVideoPlayer videos={videos} />
+        <SharedVideoPlayer videos={videos} singleAtATime={singleAtATime} />
       </div>
     </section>
   );

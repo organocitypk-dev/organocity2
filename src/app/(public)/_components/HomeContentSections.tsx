@@ -65,6 +65,7 @@ export function HomeContentSections({
         videos={homeVideos}
         heading="See the latest from OrganoCity"
         description="Watch featured product showcases, buying advice, and shop updates selected by the admin team."
+        singleAtATime
       />
       <CollectionsSection collections={collections} />
       <PhilosophySection />

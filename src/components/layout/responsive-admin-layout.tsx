@@ -109,8 +109,8 @@ function AdminSidebar({ admin, onClose, isMobile = false }: { admin: AdminIdenti
         initial={isMobile ? { x: -280 } : false}
         animate={{ x: 0 }}
         className={isMobile 
-          ? "fixed left-0 top-0 z-50 h-screen w-64 bg-[#1a1308] text-white"
-          : "h-full w-64 bg-[#1a1308] text-white"
+          ? "fixed left-0 top-0 z-50 flex h-screen w-64 flex-col overflow-hidden bg-[#1a1308] text-white"
+          : "flex h-full w-64 flex-col overflow-hidden bg-[#1a1308] text-white"
         }
       >
         <div className="flex h-16 items-center justify-between border-b border-white/10 px-4">
@@ -126,7 +126,7 @@ function AdminSidebar({ admin, onClose, isMobile = false }: { admin: AdminIdenti
           )}
         </div>
 
-        <nav className="flex-1 overflow-y-auto p-4">
+        <nav className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 [scrollbar-color:#C6A24A_#1a1308] [scrollbar-width:thin]">
           <ul className="space-y-1">
             {navItems.map((item) => {
               const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
@@ -153,7 +153,7 @@ function AdminSidebar({ admin, onClose, isMobile = false }: { admin: AdminIdenti
           </ul>
         </nav>
 
-        <div className="border-t border-white/10 p-4">
+        <div className="shrink-0 border-t border-white/10 bg-[#1a1308] p-4">
           <div className="mb-3 flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#C6A24A] text-sm font-bold text-[#0a0a0a]">
               {admin?.name?.[0] || admin?.email?.[0]?.toUpperCase() || "A"}
