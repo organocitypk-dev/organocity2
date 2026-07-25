@@ -2,7 +2,6 @@ import { ReactNode, Suspense } from "react";
 import Providers from "../components/providers/providers";
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
-import InstallPrompt from "@/components/core/install-prompt";
 import ServiceWorkerRegistration from "@/components/core/service-worker-registration";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
@@ -77,7 +76,6 @@ export default function RootLayout({
           <SpeedInsights />
           <Analytics />
         </Providers>
-        <InstallPrompt />
         <ServiceWorkerRegistration />
       </body>
     </html>

@@ -11,6 +11,7 @@ import {
 } from "@esmate/shadcn/components/ui/sheet";
 import {
   ChevronDown,
+  Download,
   Menu,
   Phone,
   Search,
@@ -25,6 +26,7 @@ import { useEffect, useRef, useState } from "react";
 import { CartDrawer } from "@/components/features/cart/cart-drawer";
 import { searchProducts } from "@/components/search/actions";
 import { search as trackSearch } from "@/lib/pixel";
+import { usePWAInstall } from "@/hooks/use-pwa-install";
 
 const mainMenuItems = [
   { text: "Home", href: "/" },
@@ -33,7 +35,6 @@ const mainMenuItems = [
   { text: "Accessories", href: "/category/accessories" },
   { text: "Deals", href: "/collections/hot-deals" },
   { text: "About", href: "/about-us" },
-  { text: "Certificates", href: "/certificates" },
   { text: "Contact", href: "/contact" },
 ];
 
@@ -69,6 +70,7 @@ async function getShopCategories() {
 export function Header() {
   const pathname = usePathname();
   const { totalQuantity } = useCart();
+  const { installApp, isInstalled } = usePWAInstall();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileLegalOpen, setMobileLegalOpen] = useState(false);
   const [desktopLegalOpen, setDesktopLegalOpen] = useState(false);
@@ -301,6 +303,19 @@ export function Header() {
                           </div>
                         ) : null}
                       </div>
+                      {!isInstalled ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            void installApp();
+                            setMobileMenuOpen(false);
+                          }}
+                          className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-[#C6A24A] px-3 py-2.5 text-sm font-bold text-[#1a1308] shadow-sm transition hover:bg-[#b8923f]"
+                        >
+                          <Download aria-hidden="true" className="h-4 w-4" />
+                          Install App
+                        </button>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -538,17 +553,6 @@ export function Header() {
 
           <div className="relative">
             <Link
-              href="/certificates"
-              className={`text-sm font-semibold transition-colors hover:text-[#b57910] ${
-                isActive("/certificates") ? "text-[#8a5b00]" : "text-[#1a1308]"
-              }`}
-            >
-              Certificates
-            </Link>
-          </div>
-
-          <div className="relative">
-            <Link
               href="/videos"
               className={`text-sm font-semibold transition-colors hover:text-[#b57910] ${
                 isActive("/videos") ? "text-[#8a5b00]" : "text-[#1a1308]"
@@ -557,6 +561,17 @@ export function Header() {
               Videos
             </Link>
           </div>
+
+          {!isInstalled ? (
+            <button
+              type="button"
+              onClick={() => void installApp()}
+              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-[#C6A24A] px-3 py-2 text-xs font-bold text-[#1a1308] shadow-sm transition hover:bg-[#b8923f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8a5b00] focus-visible:ring-offset-2"
+            >
+              <Download aria-hidden="true" className="h-4 w-4" />
+              Install App
+            </button>
+          ) : null}
         </div>
 
         {/* ───────── search + icons ───────── */}

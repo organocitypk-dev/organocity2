@@ -16,13 +16,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
   const [active, setActive] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  useEffect(() => {
-    if (slides.length === 0) return;
-
-    if (active >= slides.length) {
-      setActive(0);
-    }
-  }, [active, slides.length]);
+  const currentActive = active < slides.length ? active : 0;
 
   const goTo = useCallback(
     (index: number) => {
@@ -58,14 +52,14 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
     <section
       aria-label="Featured collections"
       aria-roledescription="carousel"
-      className="relative h-[clamp(428px,calc(100dvh-120px),568px)] w-full overflow-hidden bg-slate-100"
+      className="relative h-[clamp(428px,calc(100dvh-120px),568px)] w-full overflow-hidden bg-[#f4f1e8]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onFocusCapture={() => setIsPaused(true)}
       onBlurCapture={() => setIsPaused(false)}
     >
       {slides.map((slide, index) => {
-        const isActive = index === active;
+        const isActive = index === currentActive;
         const hasMobileImage = Boolean(slide.mobileImageUrl);
 
         return (
@@ -106,7 +100,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
 
       <div className="absolute inset-0 z-10">
         {slides.map((slide, index) => {
-          const isActive = index === active;
+          const isActive = index === currentActive;
 
           return (
             <div
@@ -204,7 +198,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
           className="absolute bottom-5 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 sm:bottom-7 sm:gap-3"
         >
           {slides.map((slide, index) => {
-            const isActive = index === active;
+            const isActive = index === currentActive;
 
             return (
               <button
