@@ -1,21 +1,12 @@
-import { PolicyPageContent } from "./_components/policy-page-content";
+import { LegalPageLayout } from "@/components/legal/legal-page-layout";
+import { privacySections } from "@/components/legal/legal-page-content";
 import { createSeoMetadata } from "@/lib/seo";
 
-export const metadata = createSeoMetadata({
-  title: "Privacy Policy",
-  description: "Read how OrganoCity Pakistan collects, uses and protects customer information.",
-  path: "/privacy",
-});
+const description = "How OrganoCity handles information for website visitors, retail customers, wholesale buyers, and international orders.";
 
-export const revalidate = 3600;
+export const metadata = createSeoMetadata({ title: "Privacy Policy", description, path: "/privacy" });
+export const revalidate = 86400;
 
 export default function PrivacyPage() {
-  return (
-    <PolicyPageContent
-      keyName="privacyPolicy"
-      title="Privacy Policy"
-      fallbackBody="<p>At OrganoCity, we value your privacy. This policy outlines how we collect, use, and protect your personal information.</p>"
-    />
-  );
+  return <LegalPageLayout title="Privacy Policy" description={description} path="/privacy" lastUpdated="July 25, 2026" sections={privacySections} />;
 }
-

@@ -1,21 +1,12 @@
-import { PolicyPageContent } from "../privacy/_components/policy-page-content";
+import { LegalPageLayout } from "@/components/legal/legal-page-layout";
+import { refundSections } from "@/components/legal/legal-page-content";
 import { createSeoMetadata } from "@/lib/seo";
 
-export const metadata = createSeoMetadata({
-  title: "Refund Policy",
-  description: "Review the refund and return policy for products and natural products purchased from OrganoCity Pakistan.",
-  path: "/refund-policy",
-});
+const description = "Refund and return guidance for eligible OrganoCity retail, wholesale, customized, and export purchases.";
 
-export const revalidate = 3600;
+export const metadata = createSeoMetadata({ title: "Refund & Return Policy", description, path: "/refund-policy" });
+export const revalidate = 86400;
 
 export default function RefundPolicyPage() {
-  return (
-    <PolicyPageContent
-      keyName="refundPolicy"
-      title="Refund Policy"
-      fallbackBody="<p>Thank you for shopping at OrganoCity. If you are not entirely satisfied with your purchase, we're here to help.</p>"
-    />
-  );
+  return <LegalPageLayout title="Refund & Return Policy" description={description} path="/refund-policy" lastUpdated="July 25, 2026" sections={refundSections} />;
 }
-

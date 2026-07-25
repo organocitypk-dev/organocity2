@@ -108,7 +108,17 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/refund-policy" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
-                  Refund Policy
+                  Refund & Return Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/shipping-policy" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+                  Shipping Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/disclaimer" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+                  Disclaimer
                 </Link>
               </li>
             </ul>

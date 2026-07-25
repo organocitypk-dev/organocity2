@@ -37,6 +37,14 @@ const mainMenuItems = [
   { text: "Contact", href: "/contact" },
 ];
 
+const legalMenuItems = [
+  { text: "Terms & Conditions", href: "/terms" },
+  { text: "Privacy Policy", href: "/privacy" },
+  { text: "Disclaimer", href: "/disclaimer" },
+  { text: "Refund & Return Policy", href: "/refund-policy" },
+  { text: "Shipping Policy", href: "/shipping-policy" },
+];
+
 const topBarLeft = [
   { icon: Truck, text: "Free Shipping on Orders Over $150" },
   { icon: ShieldCheck, text: "100% Secure Checkout" },
@@ -61,6 +69,9 @@ export function Header() {
   const pathname = usePathname();
   const { totalQuantity } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileLegalOpen, setMobileLegalOpen] = useState(false);
+  const [desktopLegalOpen, setDesktopLegalOpen] = useState(false);
+  const desktopLegalRef = useRef<HTMLDivElement>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Awaited<ReturnType<typeof searchProducts>>>([]);
@@ -76,6 +87,27 @@ export function Header() {
   }, []);
 
   const isActive = (href: string) => pathname.startsWith(href);
+  const legalPageActive = legalMenuItems.some((item) => pathname === item.href);
+
+  useEffect(() => {
+    function closeLegalMenu(event: MouseEvent) {
+      if (!desktopLegalRef.current?.contains(event.target as Node)) {
+        setDesktopLegalOpen(false);
+      }
+    }
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setDesktopLegalOpen(false);
+        setMobileLegalOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", closeLegalMenu);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("mousedown", closeLegalMenu);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, []);
 
   useEffect(() => {
     async function performSearch() {
@@ -234,6 +266,40 @@ export function Header() {
                             {item.text}
                           </Link>
                         ))}
+                      <div className="mt-2">
+                        <button
+                          type="button"
+                          aria-expanded={mobileLegalOpen}
+                          aria-controls="mobile-legal-menu"
+                          onClick={() => setMobileLegalOpen((open) => !open)}
+                          className={`flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm font-medium transition-colors ${
+                            legalPageActive ? "bg-[#C6A24A]/20 text-[#8a5b00]" : "text-[#1a1308] hover:bg-[#C6A24A]/12"
+                          }`}
+                        >
+                          Legal Pages
+                          <ChevronDown aria-hidden="true" className={`h-4 w-4 transition-transform ${mobileLegalOpen ? "rotate-180" : ""}`} />
+                        </button>
+                        {mobileLegalOpen ? (
+                          <div id="mobile-legal-menu" className="ml-3 mt-1 space-y-1 border-l border-[#C6A24A]/30 pl-3">
+                            {legalMenuItems.map((item) => (
+                              <Link
+                                key={item.href}
+                                href={item.href}
+                                aria-current={pathname === item.href ? "page" : undefined}
+                                className={`block rounded-lg px-3 py-2 text-sm transition-colors ${
+                                  pathname === item.href ? "bg-[#C6A24A]/20 font-semibold text-[#8a5b00]" : "text-[#1a1308] hover:bg-[#C6A24A]/12"
+                                }`}
+                                onClick={() => {
+                                  setMobileLegalOpen(false);
+                                  setMobileMenuOpen(false);
+                                }}
+                              >
+                                {item.text}
+                              </Link>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -401,6 +467,50 @@ export function Header() {
             >
               About
             </Link>
+          </div>
+
+          <div
+            ref={desktopLegalRef}
+            className="relative"
+            onMouseEnter={() => setDesktopLegalOpen(true)}
+            onMouseLeave={() => setDesktopLegalOpen(false)}
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) setDesktopLegalOpen(false);
+            }}
+          >
+            <button
+              type="button"
+              aria-haspopup="menu"
+              aria-expanded={desktopLegalOpen}
+              aria-controls="desktop-legal-menu"
+              onClick={() => setDesktopLegalOpen((open) => !open)}
+              className={`flex items-center gap-1 text-sm font-semibold transition-colors hover:text-[#b57910] ${
+                legalPageActive ? "text-[#8a5b00]" : "text-[#1a1308]"
+              }`}
+            >
+              Legal Pages
+              <ChevronDown aria-hidden="true" className={`h-4 w-4 transition-transform ${desktopLegalOpen ? "rotate-180" : ""}`} />
+            </button>
+            {desktopLegalOpen ? (
+              <div className="absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 pt-3">
+                <div id="desktop-legal-menu" role="menu" className="rounded-xl border border-[#C6A24A]/25 bg-white p-2 shadow-2xl">
+                  {legalMenuItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      role="menuitem"
+                      aria-current={pathname === item.href ? "page" : undefined}
+                      onClick={() => setDesktopLegalOpen(false)}
+                      className={`block rounded-lg px-4 py-2.5 text-sm transition-colors ${
+                        pathname === item.href ? "bg-[#C6A24A]/20 font-semibold text-[#8a5b00]" : "text-[#1a1308] hover:bg-[#fcf5e8] hover:text-[#8a5b00]"
+                      }`}
+                    >
+                      {item.text}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <div className="relative">

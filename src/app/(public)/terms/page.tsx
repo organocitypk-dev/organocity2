@@ -1,21 +1,12 @@
-import { PolicyPageContent } from "../privacy/_components/policy-page-content";
+import { LegalPageLayout } from "@/components/legal/legal-page-layout";
+import { termsSections } from "@/components/legal/legal-page-content";
 import { createSeoMetadata } from "@/lib/seo";
 
-export const metadata = createSeoMetadata({
-  title: "Terms and Conditions",
-  description: "Terms and conditions for using OrganoCity Pakistan and purchasing natural wellness products.",
-  path: "/terms",
-});
+const description = "Terms governing OrganoCity retail, wholesale, private-label, and export orders for Himalayan salt and natural products.";
 
-export const revalidate = 3600;
+export const metadata = createSeoMetadata({ title: "Terms & Conditions", description, path: "/terms" });
+export const revalidate = 86400;
 
 export default function TermsPage() {
-  return (
-    <PolicyPageContent
-      keyName="termsOfService"
-      title="Terms and Conditions"
-      fallbackBody="<p>Welcome to OrganoCity. These terms and conditions outline the rules and regulations for the use of our Website.</p>"
-    />
-  );
+  return <LegalPageLayout title="Terms & Conditions" description={description} path="/terms" lastUpdated="July 25, 2026" sections={termsSections} />;
 }
-
