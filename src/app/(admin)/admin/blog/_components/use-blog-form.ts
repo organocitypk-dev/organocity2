@@ -17,7 +17,7 @@ export function useBlogForm({ mode, postId, initialValues }: {
   const [values, setValues] = useState<BlogFormValues>({
     title: "", slug: "", excerpt: "", content: "", featuredImage: "",
     author: "Admin", status: "draft", seoTitle: "", seoDescription: "",
-    tags: [], isFeatured: false, ...initialValues,
+    tags: [], relatedKeywords: [], isIndexable: true, isFeatured: false, ...initialValues,
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

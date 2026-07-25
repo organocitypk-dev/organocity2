@@ -117,7 +117,7 @@ model AdminAccountRequest {
   action        String
   targetAdminId String?
   newEmail      String
-  passwordHash String?
+  passwordHash  String?
   otpHash       String
   expiresAt     DateTime
   attempts      Int       @default(0)
@@ -206,23 +206,38 @@ model Category {
 }
 
 model BlogPost {
-  id             String    @id @default(cuid())
-  title          String
-  slug           String    @unique
-  excerpt        String?
-  content        String?
-  featuredImage  String?
-  categoryId     String?
-  author         String
-  status         String    @default("draft")
-  publishedAt    DateTime?
-  seoTitle       String?
-  seoDescription String?
-  tags           Json      @default("[]")
-  views          Int       @default(0)
-  isFeatured     Boolean   @default(false)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id               String    @id @default(cuid())
+  title            String
+  slug             String    @unique
+  excerpt          String?
+  content          String?
+  featuredImage    String?
+  featuredImageAlt String?
+  openGraphImage   String?
+  categoryId       String?
+  author           String
+  authorRole       String?
+  authorBio        String?
+  authorImage      String?
+  status           String    @default("draft")
+  publishedAt      DateTime?
+  scheduledAt      DateTime?
+  contentRevisedAt DateTime?
+  seoTitle         String?
+  seoDescription   String?
+  canonicalUrl     String?
+  focusKeyword     String?
+  relatedKeywords  Json      @default("[]")
+  isIndexable      Boolean   @default(true)
+  tags             Json      @default("[]")
+  views            Int       @default(0)
+  isFeatured       Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([status, publishedAt])
+  @@index([categoryId, status])
+  @@index([author, status])
 }
 
 model Review {

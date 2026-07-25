@@ -161,7 +161,7 @@ export default function BlogSection({ articles: initialArticles }: BlogSectionPr
 
                       <h3 className="mt-1.5 text-sm sm:text-base font-semibold leading-snug line-clamp-2">
                         <Link
-                          href={`/blogs/${article.blogHandle}/${article.handle}`}
+                          href={`/blog/${article.handle}`}
                           className="hover:text-primary transition-colors"
                         >
                           {article.title}
@@ -173,7 +173,7 @@ export default function BlogSection({ articles: initialArticles }: BlogSectionPr
                       </p>
 
                       <Link
-                        href={`/blogs/${article.blogHandle}/${article.handle}`}
+                        href={`/blog/${article.handle}`}
                         className="mt-2.5 inline-flex items-center gap-1.5 text-sm sm:text-base font-medium text-primary hover:underline"
                       >
                         Read Article <ArrowRight className="h-4 w-4 sm:h-4.5 sm:w-4.5" />

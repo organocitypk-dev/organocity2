@@ -8,19 +8,22 @@ type BlogPostSummary = {
   slug: string;
   excerpt: string | null;
   featuredImage: string | null;
+  featuredImageAlt: string | null;
   publishedAt: Date | null;
 };
 
 type BlogPageContentProps = {
   articles: BlogPostSummary[];
+  page?: number;
+  pages?: number;
 };
 
-export function BlogPageContent({ articles }: BlogPageContentProps) {
+export function BlogPageContent({ articles, page = 1, pages = 1 }: BlogPageContentProps) {
   return (
     <div className="bg-[#fcf5e8]">
       <div className="relative h-80 w-full overflow-hidden sm:h-105">
         <Image
-          src="https://placehold.co/1400x420?text=MM+Product+Center+Blog"
+          src="/logo/organocityBackup.png"
           alt="OrganoCity Blog"
           fill
           priority
@@ -38,7 +41,7 @@ export function BlogPageContent({ articles }: BlogPageContentProps) {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold tracking-tight text-[#0a0a0a] sm:text-4xl">
-              Latest from the OrganoCity
+              Latest from OrganoCity
             </h2>
 
             <p className="mt-4 text-lg text-[#5A5E55]">
@@ -66,12 +69,12 @@ export function BlogPageContent({ articles }: BlogPageContentProps) {
                 key={post.id}
                 className="flex flex-col items-start justify-between rounded-2xl border border-[#C6A24A]/30 bg-white p-6 transition-shadow group hover:shadow-lg"
               >
-                <Link href={`/blogs/news/${post.slug}`} className="w-full">
+                <Link href={`/blog/${post.slug}`} className="w-full">
                   <div className="relative mb-4 aspect-video w-full overflow-hidden rounded-lg bg-white">
                     {post.featuredImage ? (
                       <Image
                         src={post.featuredImage}
-                        alt={post.title}
+                        alt={post.featuredImageAlt || post.title}
                         fill
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
@@ -101,7 +104,7 @@ export function BlogPageContent({ articles }: BlogPageContentProps) {
 
                 <div className="group relative">
                   <h3 className="mt-3 text-lg font-semibold leading-6 text-[#0a0a0a] transition-colors group-hover:text-[#f6a45d]">
-                    <Link href={`/blogs/news/${post.slug}`}>
+                    <Link href={`/blog/${post.slug}`}>
                       <span className="absolute inset-0" />
                       {post.title}
                     </Link>
@@ -121,6 +124,14 @@ export function BlogPageContent({ articles }: BlogPageContentProps) {
           <div className="mt-16 text-center text-[#5A5E55]">
             <p>No articles found. Check back soon!</p>
           </div>
+        )}
+
+        {pages > 1 && (
+          <nav aria-label="Blog pagination" className="mx-auto mt-12 flex max-w-2xl items-center justify-center gap-4">
+            {page > 1 && <Link href={page === 2 ? "/blog" : `/blog?page=${page - 1}`}>← Newer articles</Link>}
+            <span>Page {page} of {pages}</span>
+            {page < pages && <Link href={`/blog?page=${page + 1}`}>Older articles →</Link>}
+          </nav>
         )}
 
         <div className="mx-auto mt-24 max-w-3xl pt-10 p-2">

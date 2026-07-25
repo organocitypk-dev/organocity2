@@ -9,12 +9,23 @@ const blogSchema = z.object({
   excerpt: z.string().optional(),
   content: z.string().optional(),
   featuredImage: z.string().optional(),
+  featuredImageAlt: z.string().optional(),
+  openGraphImage: z.string().optional(),
   categoryId: z.string().optional(),
   author: z.string().default("Admin"),
-  status: z.string().default("draft"),
+  authorRole: z.string().optional(),
+  authorBio: z.string().optional(),
+  authorImage: z.string().optional(),
+  status: z.enum(["draft", "scheduled", "published"]).default("draft"),
   publishedAt: z.union([z.string(), z.date()]).optional(),
+  scheduledAt: z.union([z.string(), z.date()]).optional(),
+  contentRevisedAt: z.union([z.string(), z.date()]).optional(),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
+  canonicalUrl: z.string().optional(),
+  focusKeyword: z.string().optional(),
+  relatedKeywords: z.array(z.string()).default([]),
+  isIndexable: z.boolean().default(true),
   tags: z.array(z.string()).default([]),
   isFeatured: z.boolean().default(false),
 });
@@ -38,6 +49,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     const body = await request.json();
     const validated = blogSchema.parse(body);
     if (validated.publishedAt) validated.publishedAt = new Date(validated.publishedAt);
+    if (validated.scheduledAt) validated.scheduledAt = new Date(validated.scheduledAt);
+    if (validated.contentRevisedAt) validated.contentRevisedAt = new Date(validated.contentRevisedAt);
+    if (validated.status === "published" && !validated.publishedAt) validated.publishedAt = new Date();
     const post = await prisma.blogPost.update({ where: { id }, data: validated });
     return NextResponse.json(post);
   } catch (error: unknown) {

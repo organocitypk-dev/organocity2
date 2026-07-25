@@ -15,6 +15,12 @@ export function BlogSeoFields({ values, setValues, saving }: Props) {
           <label className="block text-xs font-medium text-[#0a0a0a] md:text-sm">SEO Title<input value={values.seoTitle ?? ""} onChange={(e) => setValues((v) => ({ ...v, seoTitle: e.target.value }))} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-1.5 text-xs focus:border-transparent focus:ring-2 focus:ring-[#C6A24A] md:py-2 md:text-sm" /></label>
           <label className="block text-xs font-medium text-[#0a0a0a] md:text-sm">SEO Description<textarea value={values.seoDescription ?? ""} onChange={(e) => setValues((v) => ({ ...v, seoDescription: e.target.value }))} rows={3} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-[#C6A24A]" /></label>
         </div>
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          <label className="block text-xs font-medium">Focus keyword<input value={values.focusKeyword ?? ""} onChange={(e) => setValues((v) => ({ ...v, focusKeyword: e.target.value }))} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2" /></label>
+          <label className="block text-xs font-medium">Canonical URL<input value={values.canonicalUrl ?? ""} placeholder="/blog/article-slug" onChange={(e) => setValues((v) => ({ ...v, canonicalUrl: e.target.value }))} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2" /></label>
+          <label className="block text-xs font-medium">Open Graph image URL<input value={values.openGraphImage ?? ""} onChange={(e) => setValues((v) => ({ ...v, openGraphImage: e.target.value }))} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2" /></label>
+          <label className="flex items-center gap-2 self-end pb-2"><input type="checkbox" checked={values.isIndexable} onChange={(e) => setValues((v) => ({ ...v, isIndexable: e.target.checked }))} /> Index and follow this article</label>
+        </div>
       </div>
       <div className="flex justify-end"><button type="submit" disabled={saving} className="rounded-lg bg-[#f6a45d] px-4 py-2 text-xs font-semibold text-white hover:bg-[#d8861f] disabled:opacity-50 md:px-5 md:py-2.5 md:text-sm">{saving ? "Saving..." : "Save"}</button></div>
     </>

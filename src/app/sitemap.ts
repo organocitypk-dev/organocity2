@@ -6,7 +6,7 @@ const staticRoutes: Array<{ path: string; priority: number; changeFrequency: "da
   { path: "/", priority: 1, changeFrequency: "daily" },
   { path: "/products", priority: 0.9, changeFrequency: "daily" },
   { path: "/collections", priority: 0.8, changeFrequency: "weekly" },
-  { path: "/blogs", priority: 0.7, changeFrequency: "weekly" },
+  { path: "/blog", priority: 0.7, changeFrequency: "weekly" },
   { path: "/videos", priority: 0.6, changeFrequency: "weekly" },
   { path: "/about-us", priority: 0.6, changeFrequency: "monthly" },
   { path: "/contact", priority: 0.5, changeFrequency: "monthly" },
@@ -30,7 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       prisma.product.findMany({ where: { status: "ACTIVE" }, select: { handle: true, updatedAt: true } }),
       prisma.category.findMany({ select: { slug: true, updatedAt: true } }),
       prisma.collection.findMany({ select: { handle: true, updatedAt: true } }),
-      prisma.blogPost.findMany({ where: { status: "published" }, select: { slug: true, updatedAt: true } }),
+      prisma.blogPost.findMany({ where: { status: "published", isIndexable: true, publishedAt: { lte: now } }, select: { slug: true, updatedAt: true } }),
     ]);
 
     return [
@@ -38,7 +38,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...products.map((item) => ({ url: absoluteUrl(`/products/${item.handle}`), lastModified: item.updatedAt, changeFrequency: "weekly" as const, priority: 0.8 })),
       ...categories.map((item) => ({ url: absoluteUrl(`/category/${item.slug}`), lastModified: item.updatedAt, changeFrequency: "weekly" as const, priority: 0.7 })),
       ...collections.map((item) => ({ url: absoluteUrl(`/collections/${item.handle}`), lastModified: item.updatedAt, changeFrequency: "weekly" as const, priority: 0.7 })),
-      ...articles.map((item) => ({ url: absoluteUrl(`/blogs/news/${item.slug}`), lastModified: item.updatedAt, changeFrequency: "monthly" as const, priority: 0.6 })),
+      ...articles.map((item) => ({ url: absoluteUrl(`/blog/${item.slug}`), lastModified: item.updatedAt, changeFrequency: "monthly" as const, priority: 0.6 })),
     ];
   } catch {
     return base;
