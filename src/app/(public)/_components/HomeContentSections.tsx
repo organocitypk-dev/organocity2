@@ -9,6 +9,7 @@ import {
   HomepageFaqSection,
   IsThisYouSection,
   OurProcessSection,
+  PinkSaltWellnessSection,
   PhilosophySection,
   TrustStrip,
 } from "@/components/features/home/homepage-static-sections";
@@ -68,8 +69,9 @@ export function HomeContentSections({
       <CollectionsSection collections={collections} />
       <PhilosophySection />
       <IsThisYouSection />
-      <CustomerVoicesSection />
+      <PinkSaltWellnessSection />
       <HomepageFaqSection />
+      <CustomerVoicesSection />
       <CertificationsSlider certificates={certificates} />
       <FeaturedBlogSection articles={featuredBlogs} />
     </>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   Box,
   CheckCircle2,
@@ -149,6 +150,46 @@ export function IsThisYouSection() {
         <div className="mt-8 text-center">
           <p className="text-lg font-semibold text-gray-900">If that sounds like you, welcome to OrganoCity.</p>
           <Link href="/products" className="mt-5 inline-flex rounded-full bg-[#ea580c] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#c2410c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#ea580c]">Explore Our Products</Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function PinkSaltWellnessSection() {
+  return (
+    <section className="bg-white px-6 py-14 lg:px-8 lg:py-20">
+      <div className="mx-auto grid max-w-7xl items-center gap-10 overflow-hidden rounded-3xl border border-[#C6A24A]/20 bg-[#f4f1e8] p-6 shadow-sm md:grid-cols-2 md:p-10">
+        <div>
+          <span className="inline-flex rounded-full bg-[#ffedd5] px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#ea580c]">
+            Naturally Distinctive
+          </span>
+          <h2 className="mt-5 font-serif text-3xl font-extrabold text-gray-900 sm:text-4xl">
+            Himalayan Pink Salt in a Balanced Diet
+          </h2>
+          <p className="mt-5 leading-7 text-gray-700">
+            Himalayan pink salt is valued for its natural color, mineral character, crystal texture, and ability to
+            season food. Its trace minerals create its distinctive appearance, but they do not make it a medical
+            treatment or a substitute for a varied diet.
+          </p>
+          <ul className="mt-6 space-y-3 text-sm leading-6 text-gray-700">
+            <li className="flex gap-3"><CheckCircle2 aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-[#C6A24A]" />Available in different crystal sizes for cooking, finishing, and presentation.</li>
+            <li className="flex gap-3"><CheckCircle2 aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-[#C6A24A]" />Its flavor can help bring out the taste of food when used thoughtfully.</li>
+            <li className="flex gap-3"><CheckCircle2 aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-[#C6A24A]" />Like other culinary salts, it is primarily sodium chloride and should be used in moderation.</li>
+          </ul>
+          <p className="mt-6 rounded-2xl bg-white p-4 text-sm leading-6 text-gray-600">
+            Nutrition note: health authorities recommend limiting total salt intake. The type of salt does not remove
+            the health risks associated with excess sodium.
+          </p>
+        </div>
+        <div className="relative aspect-[3/2] overflow-hidden rounded-3xl">
+          <Image
+            src="/images/homepage/himalayan-pink-salt.png"
+            alt="Natural Himalayan pink salt crystals and coarse salt in a ceramic bowl"
+            fill
+            sizes="(min-width: 768px) 50vw, 100vw"
+            className="object-cover"
+          />
         </div>
       </div>
     </section>
