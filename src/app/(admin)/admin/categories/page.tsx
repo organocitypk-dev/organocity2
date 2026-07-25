@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { FiPlus, FiEdit, FiTrash2 } from "react-icons/fi";
 
 interface Category {
@@ -70,10 +71,13 @@ export default function CategoriesPage() {
           {categories.map((category) => (
             <div key={category.id} className="bg-white rounded-lg shadow p-3 md:p-4">
               {category.image && (
-                <img
+                <Image
                   src={category.image}
                   alt={category.name}
-                  className="w-full h-20 md:h-32 object-cover rounded mb-2 md:mb-3"
+                  width={480}
+                  height={320}
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  className="mb-2 h-20 w-full rounded object-cover md:mb-3 md:h-32"
                 />
               )}
               <h3 className="font-semibold text-sm md:text-base">{category.name}</h3>

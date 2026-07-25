@@ -15,6 +15,11 @@ export type CategoryFormValues = {
   featured: boolean;
   seoTitle?: string;
   seoDescription?: string;
+  canonicalUrl?: string;
+  robots?: string;
+  openGraphImage?: string;
+  imageAlt?: string;
+  focusKeyword?: string;
   productIds: string[];
 };
 

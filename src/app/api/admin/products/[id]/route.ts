@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-auth";
+import { revalidatePath } from "next/cache";
 
 const productSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -21,6 +22,11 @@ const productSchema = z.object({
   status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED"]).default("ACTIVE"),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
+  canonicalUrl: z.string().optional(),
+  robots: z.enum(["index,follow", "noindex,follow", "noindex,nofollow"]).default("index,follow"),
+  openGraphImage: z.string().optional(),
+  imageAlt: z.string().optional(),
+  focusKeyword: z.string().optional(),
   images: z.array(z.string()).min(1, "At least one image is required"),
   featuredImage: z.string().optional(),
   productType: z.string().optional(),
@@ -124,6 +130,11 @@ export async function PUT(
         },
       },
     });
+    revalidatePath("/");
+    revalidatePath("/products");
+    revalidatePath(`/products/${product.handle}`);
+    revalidatePath("/products-sitemap.xml");
+    revalidatePath("/google-merchant-feed.xml");
 
     return NextResponse.json(product);
   } catch (error: unknown) {
@@ -149,9 +160,14 @@ export async function DELETE(
     await requireAdmin();
     const { id } = await params;
     
-    await prisma.product.delete({
+    const product = await prisma.product.delete({
       where: { id },
     });
+    revalidatePath("/");
+    revalidatePath("/products");
+    revalidatePath(`/products/${product.handle}`);
+    revalidatePath("/products-sitemap.xml");
+    revalidatePath("/google-merchant-feed.xml");
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {

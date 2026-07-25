@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-auth";
 import type { Prisma } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 const productSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -22,6 +23,11 @@ const productSchema = z.object({
   status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED"]).default("ACTIVE"),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
+  canonicalUrl: z.string().optional(),
+  robots: z.enum(["index,follow", "noindex,follow", "noindex,nofollow"]).default("index,follow"),
+  openGraphImage: z.string().optional(),
+  imageAlt: z.string().optional(),
+  focusKeyword: z.string().optional(),
   images: z.array(z.string()).min(1, "At least one image is required"),
   featuredImage: z.string().optional(),
   productType: z.string().optional(),
@@ -130,6 +136,11 @@ export async function POST(request: Request) {
         variations: { create: variants.map(({ id, ...variant }) => ({ id, ...variant, value: variant.name })) },
       },
     });
+    revalidatePath("/");
+    revalidatePath("/products");
+    revalidatePath(`/products/${product.handle}`);
+    revalidatePath("/products-sitemap.xml");
+    revalidatePath("/google-merchant-feed.xml");
 
     return NextResponse.json({ product }, { status: 201 });
   } catch (error: unknown) {

@@ -27,10 +27,10 @@ export async function POST(request: Request) {
       format: result.format,
       size: result.bytes,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error uploading image:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to upload image" },
+      { error: error instanceof Error ? error.message : "Failed to upload image" },
       { status: 500 }
     );
   }
@@ -50,10 +50,10 @@ export async function DELETE(request: Request) {
     await deleteImage(publicId);
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error deleting image:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to delete image" },
+      { error: error instanceof Error ? error.message : "Failed to delete image" },
       { status: 500 }
     );
   }

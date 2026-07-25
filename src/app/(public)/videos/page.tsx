@@ -3,7 +3,7 @@ import { serializeVideo } from "@/lib/video-utils";
 import { VideosPageClient } from "@/components/features/videos/videos-page-client";
 import { createSeoMetadata } from "@/lib/seo";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 900;
 
 export const metadata = createSeoMetadata({
   title: "Product Videos and Tech Guides Pakistan",

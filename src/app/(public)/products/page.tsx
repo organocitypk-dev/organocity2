@@ -1,73 +1,43 @@
 import { Metadata } from "next";
-import type { JsonValue } from "@prisma/client/runtime/library";
-import { getCategoriesForFilters, getAllProductsForFilter } from "./service";
+import { getCategoriesForFilters, getProductsPage } from "./service";
 import { ProductsPageContent } from "./_components/products-page-content";
+import { createSeoMetadata } from "@/lib/seo";
 
 export const revalidate = 60;
 
 /* ---------------- SEO METADATA ---------------- */
 
-export const metadata: Metadata = {
-  title: "Shop Products – OrganoCity",
-  description:
-    "OrganoCity – Shop premium products, natural wellness products and accessories",
-
-  keywords: [
-    "products",
-    "salt lamps",
-    "herbal products",
-    "ultrabooks",
-    "budget products",
-    "related natural products",
-    "monitors",
-    "keyboards",
-    "mice",
-    "product bags",
-    "OrganoCity",
-  ],
-
-  openGraph: {
-    title: "Shop Products – OrganoCity",
-    description:
-      "Browse salt lamps, business ultrabooks, accessories and more at OrganoCity.",
-    url: "https://www.organocity.com/products",
-    siteName: "OrganoCity",
-    type: "website",
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "Shop Products – OrganoCity",
-    description:
-      "Discover premium products, natural wellness products and natural products at OrganoCity.",
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-  },
-
-  alternates: {
-    canonical: "https://www.organocity.com/products",
-  },
-};
+export async function generateMetadata({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }): Promise<Metadata> {
+  const query = await searchParams;
+  const filtered = Boolean(query.q || query.category || query.min || query.max || query.sort);
+  const page = Math.max(1, Number(query.page) || 1);
+  return createSeoMetadata({
+    title: page > 1 ? `Himalayan & Natural Wellness Products – Page ${page}` : "Shop Himalayan & Natural Wellness Products",
+    description: "Shop authentic Himalayan pink salt, Shilajit, salt lamps, natural honey and herbal wellness products from OrganoCity.",
+    path: page > 1 && !filtered ? `/products?page=${page}` : "/products",
+    keywords: ["Himalayan pink salt products", "Shilajit Pakistan", "salt lamps", "herbal wellness products", "natural honey"],
+    noIndex: filtered,
+  });
+}
 
 /* ---------------- PAGE ---------------- */
 
 export default async function Page({
   searchParams,
 }: {
-  searchParams?: { q?: string; category?: string; subcategory?: string; tag?: string; min?: string; max?: string };
+  searchParams: Promise<{ q?: string; category?: string; min?: string; max?: string; sort?: string; page?: string }>;
 }) {
-  const initialCategorySlug = (searchParams?.category ?? "").trim();
-
-  let categories: Array<{ id: string; name: string; slug: string; order: number; subcategories: Array<{ id: string; name: string; slug: string; parentId: string | null; order: number }> }> = [];
-  let allProducts: Array<{ id: string; handle: string; title: string; price: number; compareAtPrice: number | null; featuredImage: string | null; images: JsonValue | null; tags: JsonValue | null; description: string | null; sku: string | null; productType: string | null; vendor: string; categoryId: string | null; subcategoryId: string | null; isFeatured: boolean }> = [];
+  const query = await searchParams;
+  const page = Math.max(1, Number(query.page) || 1);
+  const min = query.min === undefined || query.min === "" ? undefined : Math.max(0, Number(query.min));
+  const max = query.max === undefined || query.max === "" ? undefined : Math.max(0, Number(query.max));
+  let categories: Awaited<ReturnType<typeof getCategoriesForFilters>> = [];
+  let result: Awaited<ReturnType<typeof getProductsPage>> = { products: [], total: 0, totalPages: 1 };
 
   try {
-    [categories, allProducts] = await Promise.all([
+    [categories, result] = await Promise.all([
       getCategoriesForFilters(),
-      getAllProductsForFilter(),
+      getProductsPage({ q: query.q?.trim(), category: query.category?.trim(), min: Number.isFinite(min) ? min : undefined, max: Number.isFinite(max) ? max : undefined, sort: query.sort, page, pageSize: 24 }),
     ]);
   } catch (error) {
     console.error("Failed to load products:", error);
@@ -76,8 +46,11 @@ export default async function Page({
   return (
     <ProductsPageContent
       categories={categories}
-      initialProducts={allProducts}
-      initialCategorySlug={initialCategorySlug}
+      products={result.products}
+      page={page}
+      totalPages={result.totalPages}
+      total={result.total}
+      query={query}
     />
   );
 }

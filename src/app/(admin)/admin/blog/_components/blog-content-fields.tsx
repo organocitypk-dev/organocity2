@@ -19,6 +19,10 @@ export function BlogContentFields({ values, setValues }: Props) {
         <label className="block text-sm font-medium text-[#0a0a0a]">Related keywords (comma-separated)<input value={values.relatedKeywords.join(", ")} onChange={(e) => setValues((v) => ({ ...v, relatedKeywords: e.target.value.split(",").map((item) => item.trim()).filter(Boolean) }))} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2" /></label>
       </div>
       <TextArea label="Author biography" rows={3} value={values.authorBio ?? ""} onChange={(value) => setValues((v) => ({ ...v, authorBio: value }))} />
+      <div className="grid gap-4 lg:grid-cols-2">
+        <label className="block text-sm font-medium text-[#0a0a0a]">Related article IDs (comma-separated)<input value={values.relatedArticleIds.join(", ")} onChange={(e) => setValues((v) => ({ ...v, relatedArticleIds: e.target.value.split(",").map((item) => item.trim()).filter(Boolean) }))} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2" /></label>
+        <label className="block text-sm font-medium text-[#0a0a0a]">Related product handles (comma-separated)<input value={values.relatedProductHandles.join(", ")} onChange={(e) => setValues((v) => ({ ...v, relatedProductHandles: e.target.value.split(",").map((item) => item.trim()).filter(Boolean) }))} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2" /></label>
+      </div>
     </>
   );
 }

@@ -128,7 +128,6 @@ export function ExtraProductDetails({ details }: { details: ExtraProductDetail[]
                     src={detail.image}
                     alt={detail.title || "Product detail"}
                     fill
-                    unoptimized
                     className="object-cover"
                     sizes="(max-width: 1024px) 100vw, 50vw"
                   />
@@ -175,12 +174,9 @@ export function ExtraProductDetails({ details }: { details: ExtraProductDetail[]
         >
           <X className="h-6 w-6" />
         </button>
-        <img
-          src={fullImage.url}
-          alt={fullImage.alt}
-          className="max-h-full max-w-full rounded-xl object-contain shadow-2xl"
-          onClick={(event) => event.stopPropagation()}
-        />
+        <div className="relative h-full w-full" onClick={(event) => event.stopPropagation()}>
+          <Image src={fullImage.url} alt={fullImage.alt} fill sizes="100vw" className="rounded-xl object-contain shadow-2xl" />
+        </div>
       </div>
     ) : null}
     </>

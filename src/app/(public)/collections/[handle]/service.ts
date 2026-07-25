@@ -22,16 +22,17 @@ const virtualCollections = {
     seo: {
       title: "Best Sellers | OrganoCity",
       description:
-        "Discover OrganoCity best-selling products, natural wellness products, and accessories.",
+        "Discover OrganoCity best-selling Himalayan and natural wellness products.",
     },
     image: null,
+    canonicalUrl: null, robots: "index,follow", openGraphImage: null, focusKeyword: "OrganoCity best sellers",
   },
   "new-arrivals": {
     id: "virtual-new-arrivals",
     handle: "new-arrivals",
     title: "New Arrivals",
     description:
-      "Explore the latest products, natural wellness products, and accessories added to OrganoCity.",
+      "Explore the latest Himalayan and natural wellness products added to OrganoCity.",
     descriptionHtml: null,
     seo: {
       title: "New Arrivals | OrganoCity",
@@ -39,6 +40,7 @@ const virtualCollections = {
         "Browse the newest natural wellness products available at OrganoCity.",
     },
     image: null,
+    canonicalUrl: null, robots: "index,follow", openGraphImage: null, focusKeyword: "new natural wellness products",
   },
   "hot-deals": {
     id: "virtual-hot-deals",
@@ -50,9 +52,10 @@ const virtualCollections = {
     seo: {
       title: "Hot Deals | OrganoCity",
       description:
-        "Save on selected products, natural wellness products, and accessories at OrganoCity.",
+        "Save on selected Himalayan and natural wellness products at OrganoCity.",
     },
     image: null,
+    canonicalUrl: null, robots: "index,follow", openGraphImage: null, focusKeyword: "natural wellness deals",
   },
 } as const;
 

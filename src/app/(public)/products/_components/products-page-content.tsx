@@ -1,5 +1,4 @@
 import { ProductsFiltered } from "@/components/features/products/products-filtered";
-import type { JsonValue } from "@prisma/client/runtime/library";
 
 type CategoryFilter = {
   id: string;
@@ -22,21 +21,17 @@ type ProductListItem = {
   price: number;
   compareAtPrice: number | null;
   featuredImage: string | null;
-  images: JsonValue | null;
-  tags: JsonValue | null;
-  description: string | null;
-  sku: string | null;
-  productType: string | null;
-  vendor: string;
-  categoryId: string | null;
-  subcategoryId: string | null;
-  isFeatured: boolean;
+  images: unknown;
+  tags: unknown;
 };
 
 type ProductsPageContentProps = {
   categories: CategoryFilter[];
-  initialProducts: ProductListItem[];
-  initialCategorySlug?: string;
+  products: ProductListItem[];
+  page: number;
+  totalPages: number;
+  total: number;
+  query: Record<string, string | undefined>;
 };
 
 function ProductsSeoSection() {
@@ -67,16 +62,18 @@ function ProductsSeoSection() {
 
 export function ProductsPageContent({
   categories,
-  initialProducts,
-  initialCategorySlug = "",
+  products, page, totalPages, total, query,
 }: ProductsPageContentProps) {
   return (
     <main className="bg-background min-h-screen">
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <ProductsFiltered
           categories={categories}
-          initialProducts={initialProducts}
-          initialCategorySlug={initialCategorySlug}
+          products={products}
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          query={query}
         />
 
         <ProductsSeoSection />

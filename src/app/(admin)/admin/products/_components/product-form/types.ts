@@ -56,6 +56,11 @@ export type ProductFormValues = ProductAttributes & {
   status: ProductStatus;
   seoTitle?: string;
   seoDescription?: string;
+  canonicalUrl?: string;
+  robots?: string;
+  openGraphImage?: string;
+  imageAlt?: string;
+  focusKeyword?: string;
   images: string[];
   featuredImage?: string;
   productType?: string;

@@ -16,7 +16,7 @@ export function useCategoryForm({ mode, categoryId, initialValues }: {
   const router = useRouter();
   const [values, setValues] = useState<CategoryFormValues>({
     name: "", slug: "", description: "", image: "", parentId: "", order: 0,
-    featured: false, seoTitle: "", seoDescription: "", productIds: [], ...initialValues,
+    featured: false, seoTitle: "", seoDescription: "", canonicalUrl: "", robots: "index,follow", openGraphImage: "", imageAlt: "", focusKeyword: "", productIds: [], ...initialValues,
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

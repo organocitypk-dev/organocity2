@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@esmate/shadcn/components/ui/select";
 import { toast } from "sonner";
+import Image from "next/image";
 
 interface Review {
   id: string;
@@ -36,35 +37,6 @@ interface ReviewStatistics {
 interface ProductReviewsProps {
   productHandle: string;
 }
-
-const DEFAULT_REVIEWS: Review[] = [
-  {
-    id: "default-review-1",
-    authorName: "Verified Product Buyer",
-    rating: 5,
-    content: "The team guided me clearly, confirmed the specs before dispatch, and the product arrived clean, packed well, and ready to use.",
-    isVerifiedPurchase: true,
-    helpfulCount: 18,
-    images: [],
-    createdAt: "2026-06-12T00:00:00.000Z",
-  },
-  {
-    id: "default-review-2",
-    authorName: "Business Customer",
-    rating: 5,
-    content: "Good communication and honest condition details. I appreciated the warranty guidance and quick delivery support.",
-    isVerifiedPurchase: true,
-    helpfulCount: 11,
-    images: [],
-    createdAt: "2026-05-28T00:00:00.000Z",
-  },
-];
-
-const DEFAULT_STATISTICS: ReviewStatistics = {
-  averageRating: 4.8,
-  totalReviews: 42,
-  distribution: { 5: 34, 4: 6, 3: 2, 2: 0, 1: 0 },
-};
 
 export function ProductReviews({ productHandle }: ProductReviewsProps) {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -189,10 +161,8 @@ export function ProductReviews({ productHandle }: ProductReviewsProps) {
     );
   }
 
-  const visibleReviews = reviews.length > 0 ? reviews : DEFAULT_REVIEWS;
-  const visibleStatistics =
-    statistics && statistics.totalReviews > 0 ? statistics : DEFAULT_STATISTICS;
-  const usingDefaultReviews = reviews.length === 0;
+  const visibleReviews = reviews;
+  const visibleStatistics = statistics;
 
   return (
     <div className="space-y-6">
@@ -206,9 +176,7 @@ export function ProductReviews({ productHandle }: ProductReviewsProps) {
               </div>
               <StarRating rating={Math.round(visibleStatistics.averageRating)} size="md" />
               <div className="text-sm text-[#5A5E55] mt-2">
-                {usingDefaultReviews
-                  ? "Representative store feedback while this product collects reviews"
-                  : `Based on ${visibleStatistics.totalReviews} review${visibleStatistics.totalReviews !== 1 ? "s" : ""}`}
+                {`Based on ${visibleStatistics.totalReviews} review${visibleStatistics.totalReviews !== 1 ? "s" : ""}`}
               </div>
             </div>
             <div className="space-y-1.5">
@@ -345,10 +313,11 @@ export function ProductReviews({ productHandle }: ProductReviewsProps) {
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-[#fcf5e8] flex items-center justify-center">
                     {review.authorImage ? (
-                      <img
+                      <Image
                         src={review.authorImage}
                         alt={review.authorName}
-                        loading="lazy"
+                        width={40}
+                        height={40}
                         className="h-full w-full rounded-full object-cover"
                       />
                     ) : (
@@ -368,11 +337,12 @@ export function ProductReviews({ productHandle }: ProductReviewsProps) {
               {review.images && review.images.length > 0 && (
                 <div className="flex gap-2 mb-3">
                   {review.images.map((img, idx) => (
-                    <img
+                    <Image
                       key={idx}
                       src={img}
                       alt={`Review image ${idx + 1}`}
-                      loading="lazy"
+                      width={64}
+                      height={64}
                       className="h-16 w-16 rounded-lg object-cover border border-[#C6A24A]/20"
                     />
                   ))}
@@ -397,6 +367,7 @@ export function ProductReviews({ productHandle }: ProductReviewsProps) {
               </div>
             </div>
           ))}
+        {visibleReviews.length === 0 && <div className="rounded-xl border bg-white p-8 text-center"><h3 className="font-semibold">No reviews yet</h3><p className="mt-2 text-sm text-[#5A5E55]">Be the first customer to share a verified experience.</p></div>}
       </div>
     </div>
   );

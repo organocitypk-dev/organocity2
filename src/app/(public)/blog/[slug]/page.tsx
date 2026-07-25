@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { authorSlug, getPublishedPost, publishedBlogWhere } from "@/lib/blog";
 import { prisma } from "@/lib/prisma";
 import { absoluteUrl, breadcrumbSchema, createSeoMetadata } from "@/lib/seo";
+import { addHeadingIds } from "@/lib/article-content";
 
 export const revalidate = 900;
 
@@ -23,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     type: "article",
     image: article.openGraphImage || article.featuredImage,
     keywords: [article.focusKeyword, ...related, ...tags].filter((item): item is string => Boolean(item)),
-    publishedTime: article.publishedAt?.toISOString(),
+    publishedTime: (article.publishedAt || article.scheduledAt)?.toISOString(),
     modifiedTime: (article.contentRevisedAt || article.updatedAt).toISOString(),
     authors: [article.author],
   });
@@ -34,17 +35,19 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const article = await getPublishedPost(slug);
   if (!article) notFound();
 
+  const manualArticleIds = Array.isArray(article.relatedArticleIds) ? article.relatedArticleIds.filter((item): item is string => typeof item === "string") : [];
+  const manualProductHandles = Array.isArray(article.relatedProductHandles) ? article.relatedProductHandles.filter((item): item is string => typeof item === "string") : [];
   const [category, related, adjacent, products] = await Promise.all([
     article.categoryId ? prisma.category.findUnique({ where: { id: article.categoryId }, select: { name: true, slug: true } }) : null,
     prisma.blogPost.findMany({
-      where: { ...publishedBlogWhere, id: { not: article.id }, ...(article.categoryId ? { categoryId: article.categoryId } : {}) },
+      where: { ...publishedBlogWhere(), id: manualArticleIds.length ? { in: manualArticleIds } : { not: article.id }, ...(!manualArticleIds.length && article.categoryId ? { categoryId: article.categoryId } : {}) },
       orderBy: { publishedAt: "desc" }, take: 3, select: { title: true, slug: true, excerpt: true },
     }),
     prisma.blogPost.findMany({
-      where: publishedBlogWhere, orderBy: { publishedAt: "desc" }, select: { title: true, slug: true, publishedAt: true },
+      where: publishedBlogWhere(), orderBy: { publishedAt: "desc" }, select: { title: true, slug: true, publishedAt: true },
     }),
-    article.categoryId ? prisma.product.findMany({
-      where: { status: "ACTIVE", OR: [{ categoryId: article.categoryId }, { subcategoryId: article.categoryId }] },
+    article.categoryId || manualProductHandles.length ? prisma.product.findMany({
+      where: { status: "ACTIVE", ...(manualProductHandles.length ? { handle: { in: manualProductHandles } } : { OR: [{ categoryId: article.categoryId! }, { subcategoryId: article.categoryId! }] }) },
       take: 3, select: { title: true, handle: true },
     }) : [],
   ]);
@@ -53,9 +56,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const next = position > 0 ? adjacent[position - 1] : null;
   const path = `/blog/${slug}`;
   const modified = article.contentRevisedAt || article.updatedAt;
-  const showUpdated = article.contentRevisedAt && article.publishedAt && article.contentRevisedAt > article.publishedAt;
+  const effectivePublishedAt = article.publishedAt || article.scheduledAt;
+  const showUpdated = article.contentRevisedAt && effectivePublishedAt && article.contentRevisedAt > effectivePublishedAt;
   const image = article.featuredImage ? absoluteUrl(article.featuredImage) : undefined;
   const cleanHtml = DOMPurify.sanitize(article.content || "");
+  const articleContent = addHeadingIds(cleanHtml);
 
   return (
     <article className="bg-background">
@@ -70,7 +75,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           headline: article.title, description: article.seoDescription || article.excerpt,
           url: absoluteUrl(path), mainEntityOfPage: { "@type": "WebPage", "@id": absoluteUrl(path) },
           image: image ? { "@type": "ImageObject", url: image, caption: article.featuredImageAlt || article.title } : undefined,
-          datePublished: article.publishedAt?.toISOString(), dateModified: modified.toISOString(),
+          datePublished: effectivePublishedAt?.toISOString(), dateModified: modified.toISOString(),
           articleSection: category?.name, keywords: [article.focusKeyword, ...(Array.isArray(article.tags) ? article.tags : [])].filter(Boolean).join(", "),
           author: { "@type": "Person", name: article.author, url: absoluteUrl(`/blog/author/${authorSlug(article.author)}`), description: article.authorBio || undefined },
           publisher: { "@type": "Organization", "@id": `${absoluteUrl("/")}#organization`, name: "OrganoCity", logo: { "@type": "ImageObject", url: absoluteUrl("/logo/organocity.png") } },
@@ -87,12 +92,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           {article.excerpt && <p className="mt-5 text-lg leading-8 text-muted-foreground">{article.excerpt}</p>}
           <div className="mt-5 flex flex-wrap gap-x-3 text-sm text-muted-foreground">
             <Link href={`/blog/author/${authorSlug(article.author)}`} rel="author">{article.author}</Link>
-            {article.publishedAt && <time dateTime={article.publishedAt.toISOString()}>Published {article.publishedAt.toLocaleDateString("en-US", { dateStyle: "long" })}</time>}
+            {effectivePublishedAt && <time dateTime={effectivePublishedAt.toISOString()}>Published {effectivePublishedAt.toLocaleDateString("en-US", { dateStyle: "long" })}</time>}
             {showUpdated && <time dateTime={modified.toISOString()}>Updated {modified.toLocaleDateString("en-US", { dateStyle: "long" })}</time>}
           </div>
         </header>
         {article.featuredImage && <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-2xl"><Image src={article.featuredImage} alt={article.featuredImageAlt || article.title} fill priority sizes="(max-width: 896px) 100vw, 896px" className="object-cover" /></div>}
-        <div className="prose prose-lg mt-10 max-w-none dark:prose-invert" dangerouslySetInnerHTML={{ __html: cleanHtml }} />
+        {articleContent.items.length >= 3 && <nav aria-labelledby="table-of-contents" className="mt-10 rounded-xl border bg-muted/40 p-5"><h2 id="table-of-contents" className="font-semibold">Table of contents</h2><ol className="mt-3 space-y-2">{articleContent.items.map((item) => <li key={item.id} className={item.level === 3 ? "ml-5" : ""}><a href={`#${item.id}`}>{item.text}</a></li>)}</ol></nav>}
+        <div className="prose prose-lg mt-10 max-w-none scroll-mt-24 dark:prose-invert" dangerouslySetInnerHTML={{ __html: articleContent.content }} />
 
         {(category || products.length > 0) && <aside className="mt-12 rounded-2xl border p-6" aria-labelledby="explore-related">
           <h2 id="explore-related" className="text-xl font-semibold">Explore related OrganoCity products</h2>

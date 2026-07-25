@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { getAuthSecret } from "@/lib/auth-secret";
 
 export async function middleware(request: NextRequest) {
   let token;
   try {
-    token = await getToken({
-      req: request,
-      secret:
-        process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET ?? "organocity-dev-secret",
-    });
+    token = await getToken({ req: request, secret: getAuthSecret() });
   } catch {
     // If token decryption fails, treat as no token
     token = null;

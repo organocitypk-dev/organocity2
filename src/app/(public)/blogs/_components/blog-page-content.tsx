@@ -46,18 +46,18 @@ export function BlogPageContent({ articles, page = 1, pages = 1 }: BlogPageConte
 
             <p className="mt-4 text-lg text-[#5A5E55]">
               Welcome to the OrganoCity blog, where we share practical buying
-              guides, tech insights, and stories that help customers choose the right
-              premium product for work, study, and play.
+              guides and sourcing insights that help customers choose authentic
+              Himalayan and natural wellness products.
             </p>
 
             <p className="mt-4 text-[#5A5E55]">
               From Himalayan salt guides to herbal product information, our goal
-              is to make it easier to choose confident, well-supported technology.
+              is to make it easier to choose confidently and understand product quality.
             </p>
 
             <p className="mt-4 text-[#5A5E55]">
-              Whether you are researching specs, accessories, or everyday setup advice,
-              you’ll find valuable guidance here.
+              Whether you are researching Shilajit, natural honey, salt products or
+              wholesale sourcing, you will find practical guidance here.
             </p>
           </div>
         </div>
@@ -160,7 +160,7 @@ export function BlogPageContent({ articles, page = 1, pages = 1 }: BlogPageConte
               </p>
 
               <p>
-                Our products and related tech products are consumer natural products and
+                Our products are consumer natural products and
                 are intended for everyday culinary, home, bath, and wellness use
                 use. Product availability, pricing, and specifications may change
                 without notice.

@@ -28,6 +28,8 @@ export type BlogFormValues = {
   canonicalUrl?: string;
   focusKeyword?: string;
   relatedKeywords: string[];
+  relatedArticleIds: string[];
+  relatedProductHandles: string[];
   isIndexable: boolean;
   tags: string[];
   isFeatured?: boolean;

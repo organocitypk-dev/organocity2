@@ -20,13 +20,13 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
   const page = Math.max(1, Number((await searchParams).page) || 1);
   const [articles, count] = await Promise.all([
     prisma.blogPost.findMany({
-      where: publishedBlogWhere,
+      where: publishedBlogWhere(),
       orderBy: { publishedAt: "desc" },
       skip: (page - 1) * BLOG_PAGE_SIZE,
       take: BLOG_PAGE_SIZE,
       select: { id: true, title: true, slug: true, excerpt: true, featuredImage: true, featuredImageAlt: true, publishedAt: true },
     }),
-    prisma.blogPost.count({ where: publishedBlogWhere }),
+    prisma.blogPost.count({ where: publishedBlogWhere() }),
   ]);
   return <BlogPageContent articles={articles} page={page} pages={Math.max(1, Math.ceil(count / BLOG_PAGE_SIZE))} />;
 }

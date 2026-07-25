@@ -31,7 +31,7 @@ const faqItems = [
   {
     question: "Are your devices tested before sale?",
     answer:
-      "Yes. Each product is inspected for battery health, keyboard responsiveness, display quality, ports, and charging performance before listing.",
+      "Yes. Products are checked for packaging integrity, labeling, presentation and the quality information supplied by our sourcing team before listing.",
   },
   {
     question: "Do you offer warranty support?",
@@ -56,7 +56,7 @@ const faqItems = [
   {
     question: "Do you sell accessories too?",
     answer:
-      "Yes. We also stock chargers, bags, mice, keyboards, USB-C hubs, and other related natural products to complete your setup.",
+      "Yes. Our range includes Himalayan salt products, salt lamps, Shilajit, herbal products and other natural wellness items.",
   },
   {
     question: "How can I contact support after purchase?",

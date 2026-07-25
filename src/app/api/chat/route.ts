@@ -244,7 +244,7 @@ KEY PRODUCTS:
 - Related Products → bags, sleeves, stands, cooling pads
 - Natural Products → salt lamps, cooking tiles, honey, dry fruits, and herbal products
 - Chargers → product power adapters, USB-C chargers, universal chargers  
-- Keyboards & Mouse → wireless, mechanical, ergonomic options
+- Natural wellness products → Himalayan salt, Shilajit, herbal products and honey
 
 CONTACT INFORMATION (share when asked):
 - Address: Swabi Topi Road, Pakistan | All Pakistan delivery available

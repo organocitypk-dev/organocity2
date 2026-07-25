@@ -1,16 +1,22 @@
 import { cache } from "react";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 
 export const BLOG_PAGE_SIZE = 9;
 
-export const publishedBlogWhere = {
-  status: "published",
-  isIndexable: true,
-  publishedAt: { lte: new Date() },
-} as const;
+export function publishedBlogWhere(): Prisma.BlogPostWhereInput {
+  const now = new Date();
+  return {
+    isIndexable: true,
+    OR: [
+      { status: "published", publishedAt: { lte: now } },
+      { status: "scheduled", scheduledAt: { lte: now } },
+    ],
+  };
+}
 
 export const getPublishedPost = cache(async (slug: string) =>
-  prisma.blogPost.findFirst({ where: { slug, ...publishedBlogWhere } }),
+  prisma.blogPost.findFirst({ where: { slug, ...publishedBlogWhere() } }),
 );
 
 export function authorSlug(name: string) {

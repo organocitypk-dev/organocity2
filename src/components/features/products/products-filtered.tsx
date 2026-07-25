@@ -1,359 +1,43 @@
-"use client";
-
-import { useMemo, useState } from "react";
+import Link from "next/link";
 import { StoreProductCard } from "@/components/features/products/store-product-card-wrapper";
 
 const FALLBACK_IMAGE = "/logo/organocity.png";
 
-interface Subcategory {
-  id: string;
-  name: string;
-  slug: string;
-  parentId: string | null;
-  order: number;
-}
-
-interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  order: number;
-  subcategories: Subcategory[];
-}
-
-interface Product {
-  id: string;
-  handle: string;
-  title: string;
-  price: number | null;
-  compareAtPrice: number | null;
-  featuredImage: string | null;
-  images: unknown;
-  tags: unknown;
-  description?: string | null;
-  sku?: string | null;
-  productType?: string | null;
-  vendor?: string | null;
-  categoryId: string | null;
-  subcategoryId: string | null;
-}
-
-interface Props {
-  categories: Category[];
-  initialProducts: Product[];
-  initialCategorySlug?: string;
-}
-
-type CategoryNode = {
-  id: string;
-  name: string;
-  slug: string;
-  parentId: string | null;
-  order: number;
-};
-
-type ProductRow = {
-  categoryId: string;
-  products: Product[];
-};
-
-function getStringArray(value: unknown) {
-  return Array.isArray(value)
-    ? value.filter((item): item is string => typeof item === "string")
-    : [];
-}
-
-function buildCategoryNodes(categories: Category[]) {
-  return categories.flatMap<CategoryNode>((category) => [
-    {
-      id: category.id,
-      name: category.name,
-      slug: category.slug,
-      parentId: null,
-      order: category.order,
-    },
-    ...category.subcategories.map((subcategory) => ({
-      id: subcategory.id,
-      name: subcategory.name,
-      slug: subcategory.slug,
-      parentId: category.id,
-      order: subcategory.order,
-    })),
-  ]);
-}
-
-function ProductCard({ product }: { product: Product }) {
-  const productImageUrls = getStringArray(product.images);
-  const firstImage = productImageUrls[0] || null;
-  const firstTag = getStringArray(product.tags)[0];
-
-  return (
-    <StoreProductCard
-      handle={product.handle}
-      title={product.title}
-      featuredImageUrl={product.featuredImage || firstImage || FALLBACK_IMAGE}
-      imageUrls={productImageUrls}
-      price={{ amount: Number(product.price || 0).toFixed(2), currencyCode: "PKR" }}
-      compareAtPrice={
-        product.compareAtPrice
-          ? { amount: Number(product.compareAtPrice).toFixed(2), currencyCode: "PKR" }
-          : null
-      }
-      tag={firstTag}
-      productId={product.id}
-    />
-  );
-}
+type Category = { id: string; name: string; slug: string; order: number; subcategories: Array<{ id: string; name: string; slug: string; parentId: string | null; order: number }> };
+type Product = { id: string; handle: string; title: string; price: number; compareAtPrice: number | null; featuredImage: string | null; images: unknown; tags: unknown };
 
 export function ProductsFiltered({
-  categories,
-  initialProducts,
-  initialCategorySlug = "",
-}: Props) {
-  const categoryNodes = useMemo(() => buildCategoryNodes(categories), [categories]);
-  const initialCategory = categoryNodes.find((category) => category.slug === initialCategorySlug);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(initialCategory?.id || "");
-  const [priceRange, setPriceRange] = useState("all");
-  const [customMinPrice, setCustomMinPrice] = useState("");
-  const [customMaxPrice, setCustomMaxPrice] = useState("");
-  const [sortBy, setSortBy] = useState("featured");
-
-  const categoryById = useMemo(
-    () => new Map(categoryNodes.map((category) => [category.id, category])),
-    [categoryNodes],
-  );
-
-  const childIdsByParentId = useMemo(() => {
-    return categoryNodes.reduce((map, category) => {
-      if (!category.parentId) return map;
-      const ids = map.get(category.parentId) || [];
-      ids.push(category.id);
-      map.set(category.parentId, ids);
-      return map;
-    }, new Map<string, string[]>());
-  }, [categoryNodes]);
-
-  const categoriesWithProducts = useMemo(() => {
-    return categories
-      .filter((category) => {
-        const relatedCategoryIds = new Set([
-          category.id,
-          ...category.subcategories.map((subcategory) => subcategory.id),
-        ]);
-
-        return initialProducts.some((product) => {
-          const effectiveCategoryId = product.subcategoryId || product.categoryId;
-          return Boolean(effectiveCategoryId && relatedCategoryIds.has(effectiveCategoryId));
-        });
-      })
-      .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
-  }, [categories, initialProducts]);
-
-  const selectedCategoryIds = useMemo(() => {
-    if (!selectedCategoryId) return null;
-
-    const category = categoryById.get(selectedCategoryId);
-    if (!category) return null;
-
-    return new Set([
-      category.id,
-      ...(category.parentId ? [] : childIdsByParentId.get(category.id) || []),
-    ]);
-  }, [categoryById, childIdsByParentId, selectedCategoryId]);
-
-  const filteredProducts = useMemo(() => {
-    const products = initialProducts.filter((product) => {
-      const price = Number(product.price || 0);
-      if (priceRange === "under-1000") return price < 1000;
-      if (priceRange === "1000-3000") return price >= 1000 && price <= 3000;
-      if (priceRange === "3000-5000") return price > 3000 && price <= 5000;
-      if (priceRange === "5000-10000") return price > 5000 && price <= 10000;
-      if (priceRange === "over-10000") return price > 10000;
-      if (priceRange === "custom") {
-        const minimum = customMinPrice === "" ? null : Number(customMinPrice);
-        const maximum = customMaxPrice === "" ? null : Number(customMaxPrice);
-        return (minimum === null || price >= minimum) && (maximum === null || price <= maximum);
-      }
-      return true;
-    });
-
-    return [...products].sort((a, b) => {
-      if (sortBy === "price-low") return Number(a.price || 0) - Number(b.price || 0);
-      if (sortBy === "price-high") return Number(b.price || 0) - Number(a.price || 0);
-      if (sortBy === "name") return a.title.localeCompare(b.title);
-      return 0;
-    });
-  }, [customMaxPrice, customMinPrice, initialProducts, priceRange, sortBy]);
-
-  const selectedProducts = useMemo(() => {
-    if (!selectedCategoryIds) return filteredProducts;
-
-    return filteredProducts.filter((product) => {
-      const effectiveCategoryId = product.subcategoryId || product.categoryId;
-      return Boolean(effectiveCategoryId && selectedCategoryIds.has(effectiveCategoryId));
-    });
-  }, [filteredProducts, selectedCategoryIds]);
-
-  const otherProducts = useMemo(() => {
-    if (!selectedCategoryIds) return [];
-
-    return filteredProducts.filter((product) => {
-      const effectiveCategoryId = product.subcategoryId || product.categoryId;
-      return !effectiveCategoryId || !selectedCategoryIds.has(effectiveCategoryId);
-    });
-  }, [filteredProducts, selectedCategoryIds]);
-
-  const buildRows = (sourceProducts: Product[]) => {
-    const grouped = sourceProducts.reduce((map, product) => {
-      const categoryId = product.subcategoryId || product.categoryId;
-      if (!categoryId || !categoryById.has(categoryId)) return map;
-
-      const products = map.get(categoryId) || [];
-      products.push(product);
-      map.set(categoryId, products);
-      return map;
-    }, new Map<string, Product[]>());
-
-    return categoryNodes
-      .map<ProductRow | null>((category) => {
-        const products = grouped.get(category.id) || [];
-        return products.length ? { categoryId: category.id, products } : null;
-      })
-      .filter((row): row is ProductRow => Boolean(row));
+  categories, products, page, totalPages, total, query,
+}: {
+  categories: Category[];
+  products: Product[];
+  page: number;
+  totalPages: number;
+  total: number;
+  query: Record<string, string | undefined>;
+}) {
+  const pageHref = (nextPage: number) => {
+    const params = new URLSearchParams(Object.entries(query).filter((entry): entry is [string, string] => Boolean(entry[1])));
+    params.set("page", String(nextPage));
+    return `/products?${params.toString()}`;
   };
-
-  const selectedRows = buildRows(selectedProducts);
-  const otherRows = buildRows(otherProducts);
-  const visibleRows = selectedRows;
-
-  const pagedRows = visibleRows.filter((row) => row.products.length > 0);
-
-  const pagedOtherRows = otherRows.filter((row) => row.products.length > 0);
-
-  const selectClassName =
-    "storefront-filter-select h-9 w-full min-w-0 appearance-none truncate rounded-md border border-[#C6A24A]/30 bg-[#fcf5e8] py-0 pl-2 pr-6 text-[10px] font-semibold normal-case tracking-normal text-[#0a0a0a] outline-none transition-all duration-200 hover:border-[#C6A24A]/60 focus:border-[#f6a45d] focus:ring-2 focus:ring-[#f6a45d]/20 sm:text-xs";
-  const priceInputClassName =
-    "h-9 min-w-0 rounded-md border border-[#C6A24A]/30 bg-white px-2 text-xs font-semibold text-[#0a0a0a] outline-none transition-all duration-200 placeholder:text-[#5A5E55]/60 focus:border-[#f6a45d] focus:ring-2 focus:ring-[#f6a45d]/20";
-
   return (
-    <section className="min-w-0 space-y-5">
-      <div className="border-b border-[#C6A24A]/20 pb-3">
-        <div className="grid w-full grid-cols-3 items-end gap-1.5 sm:flex sm:justify-end sm:gap-2">
-          <label className="grid min-w-0 gap-1 text-[8px] font-bold uppercase tracking-wide text-[#5A5E55] sm:w-36 sm:text-[10px]">
-            Category
-            <select
-              value={selectedCategoryId}
-              onChange={(event) => setSelectedCategoryId(event.target.value)}
-              className={selectClassName}
-            >
-              <option value="">All Products</option>
-              {categoriesWithProducts.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="grid min-w-0 gap-1 text-[8px] font-bold uppercase tracking-wide text-[#5A5E55] sm:w-40 sm:text-[10px]">
-            Price Range
-            <select
-              value={priceRange}
-              onChange={(event) => setPriceRange(event.target.value)}
-              className={selectClassName}
-            >
-              <option value="all">All Prices</option>
-              <option value="under-1000">Under PKR 1,000</option>
-              <option value="1000-3000">PKR 1,000–3,000</option>
-              <option value="3000-5000">PKR 3,000–5,000</option>
-              <option value="5000-10000">PKR 5,000–10,000</option>
-              <option value="over-10000">Over PKR 10,000</option>
-              <option value="custom">Custom Range</option>
-            </select>
-          </label>
-
-          {priceRange === "custom" ? (
-            <fieldset className="order-last col-span-3 grid min-w-0 gap-1 sm:w-48 sm:shrink-0">
-              <legend className="text-[9px] font-bold uppercase tracking-wide text-[#5A5E55] sm:text-[10px]">
-                Your Range (PKR)
-              </legend>
-              <div className="grid grid-cols-2 gap-1.5">
-                <input
-                  type="number"
-                  min="0"
-                  inputMode="numeric"
-                  value={customMinPrice}
-                  onChange={(event) => setCustomMinPrice(event.target.value)}
-                  placeholder="Min"
-                  aria-label="Minimum price in PKR"
-                  className={priceInputClassName}
-                />
-                <input
-                  type="number"
-                  min="0"
-                  inputMode="numeric"
-                  value={customMaxPrice}
-                  onChange={(event) => setCustomMaxPrice(event.target.value)}
-                  placeholder="Max"
-                  aria-label="Maximum price in PKR"
-                  className={priceInputClassName}
-                />
-              </div>
-            </fieldset>
-          ) : null}
-
-          <label className="grid min-w-0 gap-1 text-[8px] font-bold uppercase tracking-wide text-[#5A5E55] sm:w-36 sm:text-[10px]">
-            Sort By
-            <select
-              value={sortBy}
-              onChange={(event) => setSortBy(event.target.value)}
-              className={selectClassName}
-            >
-              <option value="featured">Featured</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="name">Name: A to Z</option>
-            </select>
-          </label>
-        </div>
-      </div>
-
-      <div className="relative grid gap-6">
-        <section className="min-w-0 space-y-6">
-          {pagedRows.length > 0 ? (
-            pagedRows.map((row) => (
-              <div
-                key={row.categoryId}
-                className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4"
-              >
-                {row.products.map((product) => (
-                  <ProductCard key={product.handle} product={product} />
-                ))}
-              </div>
-            ))
-          ) : (
-            <div className="rounded-2xl border border-[#C6A24A]/20 bg-white p-12 text-center">
-              <p className="text-lg text-[#5A5E55]">No products found.</p>
-            </div>
-          )}
-
-          {selectedCategoryId && pagedOtherRows.length > 0 ? (
-            <div className="space-y-6 border-t border-[#C6A24A]/20 pt-8">
-              <h2 className="font-serif text-xl font-bold text-[#0a0a0a]">Other Products</h2>
-              {pagedOtherRows.map((row) => (
-                <div
-                  key={`other-${row.categoryId}`}
-                  className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4"
-                >
-                  {row.products.map((product) => (
-                    <ProductCard key={product.handle} product={product} />
-                  ))}
-                </div>
-              ))}
-            </div>
-          ) : null}
-        </section>
-      </div>
+    <section className="min-w-0 space-y-6">
+      <form action="/products" className="grid gap-2 rounded-xl border border-[#C6A24A]/20 bg-white p-3 sm:grid-cols-2 lg:grid-cols-6">
+        <input name="q" defaultValue={query.q} placeholder="Search products" aria-label="Search products" className="rounded-md border px-3 py-2 text-sm" />
+        <select name="category" defaultValue={query.category || ""} aria-label="Category" className="rounded-md border px-3 py-2 text-sm"><option value="">All categories</option>{categories.map((category) => <option key={category.id} value={category.slug}>{category.name}</option>)}</select>
+        <input name="min" type="number" min="0" defaultValue={query.min} placeholder="Minimum price" aria-label="Minimum price" className="rounded-md border px-3 py-2 text-sm" />
+        <input name="max" type="number" min="0" defaultValue={query.max} placeholder="Maximum price" aria-label="Maximum price" className="rounded-md border px-3 py-2 text-sm" />
+        <select name="sort" defaultValue={query.sort || "featured"} aria-label="Sort products" className="rounded-md border px-3 py-2 text-sm"><option value="featured">Featured</option><option value="newest">Newest</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option><option value="name">Name</option></select>
+        <button type="submit" className="rounded-md bg-[#1a1308] px-4 py-2 font-semibold text-white">Apply</button>
+      </form>
+      <p className="text-sm text-[#5A5E55]">{total} product{total === 1 ? "" : "s"} found</p>
+      {products.length ? <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">{products.map((product) => {
+        const images = Array.isArray(product.images) ? product.images.filter((item): item is string => typeof item === "string") : [];
+        const tags = Array.isArray(product.tags) ? product.tags.filter((item): item is string => typeof item === "string") : [];
+        return <StoreProductCard key={product.handle} handle={product.handle} title={product.title} featuredImageUrl={product.featuredImage || images[0] || FALLBACK_IMAGE} imageUrls={images} price={{ amount: product.price.toFixed(2), currencyCode: "PKR" }} compareAtPrice={product.compareAtPrice ? { amount: product.compareAtPrice.toFixed(2), currencyCode: "PKR" } : null} tag={tags[0]} productId={product.id} />;
+      })}</div> : <div className="rounded-2xl border bg-white p-12 text-center"><h2 className="text-xl font-semibold">No products found</h2><p className="mt-2 text-[#5A5E55]">Try removing a filter or using a broader search.</p></div>}
+      {totalPages > 1 && <nav aria-label="Product pagination" className="flex items-center justify-center gap-4">{page > 1 && <Link href={pageHref(page - 1)}>← Previous</Link>}<span>Page {page} of {totalPages}</span>{page < totalPages && <Link href={pageHref(page + 1)}>Next →</Link>}</nav>}
     </section>
   );
 }

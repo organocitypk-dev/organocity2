@@ -12,7 +12,8 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { initiateCheckout } from "@/lib/pixel";
-import { calculateDiscountedUnitPrice, type WholesaleDiscountTier } from "@/lib/product-discounts";
+import { type WholesaleDiscountTier } from "@/lib/product-discounts";
+import { effectiveUnitPrice } from "@/lib/product-pricing";
 
 type MoneyV2 = {
   amount: string;
@@ -131,7 +132,7 @@ function getLinePrice(
   generalDiscountPercent?: number,
   wholesaleDiscounts?: WholesaleDiscountTier[],
 ) {
-  const pricing = calculateDiscountedUnitPrice(
+  const pricing = effectiveUnitPrice(
     Number(basePrice.amount),
     quantity,
     generalDiscountPercent,

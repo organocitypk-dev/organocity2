@@ -1,6 +1,8 @@
 import { getAllProducts, searchProducts as searchProductsInDb } from "@/lib/storefront";
 import { invariant } from "@esmate/utils";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
+import { resolveProductPricing } from "@/lib/product-pricing";
 
 function getProductImage(product: { featuredImage: string | null; images: unknown }) {
   if (product.featuredImage) {
@@ -43,6 +45,34 @@ export async function getAllProductsForFilter() {
       isFeatured: true,
     },
   });
+}
+
+export async function getProductsPage(params: {
+  q?: string; category?: string; min?: number; max?: number; sort?: string; page: number; pageSize: number;
+}) {
+  const category = params.category ? await prisma.category.findUnique({ where: { slug: params.category }, select: { id: true, parentId: true } }) : null;
+  const where: Prisma.ProductWhereInput = {
+    status: "ACTIVE",
+    AND: [
+      ...(params.q ? [{ OR: [{ title: { contains: params.q, mode: "insensitive" as const } }, { description: { contains: params.q, mode: "insensitive" as const } }, { seoTitle: { contains: params.q, mode: "insensitive" as const } }] }] : []),
+      ...(category?.parentId ? [{ subcategoryId: category.id }] : []),
+    ],
+    ...(params.min !== undefined || params.max !== undefined ? { price: { ...(params.min !== undefined ? { gte: params.min } : {}), ...(params.max !== undefined ? { lte: params.max } : {}) } } : {}),
+  };
+  if (category && !category.parentId) {
+    const children = await prisma.category.findMany({ where: { parentId: category.id }, select: { id: true } });
+    (where.AND as Prisma.ProductWhereInput[]).push({ OR: [{ categoryId: category.id }, { subcategoryId: { in: children.map((item) => item.id) } }] });
+  }
+  const orderBy: Prisma.ProductOrderByWithRelationInput[] = params.sort === "price-asc" ? [{ price: "asc" }] : params.sort === "price-desc" ? [{ price: "desc" }] : params.sort === "name" ? [{ title: "asc" }] : params.sort === "newest" ? [{ createdAt: "desc" }] : [{ isFeatured: "desc" }, { displayOrder: "asc" }, { updatedAt: "desc" }];
+  const [rows, total] = await Promise.all([
+    prisma.product.findMany({ where, orderBy, skip: (params.page - 1) * params.pageSize, take: params.pageSize, select: { id: true, handle: true, title: true, price: true, compareAtPrice: true, inventory: true, availableForSale: true, generalDiscountPercent: true, wholesaleDiscounts: true, featuredImage: true, images: true, tags: true, variations: { where: { active: true }, select: { id: true, price: true, compareAtPrice: true, stock: true, active: true, sku: true } } } }),
+    prisma.product.count({ where }),
+  ]);
+  return {
+    products: rows.map((product) => ({ ...product, price: resolveProductPricing(product).minimumUnitPrice })),
+    total,
+    totalPages: Math.max(1, Math.ceil(total / params.pageSize)),
+  };
 }
 
 export async function searchProducts(query: string) {

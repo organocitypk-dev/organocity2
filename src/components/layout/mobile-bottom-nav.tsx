@@ -37,6 +37,8 @@ export function MobileBottomNav() {
           {/* Home */}
           <Link
             href="/"
+            aria-label="Home"
+            aria-current={homeActive ? "page" : undefined}
             className={`flex items-center justify-center px-4 py-2.5 transition-colors ${
               homeActive ? "text-[#C6A24A]" : "text-gray-400"
             }`}
@@ -47,6 +49,8 @@ export function MobileBottomNav() {
           {/* Products */}
           <Link
             href="/products"
+            aria-label="Products"
+            aria-current={productsActive ? "page" : undefined}
             className={`flex items-center justify-center px-4 py-2.5 transition-colors ${
               productsActive ? "text-[#C6A24A]" : "text-gray-400"
             }`}

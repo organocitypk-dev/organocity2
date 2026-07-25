@@ -11,7 +11,7 @@ export const metadata = createSeoMetadata({
   keywords: ["OrganoCity Pakistan", "Ihsan ul Haq", "Natural Products Pakistan", "Shilajit Pakistan", "Himalayan Pink Salt Pakistan"],
 })
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export default async function AboutPage() {
   const aboutVideos = await prisma.video.findMany({

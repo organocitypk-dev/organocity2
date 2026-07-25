@@ -35,10 +35,15 @@ export default function EditCategoryPage() {
           featured: data.featured ?? false,
           seoTitle: data.seoTitle ?? "",
           seoDescription: data.seoDescription ?? "",
+          canonicalUrl: data.canonicalUrl ?? "",
+          robots: data.robots ?? "index,follow",
+          openGraphImage: data.openGraphImage ?? "",
+          imageAlt: data.imageAlt ?? "",
+          focusKeyword: data.focusKeyword ?? "",
           productIds: Array.isArray(data.productIds) ? data.productIds : [],
         });
-      } catch (e: any) {
-        if (!cancelled) setError(e?.message || "Failed to load category");
+      } catch (e: unknown) {
+        if (!cancelled) setError(e instanceof Error ? e.message : "Failed to load category");
       } finally {
         if (!cancelled) setLoading(false);
       }

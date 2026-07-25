@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-auth";
+import { revalidatePath } from "next/cache";
 
 const collectionSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -11,6 +12,11 @@ const collectionSchema = z.object({
   image: z.string().optional(),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
+  canonicalUrl: z.string().optional(),
+  robots: z.enum(["index,follow", "noindex,follow", "noindex,nofollow"]).default("index,follow"),
+  openGraphImage: z.string().optional(),
+  imageAlt: z.string().optional(),
+  focusKeyword: z.string().optional(),
   productHandles: z.array(z.string()).default([]),
   isFeatured: z.boolean().default(false),
 });
@@ -32,6 +38,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const validated = collectionSchema.parse(body);
     const collection = await prisma.collection.create({ data: validated });
+    revalidatePath("/");
+    revalidatePath("/collections");
+    revalidatePath(`/collections/${collection.handle}`);
+    revalidatePath("/collections-sitemap.xml");
     return NextResponse.json({ collection }, { status: 201 });
   } catch (error: unknown) {
     if (error instanceof z.ZodError) return NextResponse.json({ error: "Validation failed", details: error.issues }, { status: 400 });

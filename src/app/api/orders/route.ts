@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { calculateOrderPricing } from "@/lib/order-pricing";
-import { calculateDiscountedUnitPrice } from "@/lib/product-discounts";
+import { effectiveUnitPrice } from "@/lib/product-pricing";
 
 const orderCreateSchema = z.object({
   customerName: z.string().min(1),
@@ -83,19 +83,22 @@ export async function POST(request: Request) {
         throw new Error(`Product not available for sale: ${product.title}`);
       }
       if (variation) {
+        if (variation.stock < item.quantity) {
+          throw new Error(`Insufficient inventory for ${variation.product.title} - ${variation.name}. Available: ${variation.stock}`);
+        }
         const images = Array.isArray(variation.images) ? (variation.images as unknown[]).filter((image): image is string => typeof image === "string") : [];
-        const pricing = calculateDiscountedUnitPrice(variation.price, item.quantity, variation.product.generalDiscountPercent, variation.product.wholesaleDiscounts);
+        const pricing = effectiveUnitPrice(variation.price, item.quantity, variation.product.generalDiscountPercent, variation.product.wholesaleDiscounts);
         return { productId: variation.id, title: `${variation.product.title} - ${variation.name}`, price: pricing.unitPrice, originalPrice: variation.price, discountPercent: pricing.discountPercent, quantity: item.quantity, image: images[0] ?? variation.product.featuredImage ?? null, variationId: variation.id };
       }
       if (!product) throw new Error("Product is not available.");
-      // if (product.inventory < item.quantity) {
-      //   throw new Error(`Insufficient inventory for ${product.title}. Available: ${product.inventory}`);
-      // }
+      if (product.inventory < item.quantity) {
+        throw new Error(`Insufficient inventory for ${product.title}. Available: ${product.inventory}`);
+      }
       const images = Array.isArray(product.images)
         ? (product.images as unknown[]).filter((x): x is string => typeof x === "string")
         : [];
 
-      const pricing = calculateDiscountedUnitPrice(product.price, item.quantity, product.generalDiscountPercent, product.wholesaleDiscounts);
+      const pricing = effectiveUnitPrice(product.price, item.quantity, product.generalDiscountPercent, product.wholesaleDiscounts);
       return {
         productId: product.id,
         title: product.title,
@@ -122,10 +125,13 @@ export async function POST(request: Request) {
     const orderNumber = generateOrderNumber();
 
     const order = await prisma.$transaction(async (tx) => {
-      // Best-effort inventory decrement: do not block order confirmation on stock gaps.
       for (const item of enrichedItems) {
-        if ("variationId" in item) await tx.productVariation.updateMany({ where: { id: item.variationId, stock: { gte: item.quantity } }, data: { stock: { decrement: item.quantity } } });
-        else await tx.product.updateMany({ where: { id: item.productId, inventory: { gte: item.quantity } }, data: { inventory: { decrement: item.quantity } } });
+        const result = "variationId" in item
+          ? await tx.productVariation.updateMany({ where: { id: item.variationId, stock: { gte: item.quantity } }, data: { stock: { decrement: item.quantity } } })
+          : await tx.product.updateMany({ where: { id: item.productId, inventory: { gte: item.quantity } }, data: { inventory: { decrement: item.quantity } } });
+        if (result.count !== 1) {
+          throw new Error(`Inventory changed while placing the order for ${item.title}. Please review your cart and try again.`);
+        }
       }
 
       return tx.order.create({

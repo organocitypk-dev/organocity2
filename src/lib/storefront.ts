@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getSitePage } from "@/lib/site-settings";
 import type { Prisma } from "@prisma/client";
 import { normalizeWholesaleDiscounts, type WholesaleDiscountTier } from "@/lib/product-discounts";
+import { effectiveUnitPrice, resolveProductPricing } from "@/lib/product-pricing";
 
 const DEFAULT_CURRENCY = "PKR";
 const DEFAULT_PAGE_SIZE = 12;
@@ -99,6 +100,10 @@ type CollectionNode = {
     description: string;
   };
   image: StorefrontImage | null;
+  canonicalUrl: string | null;
+  robots: string;
+  openGraphImage: string | null;
+  focusKeyword: string | null;
 };
 
 type Connection<T> = {
@@ -265,6 +270,16 @@ async function buildProductNode(product: {
     images.push(fallbackImage);
   }
   const activeVariations = product.variations.filter((variant) => variant.active);
+  const resolvedPricing = resolveProductPricing({
+    id: product.id,
+    price: product.price,
+    compareAtPrice: product.compareAtPrice,
+    inventory: product.inventory,
+    availableForSale: product.availableForSale,
+    generalDiscountPercent: product.generalDiscountPercent,
+    wholesaleDiscounts: product.wholesaleDiscounts,
+    variations: activeVariations,
+  });
   const variantOptions = [
     { name: "Color", values: activeVariations.map((variant) => variant.color) },
     { name: "Price", values: activeVariations.map((variant) => String(variant.price)) },
@@ -286,7 +301,7 @@ async function buildProductNode(product: {
       description: product.seoDescription ?? product.description ?? product.title,
     },
     priceRange: {
-      minVariantPrice: toMoney(product.price),
+      minVariantPrice: toMoney(resolvedPricing.minimumUnitPrice),
     },
     featuredImage:
       toImage(
@@ -299,10 +314,10 @@ async function buildProductNode(product: {
     options: variantOptions,
     variants: {
       nodes: [
-        {
+        ...(activeVariations.length ? [] : [{
           id: product.id,
-          availableForSale: product.availableForSale && product.inventory > 0,
-          price: toMoney(product.price),
+          availableForSale: resolvedPricing.available,
+          price: toMoney(effectiveUnitPrice(product.price, 1, product.generalDiscountPercent, product.wholesaleDiscounts).unitPrice),
           compareAtPrice: product.compareAtPrice ? toMoney(product.compareAtPrice) : null,
           selectedOptions: [],
           image: images[0] ? { id: images[0].id } : null,
@@ -312,14 +327,14 @@ async function buildProductNode(product: {
           stock: product.inventory,
           images,
           specifications: {},
-        },
+        }]),
         ...activeVariations.map((variant) => {
         const variantImages = parseStringArray(variant.images).map((url, index) => toImage(url, `${variant.id}-image-${index}`)).filter((image): image is StorefrontImage => Boolean(image));
         const variantImage = variantImages[0];
         return {
           id: variant.id,
           availableForSale: variant.active && variant.stock > 0,
-          price: toMoney(variant.price),
+          price: toMoney(effectiveUnitPrice(variant.price, 1, product.generalDiscountPercent, product.wholesaleDiscounts).unitPrice),
           compareAtPrice: variant.compareAtPrice ? toMoney(variant.compareAtPrice) : null,
           selectedOptions: [
             ["Color", variant.color], ["Price", String(variant.price)], ["Size", variant.size], ["Storage", variant.storage], ["Condition", variant.condition],
@@ -358,6 +373,11 @@ function buildCollectionNode(collection: {
   seoTitle: string | null;
   seoDescription: string | null;
   image: string | null;
+  canonicalUrl: string | null;
+  robots: string;
+  openGraphImage: string | null;
+  focusKeyword: string | null;
+  imageAlt: string | null;
 }): CollectionNode {
   return {
     id: collection.id,
@@ -370,7 +390,11 @@ function buildCollectionNode(collection: {
       description:
         collection.seoDescription ?? collection.description ?? collection.title,
     },
-    image: toImage(collection.image, `${collection.id}-image`),
+    image: collection.image ? { ...toImage(collection.image, `${collection.id}-image`)!, altText: collection.imageAlt } : null,
+    canonicalUrl: collection.canonicalUrl,
+    robots: collection.robots,
+    openGraphImage: collection.openGraphImage,
+    focusKeyword: collection.focusKeyword,
   };
 }
 
@@ -472,6 +496,11 @@ export async function getCollection(handle: string) {
       seoTitle: true,
       seoDescription: true,
       image: true,
+      canonicalUrl: true,
+      robots: true,
+      openGraphImage: true,
+      focusKeyword: true,
+      imageAlt: true,
       productHandles: true,
     },
   });
@@ -502,6 +531,11 @@ export async function getAllCollections(cursor?: string, take = DEFAULT_PAGE_SIZ
         seoTitle: true,
         seoDescription: true,
         image: true,
+        canonicalUrl: true,
+        robots: true,
+        openGraphImage: true,
+        focusKeyword: true,
+        imageAlt: true,
       },
     }),
   ]);

@@ -36,7 +36,7 @@ const testimonials = [
   {
     name: "Hassan Ali",
     role: "Freelancer – Rawalpindi",
-    text: "Picked up a ThinkPad X1 Carbon and a Logitech mouse. Professional service and competitive pricing.",
+    text: "The Himalayan products arrived carefully packed and exactly as described. Professional service and responsive support.",
   },
   {
     name: "Sana Tariq",

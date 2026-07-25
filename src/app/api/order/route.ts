@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
-import { calculateDiscountedUnitPrice } from "@/lib/product-discounts";
+import { effectiveUnitPrice } from "@/lib/product-pricing";
 
 const orderSchema = z.object({
   productId: z.string().min(1),
@@ -25,22 +25,32 @@ export async function POST(request: Request) {
 
     const product = await prisma.product.findUnique({
       where: { id: input.productId },
-      select: { id: true, title: true, price: true, featuredImage: true, images: true, status: true, generalDiscountPercent: true, wholesaleDiscounts: true },
+      select: { id: true, title: true, price: true, featuredImage: true, images: true, status: true, availableForSale: true, inventory: true, generalDiscountPercent: true, wholesaleDiscounts: true },
     });
-    if (!product || product.status !== "ACTIVE") {
+    if (!product || product.status !== "ACTIVE" || !product.availableForSale) {
       return NextResponse.json({ error: "Product not available" }, { status: 400 });
+    }
+    if (product.inventory < input.quantity) {
+      return NextResponse.json({ error: `Insufficient inventory. Available: ${product.inventory}` }, { status: 400 });
     }
 
     const firstImage = Array.isArray(product.images)
       ? ((product.images as unknown[]).find((x): x is string => typeof x === "string") ?? null)
       : null;
 
-    const pricing = calculateDiscountedUnitPrice(product.price, input.quantity, product.generalDiscountPercent, product.wholesaleDiscounts);
+    const pricing = effectiveUnitPrice(product.price, input.quantity, product.generalDiscountPercent, product.wholesaleDiscounts);
     const subtotal = product.price * input.quantity;
     const discountedSubtotal = pricing.unitPrice * input.quantity;
     const discount = Math.round((subtotal - discountedSubtotal) * 100) / 100;
-    const order = await prisma.order.create({
-      data: {
+    const order = await prisma.$transaction(async (tx) => {
+      const inventoryUpdate = await tx.product.updateMany({
+        where: { id: product.id, status: "ACTIVE", availableForSale: true, inventory: { gte: input.quantity } },
+        data: { inventory: { decrement: input.quantity } },
+      });
+      if (inventoryUpdate.count !== 1) {
+        throw new Error("Inventory changed while placing the order. Please try again.");
+      }
+      return tx.order.create({ data: {
         orderNumber: generateOrderNumber(),
         customerName: input.customerName,
         customerEmail: input.customerEmail || "chat-order@organocity.local",
@@ -68,7 +78,7 @@ export async function POST(request: Request) {
         paymentStatus: "pending",
         orderStatus: "pending",
         notes: "Created from AI chatbot",
-      },
+      } });
     });
 
     return NextResponse.json({ order }, { status: 201 });

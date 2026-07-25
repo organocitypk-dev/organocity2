@@ -5,7 +5,8 @@ export async function loadProductExtras(
   setValues: React.Dispatch<React.SetStateAction<ProductFormValues>>,
 ) {
   await loadExtra(productId, "details", (data) => {
-    if (data.details) setValues((v) => ({ ...v, details: data.details }));
+    const details = data.details;
+    if (details) setValues((v) => ({ ...v, details }));
   });
 }
 
@@ -28,14 +29,14 @@ export async function saveProductExtra(
     });
     if (!res.ok) throw new Error((await res.json()).error || `Failed to save ${name}`);
     alert(`${name[0].toUpperCase()}${name.slice(1)} saved successfully!`);
-  } catch (err: any) {
-    setError(err.message || `Failed to save ${name}`);
+  } catch (err: unknown) {
+    setError(err instanceof Error ? err.message : `Failed to save ${name}`);
   } finally {
     setSaving(false);
   }
 }
 
-async function loadExtra(productId: string, name: string, onData: (data: any) => void) {
+async function loadExtra(productId: string, name: string, onData: (data: { details?: ProductFormValues["details"] }) => void) {
   try {
     const res = await fetch(`/api/admin/products/${productId}/${name}`, { next: { revalidate: 0 } });
     onData(await res.json());

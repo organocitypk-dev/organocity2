@@ -47,6 +47,8 @@ export default function EditBlogPage() {
           canonicalUrl: data.canonicalUrl ?? "",
           focusKeyword: data.focusKeyword ?? "",
           relatedKeywords: Array.isArray(data.relatedKeywords) ? data.relatedKeywords : [],
+          relatedArticleIds: Array.isArray(data.relatedArticleIds) ? data.relatedArticleIds : [],
+          relatedProductHandles: Array.isArray(data.relatedProductHandles) ? data.relatedProductHandles : [],
           isIndexable: data.isIndexable ?? true,
           tags: Array.isArray(data.tags) ? data.tags : [],
           isFeatured: data.isFeatured ?? false,

@@ -1,15 +1,16 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { authorSlug, publishedBlogWhere } from "@/lib/blog";
+import { publishedBlogWhere } from "@/lib/blog";
 import { prisma } from "@/lib/prisma";
 import { createSeoMetadata } from "@/lib/seo";
 
 export const revalidate = 900;
 
 async function findAuthor(slug: string) {
-  const posts = await prisma.blogPost.findMany({ where: publishedBlogWhere, orderBy: { publishedAt: "desc" }, select: { author: true, authorRole: true, authorBio: true, authorImage: true, title: true, slug: true } });
-  const matching = posts.filter((post) => authorSlug(post.author) === slug);
-  return { profile: matching[0], posts: matching };
+  const author = await prisma.author.findUnique({ where: { slug } });
+  const posts = await prisma.blogPost.findMany({ where: { ...publishedBlogWhere(), ...(author ? { authorId: author.id } : { author: { equals: slug.replace(/-/g, " "), mode: "insensitive" } }) }, orderBy: { publishedAt: "desc" }, select: { author: true, authorRole: true, authorBio: true, authorImage: true, title: true, slug: true } });
+  const legacy = posts[0];
+  return { profile: author ? { author: author.name, authorRole: author.role, authorBio: author.bio, authorImage: author.image } : legacy, posts };
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {

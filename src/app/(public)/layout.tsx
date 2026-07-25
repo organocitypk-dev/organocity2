@@ -19,7 +19,7 @@ const businessSchemas = [
   },
   {
     "@context": "https://schema.org",
-    "@type": ["LocalBusiness", "Store"],
+    "@type": ["OnlineStore", "LocalBusiness", "Store"],
     "@id": `${SITE_URL}/#localbusiness`,
     name: "OrganoCity",
     url: SITE_URL,
@@ -40,10 +40,11 @@ const businessSchemas = [
 export default function PublicLayout({ children }: { children: ReactNode }) {
   return (
     <div className="public-site flex min-h-screen flex-col">
+      <a href="#main-content" className="sr-only z-[100] rounded bg-white px-4 py-2 text-black focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Skip to main content</a>
       <JsonLd data={businessSchemas} />
       <Header />
       <SiteLoader />
-      <main className="flex-grow bg-[#f5f5f5] pb-16 md:pb-0">{children}</main>
+      <main id="main-content" tabIndex={-1} className="flex-grow bg-[#f5f5f5] pb-16 outline-none md:pb-0">{children}</main>
       <Footer />
       <MobileBottomNav />
       <ChatIntegrations />

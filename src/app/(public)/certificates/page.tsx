@@ -9,7 +9,7 @@ export const metadata = createSeoMetadata({
   keywords: ["OrganoCity certificates", "verified natural products", "OrganoCity authenticity"],
 });
 
-export const dynamic = "force-dynamic";
+export const revalidate = 900;
 
 export default async function CertificatesPage() {
   let certificates: PublicCertificate[] = [];

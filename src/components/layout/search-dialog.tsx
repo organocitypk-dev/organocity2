@@ -22,7 +22,17 @@ export function SearchDialog({ open, onOpenChange }: Props) {
   const debouncedQuery = useDebounce(query, { wait: 300 });
   const [results, setResults] = useState<Awaited<ReturnType<typeof searchProducts>>>([]);
   const [loading, setLoading] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const lastTrackedQuery = useRef("");
+
+  useEffect(() => {
+    if (!open) return;
+    try {
+      setRecentSearches(JSON.parse(localStorage.getItem("organocity-recent-searches") || "[]").filter((item: unknown): item is string => typeof item === "string").slice(0, 5));
+    } catch {
+      setRecentSearches([]);
+    }
+  }, [open]);
 
   useEffect(() => {
     const validQuery = debouncedQuery.trim();
@@ -31,10 +41,12 @@ export function SearchDialog({ open, onOpenChange }: Props) {
       return;
     }
 
+    let active = true;
     async function fetchResults() {
       setLoading(true);
       try {
         const products = await searchProducts(validQuery);
+        if (!active) return;
         setResults(products);
         if (lastTrackedQuery.current !== validQuery) {
           search(validQuery);
@@ -42,21 +54,33 @@ export function SearchDialog({ open, onOpenChange }: Props) {
         }
       } catch (e) {
         console.error(e);
-        setResults([]);
+        if (active) setResults([]);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     }
 
     fetchResults();
+    return () => { active = false; };
   }, [debouncedQuery]);
 
   const handleSelect = (handle: string) => {
+    const nextRecent = [query.trim(), ...recentSearches.filter((item) => item !== query.trim())].filter(Boolean).slice(0, 5);
+    setRecentSearches(nextRecent);
+    localStorage.setItem("organocity-recent-searches", JSON.stringify(nextRecent));
     onOpenChange(false);
     router.push(`/products/${handle}`);
   };
 
   const handleSearch = (value: string) => setQuery(value);
+
+  const highlightedTitle = (title: string) => {
+    const needle = query.trim();
+    if (!needle) return title;
+    const index = title.toLowerCase().indexOf(needle.toLowerCase());
+    if (index < 0) return title;
+    return <>{title.slice(0, index)}<mark className="bg-[#C6A24A]/25 text-inherit">{title.slice(index, index + needle.length)}</mark>{title.slice(index + needle.length)}</>;
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -74,6 +98,11 @@ export function SearchDialog({ open, onOpenChange }: Props) {
           </div>
           <CommandList>
             <CommandEmpty>{loading ? "Searching..." : "No results found."}</CommandEmpty>
+            {query.trim().length < 3 && recentSearches.length > 0 && (
+              <CommandGroup heading="Recent searches">
+                {recentSearches.map((item) => <CommandItem key={item} onSelect={() => setQuery(item)}>{item}</CommandItem>)}
+              </CommandGroup>
+            )}
             {results.length > 0 && (
               <CommandGroup heading="Products">
                 {results.map((product) => (
@@ -85,7 +114,7 @@ export function SearchDialog({ open, onOpenChange }: Props) {
                         )}
                       </div>
                       <div className="flex flex-col">
-                        <span className="font-medium">{product.title}</span>
+                        <span className="font-medium">{highlightedTitle(product.title)}</span>
                         <span className="text-xs text-muted-foreground">
                           {product.priceRange.minVariantPrice.amount} {product.priceRange.minVariantPrice.currencyCode}
                         </span>

@@ -13,6 +13,11 @@ const categorySchema = z.object({
   featured: z.boolean().default(false),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
+  canonicalUrl: z.string().optional(),
+  robots: z.enum(["index,follow", "noindex,follow", "noindex,nofollow"]).default("index,follow"),
+  openGraphImage: z.string().optional(),
+  imageAlt: z.string().optional(),
+  focusKeyword: z.string().optional(),
   productIds: z.array(z.string()).default([]),
 });
 

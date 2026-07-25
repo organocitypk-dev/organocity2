@@ -16,7 +16,7 @@ export function useCollectionForm({ mode, collectionId, initialValues }: {
   const router = useRouter();
   const [values, setValues] = useState<CollectionFormValues>({
     title: "", handle: "", description: "", descriptionHtml: "", image: "",
-    seoTitle: "", seoDescription: "", productHandles: [], isFeatured: false, ...initialValues,
+    seoTitle: "", seoDescription: "", canonicalUrl: "", robots: "index,follow", openGraphImage: "", imageAlt: "", focusKeyword: "", productHandles: [], isFeatured: false, ...initialValues,
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

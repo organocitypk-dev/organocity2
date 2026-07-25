@@ -4,7 +4,7 @@ import { HomeHeroSection } from "./_components/HomeHeroSection";
 import { HomeContentSections } from "./_components/HomeContentSections";
 import { createSeoMetadata } from "@/lib/seo";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 async function safeHomeQuery<T>(
   label: string,
@@ -20,7 +20,7 @@ async function safeHomeQuery<T>(
   }
 }
 
-const jsonLd = {
+const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "@id": "https://www.organocity.com/#website",
@@ -78,7 +78,14 @@ export default async function Page() {
     safeHomeQuery(
       "featured blogs",
       () => prisma.blogPost.findMany({
-        where: { status: "published", isFeatured: true },
+        where: {
+          isFeatured: true,
+          isIndexable: true,
+          OR: [
+            { status: "published", publishedAt: { lte: new Date() } },
+            { status: "scheduled", scheduledAt: { lte: new Date() } },
+          ],
+        },
         orderBy: { publishedAt: "desc" },
         take: 20,
         select: { id: true, title: true, slug: true, excerpt: true, featuredImage: true, publishedAt: true, content: true },
@@ -145,11 +152,27 @@ const allProducts = Array.from(
   new Map([...collectionProducts, ...recentProducts].map((product) => [product.handle, product])).values(),
 );
 
+const homepageJsonLd = [
+  websiteJsonLd,
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Featured OrganoCity products",
+    numberOfItems: allProducts.length,
+    itemListElement: allProducts.slice(0, 20).map((product, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: product.title,
+      url: `https://www.organocity.com/products/${product.handle}`,
+    })),
+  },
+];
+
 return (
        <>
           <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageJsonLd).replace(/</g, "\\u003c") }}
           />
         <div className="flex flex-col bg-gray-50">
           <HomeHeroSection />

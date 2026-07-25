@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin-auth";
+import { revalidatePath } from "next/cache";
+import { authorSlug } from "@/lib/blog";
 
 const blogSchema = z.object({
   title: z.string().min(1),
@@ -25,6 +27,8 @@ const blogSchema = z.object({
   canonicalUrl: z.string().optional(),
   focusKeyword: z.string().optional(),
   relatedKeywords: z.array(z.string()).default([]),
+  relatedArticleIds: z.array(z.string()).default([]),
+  relatedProductHandles: z.array(z.string()).default([]),
   isIndexable: z.boolean().default(true),
   tags: z.array(z.string()).default([]),
   isFeatured: z.boolean().default(false),
@@ -54,7 +58,11 @@ export async function POST(request: Request) {
     if (validated.scheduledAt) validated.scheduledAt = new Date(validated.scheduledAt);
     if (validated.contentRevisedAt) validated.contentRevisedAt = new Date(validated.contentRevisedAt);
     if (validated.status === "published" && !validated.publishedAt) validated.publishedAt = new Date();
-    const post = await prisma.blogPost.create({ data: validated });
+    const authorProfile = await prisma.author.upsert({ where: { slug: authorSlug(validated.author) }, update: { name: validated.author, role: validated.authorRole, bio: validated.authorBio, image: validated.authorImage }, create: { name: validated.author, slug: authorSlug(validated.author), role: validated.authorRole, bio: validated.authorBio, image: validated.authorImage } });
+    const post = await prisma.blogPost.create({ data: { ...validated, authorId: authorProfile.id } });
+    revalidatePath("/");
+    revalidatePath("/blog");
+    revalidatePath("/blog-sitemap.xml");
     return NextResponse.json({ blog: post }, { status: 201 });
   } catch (error: unknown) {
     if (error instanceof z.ZodError) return NextResponse.json({ error: "Validation failed", details: error.issues }, { status: 400 });

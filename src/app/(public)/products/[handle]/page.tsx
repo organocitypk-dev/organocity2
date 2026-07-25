@@ -15,14 +15,18 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { handle } = await params;
   try {
-    const product = await getProductSingle(handle);
+    const [product, seoFields] = await Promise.all([
+      getProductSingle(handle),
+      prisma.product.findUnique({ where: { handle }, select: { canonicalUrl: true, robots: true, openGraphImage: true, focusKeyword: true, imageAlt: true } }),
+    ]);
 
     return createSeoMetadata({
       title: `${product.seo.title} Pakistan`,
       description: product.seo.description,
-      path: `/products/${handle}`,
-      image: product.featuredImage?.url,
-      keywords: [product.title, `${product.title} Pakistan`, product.productType || "Products Pakistan", ...product.tags],
+      path: seoFields?.canonicalUrl || `/products/${handle}`,
+      image: seoFields?.openGraphImage || product.featuredImage?.url,
+      keywords: [seoFields?.focusKeyword, product.title, `${product.title} Pakistan`, product.productType || "Products Pakistan", ...product.tags].filter((item): item is string => Boolean(item)),
+      noIndex: seoFields?.robots?.startsWith("noindex"),
     });
   } catch {
     return createSeoMetadata({ title: "Product Not Found", description: "This product is not available.", path: `/products/${handle}`, noIndex: true });
@@ -60,17 +64,36 @@ export default async function Page({ params }: Props) {
       sku: data.variants?.nodes?.[0]?.sku || undefined,
       brand: { "@type": "Brand", name: data.vendor || "OrganoCity" },
       category: category?.name || data.productType || "Products",
-      offers: {
+      offers: data.variants.nodes.map((variant) => ({
         "@type": "Offer",
         url: productUrl,
-        priceCurrency: data.priceRange.minVariantPrice.currencyCode,
-        price: data.priceRange.minVariantPrice.amount,
+        sku: variant.sku || undefined,
+        priceCurrency: variant.price.currencyCode,
+        price: variant.price.amount,
         itemCondition: "https://schema.org/NewCondition",
-        availability: data.variants?.nodes?.[0]?.availableForSale
+        availability: variant.availableForSale
           ? "https://schema.org/InStock"
           : "https://schema.org/OutOfStock",
         seller: { "@id": "https://www.organocity.com/#organization" },
-      },
+        shippingDetails: Number.isFinite(Number(process.env.MERCHANT_SHIPPING_COST_PKR)) ? {
+          "@type": "OfferShippingDetails",
+          shippingRate: { "@type": "MonetaryAmount", value: Number(process.env.MERCHANT_SHIPPING_COST_PKR), currency: "PKR" },
+          shippingDestination: { "@type": "DefinedRegion", addressCountry: "PK" },
+          deliveryTime: {
+            "@type": "ShippingDeliveryTime",
+            handlingTime: { "@type": "QuantitativeValue", minValue: 0, maxValue: 2, unitCode: "DAY" },
+            transitTime: { "@type": "QuantitativeValue", minValue: 2, maxValue: 7, unitCode: "DAY" },
+          },
+        } : undefined,
+        hasMerchantReturnPolicy: {
+          "@type": "MerchantReturnPolicy",
+          applicableCountry: "PK",
+          returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+          merchantReturnDays: 7,
+          returnMethod: "https://schema.org/ReturnByMail",
+          returnFees: "https://schema.org/ReturnShippingFees",
+        },
+      })),
       ...(averageRating ? { aggregateRating: { "@type": "AggregateRating", ratingValue: averageRating.toFixed(1), reviewCount: reviews.length, bestRating: 5, worstRating: 1 } } : {}),
       review: reviews.map((review) => ({
         "@type": "Review",

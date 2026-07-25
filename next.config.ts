@@ -1,11 +1,15 @@
 import type { NextConfig } from "next";
+import bundleAnalyzer from "@next/bundle-analyzer";
+
+const withBundleAnalyzer = bundleAnalyzer({ enabled: process.env.ANALYZE === "true" });
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   devIndicators: false,
   serverExternalPackages: ["dompurify"],
   images: {
-    domains: ["placehold.co", "res.cloudinary.com", "i.pinimg.com", "images.unsplash.com", "i.ytimg.com"],
+    formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 86400,
     remotePatterns: [
       {
         protocol: "https",
@@ -70,4 +74,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

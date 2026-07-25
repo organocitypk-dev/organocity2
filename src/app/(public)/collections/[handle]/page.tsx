@@ -21,9 +21,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return createSeoMetadata({
       title: collection.seo?.title ?? `${collection.title} Pakistan`,
       description: collection.seo?.description || collection.description || `Shop ${collection.title} in Pakistan from OrganoCity Pakistan with nationwide delivery.`,
-      path: `/collections/${collectionHandle}`,
-      image: collection.image?.url,
-      keywords: [collection.title, `${collection.title} Pakistan`, "Buy Himalayan Pink Salt Online Pakistan"],
+      path: collection.canonicalUrl || `/collections/${collectionHandle}`,
+      image: collection.openGraphImage || collection.image?.url,
+      keywords: [collection.focusKeyword, collection.title, `${collection.title} Pakistan`, "Buy Himalayan Pink Salt Online Pakistan"].filter((item): item is string => Boolean(item)),
+      noIndex: collection.robots.startsWith("noindex"),
     });
   } catch {
     return createSeoMetadata({ title: "Collection Not Found", description: "This collection is not available.", path: `/collections/${collectionHandle}`, noIndex: true });

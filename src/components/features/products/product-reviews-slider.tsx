@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Star, User, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
+import Image from "next/image";
 
 interface Review {
   id: string;
@@ -134,9 +135,11 @@ export function ProductReviewsSlider({ productHandle }: ProductReviewsSliderProp
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-full bg-[#fcf5e8] flex items-center justify-center overflow-hidden">
                   {review.authorImage ? (
-                    <img
+                    <Image
                       src={review.authorImage}
                       alt={review.authorName}
+                      width={32}
+                      height={32}
                       className="h-full w-full rounded-full object-cover"
                     />
                   ) : (

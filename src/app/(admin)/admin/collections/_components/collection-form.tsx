@@ -13,6 +13,11 @@ export type CollectionFormValues = {
   image?: string;
   seoTitle?: string;
   seoDescription?: string;
+  canonicalUrl?: string;
+  robots?: string;
+  openGraphImage?: string;
+  imageAlt?: string;
+  focusKeyword?: string;
   productHandles: string[];
   isFeatured?: boolean;
 };

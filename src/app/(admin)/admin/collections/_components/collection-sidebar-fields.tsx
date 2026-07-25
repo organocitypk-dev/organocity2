@@ -49,6 +49,11 @@ function SeoFields({ values, setValues }: Pick<Props, "values" | "setValues">) {
       <div className="mt-3 space-y-3">
         <label className="block text-sm font-medium text-[#0a0a0a]">SEO Title (optional)<input value={values.seoTitle ?? ""} onChange={(e) => setValues((v) => ({ ...v, seoTitle: e.target.value }))} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-[#C6A24A]" /></label>
         <label className="block text-sm font-medium text-[#0a0a0a]">SEO Description (optional)<textarea value={values.seoDescription ?? ""} onChange={(e) => setValues((v) => ({ ...v, seoDescription: e.target.value }))} rows={3} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-[#C6A24A]" /></label>
+        <label className="block text-sm font-medium text-[#0a0a0a]">Canonical URL<input value={values.canonicalUrl ?? ""} onChange={(e) => setValues((v) => ({ ...v, canonicalUrl: e.target.value }))} className="mt-1 w-full rounded-lg border px-3 py-2" /></label>
+        <label className="block text-sm font-medium text-[#0a0a0a]">Focus keyword<input value={values.focusKeyword ?? ""} onChange={(e) => setValues((v) => ({ ...v, focusKeyword: e.target.value }))} className="mt-1 w-full rounded-lg border px-3 py-2" /></label>
+        <label className="block text-sm font-medium text-[#0a0a0a]">Image alt text<input value={values.imageAlt ?? ""} onChange={(e) => setValues((v) => ({ ...v, imageAlt: e.target.value }))} className="mt-1 w-full rounded-lg border px-3 py-2" /></label>
+        <label className="block text-sm font-medium text-[#0a0a0a]">Open Graph image<input value={values.openGraphImage ?? ""} onChange={(e) => setValues((v) => ({ ...v, openGraphImage: e.target.value }))} className="mt-1 w-full rounded-lg border px-3 py-2" /></label>
+        <label className="block text-sm font-medium text-[#0a0a0a]">Robots<select value={values.robots ?? "index,follow"} onChange={(e) => setValues((v) => ({ ...v, robots: e.target.value }))} className="mt-1 w-full rounded-lg border px-3 py-2"><option value="index,follow">Index, follow</option><option value="noindex,follow">Noindex, follow</option><option value="noindex,nofollow">Noindex, nofollow</option></select></label>
       </div>
     </div>
   );

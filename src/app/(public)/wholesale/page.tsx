@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { createSeoMetadata } from "@/lib/seo";
 import { defaultWholesalePage, getYouTubeEmbedUrl, parseWholesalePage, WHOLESALE_PAGE_KEY } from "@/lib/wholesale-page";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 900;
 export const metadata = createSeoMetadata({ title: "Wholesale & Bulk Supply | OrganoCity", description: "Explore OrganoCity wholesale products, bulk-order policy and business supply options.", path: "/wholesale", keywords: ["OrganoCity wholesale", "bulk Himalayan salt Pakistan", "wholesale natural products"] });
 
 export default async function WholesalePage() {

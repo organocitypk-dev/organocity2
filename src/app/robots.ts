@@ -8,7 +8,13 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/admin/", "/api/", "/checkout", "/cart", "/api-test"],
     },
-    sitemap: [`${SITE_URL}/sitemap.xml`, `${SITE_URL}/blog-sitemap.xml`],
+    sitemap: [
+      `${SITE_URL}/sitemap.xml`,
+      `${SITE_URL}/products-sitemap.xml`,
+      `${SITE_URL}/categories-sitemap.xml`,
+      `${SITE_URL}/collections-sitemap.xml`,
+      `${SITE_URL}/blog-sitemap.xml`,
+    ],
     host: SITE_URL,
   };
 }
