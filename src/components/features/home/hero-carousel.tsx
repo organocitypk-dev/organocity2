@@ -78,8 +78,6 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
               sizes="100vw"
               className={`hero-desktop-image object-cover object-right ${
                 hasMobileImage ? "has-mobile-hero-image" : ""
-              } ${
-                isActive ? "hero-image-zoom" : ""
               }`}
             />
             {slide.mobileImageUrl && (
@@ -89,9 +87,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
                 fill
                 priority={index === 0}
                 sizes="100vw"
-                className={`hero-mobile-image object-cover object-right ${
-                  isActive ? "hero-image-zoom" : ""
-                }`}
+                className="hero-mobile-image object-cover object-right"
               />
             )}
           </div>
@@ -220,19 +216,6 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
       )}
 
       <style jsx global>{`
-        @keyframes hero-image-ken-burns {
-          from {
-            transform: scale(1);
-          }
-          to {
-            transform: scale(1.03);
-          }
-        }
-
-        .hero-image-zoom {
-          animation: hero-image-ken-burns 7s ease-out forwards;
-        }
-
         .hero-mobile-image {
           display: none;
         }
@@ -244,12 +227,6 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
 
           .hero-mobile-image {
             display: block;
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .hero-image-zoom {
-            animation: none;
           }
         }
       `}</style>
