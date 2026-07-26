@@ -76,7 +76,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
               fill
               priority={index === 0}
               sizes="100vw"
-              className={`hero-desktop-image object-cover object-right ${
+              className={`hero-desktop-image object-contain object-right ${
                 hasMobileImage ? "has-mobile-hero-image" : ""
               }`}
             />
@@ -87,7 +87,7 @@ export default function HeroCarousel({ slides }: HeroCarouselProps) {
                 fill
                 priority={index === 0}
                 sizes="100vw"
-                className="hero-mobile-image object-cover object-right"
+                className="hero-mobile-image object-contain object-right"
               />
             )}
           </div>
