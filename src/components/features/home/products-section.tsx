@@ -135,7 +135,7 @@ function FeaturedProductRow({
     let animationFrame = 0;
     let previousTime = performance.now();
     let initialized = false;
-    const pixelsPerSecond = 14;
+    const pixelsPerSecond = 22;
 
     const moveRow = (currentTime: number) => {
       const row = rowRef.current;
