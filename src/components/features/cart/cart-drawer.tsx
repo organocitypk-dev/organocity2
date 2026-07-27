@@ -33,7 +33,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/15"
             onClick={() => onOpenChange(false)}
           />
           <motion.div
@@ -41,7 +41,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 z-[60] flex h-full w-[85%] max-w-xs flex-col border-l border-[#C6A24A]/20 bg-white/95 shadow-xl sm:w-full sm:max-w-md"
+            className="fixed right-0 top-0 z-[60] flex h-full w-[78vw] min-w-[16.5rem] max-w-[21rem] flex-col border-l border-[#C6A24A]/20 bg-white shadow-[-12px_0_30px_rgba(0,0,0,0.16)] sm:w-full sm:max-w-md"
           >
              <div className="flex items-center justify-between border-b border-[#C6A24A]/15 bg-gradient-to-r from-[#fcf5e8]/80 to-white/80 px-3 py-3 backdrop-blur-sm sm:px-5 sm:py-4">
                <div className="flex items-center gap-2">
