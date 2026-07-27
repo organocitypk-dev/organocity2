@@ -86,11 +86,11 @@ export const homepageFaqItems = [
 
 export function TrustStrip() {
   return (
-    <section aria-label="Why buyers trust OrganoCity" className="border-y border-[#C6A24A]/20 bg-[#f4f1e8] px-6 py-5">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+    <section aria-label="Why buyers trust OrganoCity" className="border-y border-[#C6A24A]/20 bg-[#f4f1e8] px-3 py-4 sm:px-6 sm:py-5">
+      <div className="mx-auto grid max-w-7xl grid-cols-6 gap-x-2 gap-y-4 sm:gap-x-5 lg:grid-cols-5 lg:gap-6">
         {trustItems.map(({ icon: Icon, text }) => (
-          <div key={text} className="flex items-center gap-3 text-sm font-semibold text-gray-800">
-            <Icon aria-hidden="true" className="h-5 w-5 shrink-0 text-[#C6A24A]" />
+          <div key={text} className="col-span-2 flex min-w-0 items-center justify-center gap-1.5 text-[10px] font-semibold leading-tight text-gray-800 [&:nth-child(n+4)]:col-span-3 sm:gap-2.5 sm:text-xs lg:col-span-1 lg:justify-start lg:gap-3 lg:text-sm lg:[&:nth-child(n+4)]:col-span-1">
+            <Icon aria-hidden="true" className="h-4 w-4 shrink-0 text-[#C6A24A] sm:h-5 sm:w-5" />
             <span>{text}</span>
           </div>
         ))}

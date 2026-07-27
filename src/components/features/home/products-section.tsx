@@ -12,6 +12,7 @@ interface Category {
   id: string;
   name: string;
   slug: string;
+  description?: string | null;
   image: string | null;
   parentId?: string | null;
   order?: number;
@@ -24,8 +25,8 @@ interface Product {
   price: number | null;
   compareAtPrice: number | null;
   featuredImage: string | null;
-  images: any;
-  tags: any;
+  images: unknown;
+  tags: unknown;
   categoryId: string | null;
   subcategoryId: string | null;
   isFeatured: boolean;
@@ -114,7 +115,7 @@ export function CategoriesSection({ categories }: { categories: Category[] }) {
   );
 }
 
-function FeaturedProductRow({ title, categorySlug, products, productCard }: { title: string; categorySlug: string; products: Product[]; productCard: (product: Product) => React.ReactNode }) {
+function FeaturedProductRow({ category, products, productCard }: { category: Category; products: Product[]; productCard: (product: Product) => React.ReactNode }) {
   const rowRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -142,20 +143,45 @@ function FeaturedProductRow({ title, categorySlug, products, productCard }: { ti
   if (!products.length) return null;
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:gap-4">
-        <h3 className="font-serif text-xl font-bold text-gray-900 sm:text-2xl">{title}</h3>
+    <section className="overflow-hidden rounded-3xl border border-[#C6A24A]/20 bg-[#f8f5ed] shadow-sm">
+      <div className="grid min-h-44 grid-cols-[minmax(0,1fr)_7.5rem] items-stretch sm:grid-cols-[minmax(0,1fr)_12rem] lg:grid-cols-[minmax(0,1fr)_18rem]">
+        <div className="flex flex-col items-start justify-center p-5 sm:p-7 lg:p-9">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#b57910] sm:text-xs">
+            Featured category
+          </p>
+          <h3 className="mt-2 font-serif text-2xl font-extrabold text-gray-950 sm:text-3xl lg:text-4xl">
+            {category.name}
+          </h3>
+          {category.description && (
+            <p className="mt-2 line-clamp-3 max-w-2xl text-xs leading-5 text-gray-600 sm:mt-3 sm:text-sm sm:leading-6 lg:text-base">
+              {category.description}
+            </p>
+          )}
+          <Link
+            href={`/category/${encodeURIComponent(category.slug)}`}
+            className="group mt-4 inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#ea580c] px-4 py-2 text-xs font-bold uppercase tracking-wide text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#c2410c] hover:shadow-md sm:mt-5 sm:px-5 sm:py-2.5 sm:text-sm"
+          >
+            Shop {category.name}
+            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </Link>
+        </div>
         <Link
-          href={`/category/${encodeURIComponent(categorySlug)}`}
-          className="group inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#C6A24A]/50 bg-[#fcf5e8] px-4 py-2 text-xs font-bold uppercase tracking-wide text-[#8a5b00] shadow-sm transition hover:-translate-y-0.5 hover:border-[#f6a45d] hover:bg-[#f6a45d] hover:text-white hover:shadow-md sm:text-sm"
+          href={`/category/${encodeURIComponent(category.slug)}`}
+          aria-label={`Shop ${category.name}`}
+          className="group relative min-h-44 overflow-hidden bg-white"
         >
-          Shop Now
-          <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          <Image
+            src={category.image || FALLBACK_IMAGE}
+            alt={category.name}
+            fill
+            sizes="(min-width: 1024px) 18rem, (min-width: 640px) 12rem, 7.5rem"
+            className="object-contain p-2 transition-transform duration-500 group-hover:scale-105 sm:p-4"
+          />
         </Link>
       </div>
       <div
         ref={rowRef}
-        className="scrollbar-hide flex snap-x gap-6 overflow-x-auto scroll-smooth pb-3"
+        className="scrollbar-hide flex snap-x gap-4 overflow-x-auto scroll-smooth border-t border-[#C6A24A]/15 bg-white p-4 sm:gap-6 sm:p-6"
       >
         {products.map((product) => (
           <div key={product.handle} data-product-card className="w-[17.5rem] shrink-0 snap-start sm:w-[18.5rem] lg:w-[19rem]">
@@ -163,18 +189,13 @@ function FeaturedProductRow({ title, categorySlug, products, productCard }: { ti
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }
 
 function CollectionSlider({ collections }: { collections: Collection[] }) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [mounted, setMounted] = useState(false);
   const itemsPerPage = 3;
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const currentCollections = collections || [];
   const totalSlides = Math.ceil(currentCollections.length / itemsPerPage);
@@ -183,23 +204,22 @@ function CollectionSlider({ collections }: { collections: Collection[] }) {
     (currentSlide + 1) * itemsPerPage
   );
 
-  if (displayCollections.length === 0) {
-    return null;
-  }
-
   useEffect(() => {
-    if (!mounted || totalSlides <= 1) return;
+    if (totalSlides <= 1) return;
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % totalSlides);
     }, 6000);
     return () => clearInterval(interval);
-  }, [mounted, totalSlides]);
+  }, [totalSlides]);
+
+  if (displayCollections.length === 0) {
+    return null;
+  }
 
   return (
     <div className="relative">
       <div
         className="grid grid-cols-1 gap-6 sm:grid-cols-3 transition-opacity duration-1000 ease-in-out"
-        style={{ opacity: mounted ? 1 : 0 }}
       >
         {displayCollections.map((collection, i) => (
           <Link
@@ -219,7 +239,7 @@ function CollectionSlider({ collections }: { collections: Collection[] }) {
           </Link>
         ))}
       </div>
-      {totalSlides > 1 && mounted && (
+      {totalSlides > 1 && (
         <div className="mt-4 flex justify-center gap-2">
           {Array.from({ length: totalSlides }).map((_, index) => (
             <button
@@ -311,12 +331,11 @@ export function ProductsSection({ categories, products, collections }: { categor
     <>
       {featuredRows.length > 0 && (
         <section className="bg-white mx-auto w-full max-w-7xl px-6 lg:px-8 py-16">
-          <div className="space-y-10">
+          <div className="space-y-12">
             {featuredRows.map((row) => (
               <FeaturedProductRow
                 key={row.category.id}
-                title={row.category.name}
-                categorySlug={row.category.slug}
+                category={row.category}
                 products={row.products}
                 productCard={productCard}
               />

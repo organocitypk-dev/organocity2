@@ -15,7 +15,7 @@ import {
 } from "@/components/features/home/homepage-static-sections";
 
 type HomeContentSectionsProps = {
-  categories: Array<{ id: string; name: string; slug: string; image: string | null; parentId?: string | null; order?: number }>;
+  categories: Array<{ id: string; name: string; slug: string; description: string | null; image: string | null; parentId?: string | null; order?: number }>;
   products: Array<{
     id: string;
     handle: string;
