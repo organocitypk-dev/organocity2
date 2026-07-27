@@ -19,19 +19,26 @@ export function MobileBottomNav() {
     window.dispatchEvent(new CustomEvent("open-mobile-chat"));
 
   const homeActive = isActive("/");
-  const productsActive = isActive("/products");
+  const productsActive =
+    isActive("/products") || isActive("/category") || isActive("/collections");
+
+  const navItemClass =
+    "relative flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300";
+  const activeItemClass =
+    "-translate-y-4 bg-gradient-to-br from-[#f6bd38] via-[#f9734d] to-[#ec297b] text-white shadow-[0_8px_20px_rgba(236,41,123,0.35)] ring-[7px] ring-[#1a1308]";
+  const inactiveItemClass = "text-gray-400 hover:text-[#C6A24A]";
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
-      <div className="bg-[#1a1308] border-t border-white/10">
-        <div className="flex justify-around py-1.5">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 px-2 md:hidden">
+      <div className="rounded-t-[1.75rem] border border-b-0 border-white/10 bg-[#1a1308] shadow-[0_-8px_24px_rgba(0,0,0,0.18)]">
+        <div className="flex h-16 items-center justify-around px-1 pt-1">
           {/* AI Chat */}
           <button
             onClick={openChat}
             aria-label="Open AI chat"
-            className="flex items-center justify-center px-4 py-2.5 transition-colors"
+            className={`${navItemClass} ${inactiveItemClass}`}
           >
-            <BsChatDots className="h-5 w-5 text-[#C6A24A]" />
+            <BsChatDots className="h-5 w-5" />
           </button>
 
           {/* Home */}
@@ -39,8 +46,8 @@ export function MobileBottomNav() {
             href="/"
             aria-label="Home"
             aria-current={homeActive ? "page" : undefined}
-            className={`flex items-center justify-center px-4 py-2.5 transition-colors ${
-              homeActive ? "text-[#C6A24A]" : "text-gray-400"
+            className={`${navItemClass} ${
+              homeActive ? activeItemClass : inactiveItemClass
             }`}
           >
             <Home className="h-5 w-5" />
@@ -51,8 +58,8 @@ export function MobileBottomNav() {
             href="/products"
             aria-label="Products"
             aria-current={productsActive ? "page" : undefined}
-            className={`flex items-center justify-center px-4 py-2.5 transition-colors ${
-              productsActive ? "text-[#C6A24A]" : "text-gray-400"
+            className={`${navItemClass} ${
+              productsActive ? activeItemClass : inactiveItemClass
             }`}
           >
             <Grid3X3 className="h-5 w-5" />
@@ -62,7 +69,7 @@ export function MobileBottomNav() {
           <a
             href={`tel:+${PHONE_NUMBER}`}
             aria-label="Call us"
-            className="flex items-center justify-center px-4 py-2.5 transition-colors text-gray-400"
+            className={`${navItemClass} ${inactiveItemClass}`}
           >
             <Phone className="h-5 w-5" />
           </a>
@@ -74,7 +81,7 @@ export function MobileBottomNav() {
             rel="noopener noreferrer"
             aria-label="WhatsApp"
             onClick={() => trackContact("WhatsApp mobile navigation")}
-            className="flex items-center justify-center px-4 py-2.5 transition-colors text-gray-400"
+            className={`${navItemClass} ${inactiveItemClass}`}
           >
             <FaWhatsapp className="h-5 w-5" />
           </a>
