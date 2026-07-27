@@ -216,8 +216,6 @@ function FeaturedProductRow({
           return (
             <div
               key={`${product.handle}-${isDuplicate ? "duplicate" : "original"}`}
-              aria-hidden={isDuplicate || undefined}
-              inert={isDuplicate || undefined}
               data-loop-first={index === 0 ? "" : undefined}
               data-loop-start={index === products.length ? "" : undefined}
               data-product-card
