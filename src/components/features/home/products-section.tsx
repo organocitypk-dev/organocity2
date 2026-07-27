@@ -115,7 +115,17 @@ export function CategoriesSection({ categories }: { categories: Category[] }) {
   );
 }
 
-function FeaturedProductRow({ category, products, productCard }: { category: Category; products: Product[]; productCard: (product: Product) => React.ReactNode }) {
+function FeaturedProductRow({
+  category,
+  products,
+  productCard,
+  direction,
+}: {
+  category: Category;
+  products: Product[];
+  productCard: (product: Product) => React.ReactNode;
+  direction: "left" | "right";
+}) {
   const rowRef = useRef<HTMLDivElement | null>(null);
   const isAutoScrollPaused = useRef(false);
 
@@ -124,7 +134,8 @@ function FeaturedProductRow({ category, products, productCard }: { category: Cat
 
     let animationFrame = 0;
     let previousTime = performance.now();
-    const pixelsPerSecond = 16;
+    let initialized = false;
+    const pixelsPerSecond = 14;
 
     const moveRow = (currentTime: number) => {
       const row = rowRef.current;
@@ -138,10 +149,18 @@ function FeaturedProductRow({ category, products, productCard }: { category: Cat
           firstCard && duplicateStart
             ? duplicateStart.offsetLeft - firstCard.offsetLeft
             : row.scrollWidth / 2;
-        row.scrollLeft += pixelsPerSecond * elapsedSeconds;
 
-        if (row.scrollLeft >= loopWidth) {
+        if (!initialized) {
+          if (direction === "right") row.scrollLeft = loopWidth;
+          initialized = true;
+        }
+
+        row.scrollLeft += (direction === "left" ? 1 : -1) * pixelsPerSecond * elapsedSeconds;
+
+        if (direction === "left" && row.scrollLeft >= loopWidth) {
           row.scrollLeft -= loopWidth;
+        } else if (direction === "right" && row.scrollLeft <= 0) {
+          row.scrollLeft += loopWidth;
         }
       }
 
@@ -150,45 +169,27 @@ function FeaturedProductRow({ category, products, productCard }: { category: Cat
 
     animationFrame = window.requestAnimationFrame(moveRow);
     return () => window.cancelAnimationFrame(animationFrame);
-  }, [products.length]);
+  }, [direction, products.length]);
 
   if (!products.length) return null;
 
   return (
-    <section className="overflow-hidden rounded-3xl border border-[#C6A24A]/20 bg-[#f8f5ed] shadow-sm">
-      <div className="grid min-h-44 grid-cols-[minmax(0,1fr)_7.5rem] items-stretch sm:grid-cols-[minmax(0,1fr)_12rem] lg:grid-cols-[minmax(0,1fr)_18rem]">
-        <div className="flex flex-col items-start justify-center p-5 sm:p-7 lg:p-9">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#b57910] sm:text-xs">
-            Featured category
+    <section>
+      <div className="mx-auto mb-6 flex max-w-3xl flex-col items-center px-4 text-center sm:mb-8">
+        <h3 className="font-serif text-2xl font-extrabold text-gray-950 sm:text-3xl lg:text-4xl">
+          {category.name}
+        </h3>
+        {category.description && (
+          <p className="mt-2 line-clamp-3 text-sm leading-6 text-gray-600 sm:mt-3 sm:text-base">
+            {category.description}
           </p>
-          <h3 className="mt-2 font-serif text-2xl font-extrabold text-gray-950 sm:text-3xl lg:text-4xl">
-            {category.name}
-          </h3>
-          {category.description && (
-            <p className="mt-2 line-clamp-3 max-w-2xl text-xs leading-5 text-gray-600 sm:mt-3 sm:text-sm sm:leading-6 lg:text-base">
-              {category.description}
-            </p>
-          )}
-          <Link
-            href={`/category/${encodeURIComponent(category.slug)}`}
-            className="group mt-4 inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#ea580c] px-4 py-2 text-xs font-bold uppercase tracking-wide text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#c2410c] hover:shadow-md sm:mt-5 sm:px-5 sm:py-2.5 sm:text-sm"
-          >
-            Shop {category.name}
-            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </Link>
-        </div>
+        )}
         <Link
           href={`/category/${encodeURIComponent(category.slug)}`}
-          aria-label={`Shop ${category.name}`}
-          className="group relative min-h-44 overflow-hidden bg-white"
+          className="group mt-4 inline-flex items-center gap-1.5 rounded-full bg-[#ea580c] px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#c2410c] hover:shadow-md sm:text-sm"
         >
-          <Image
-            src={category.image || FALLBACK_IMAGE}
-            alt={category.name}
-            fill
-            sizes="(min-width: 1024px) 18rem, (min-width: 640px) 12rem, 7.5rem"
-            className="object-contain p-2 transition-transform duration-500 group-hover:scale-105 sm:p-4"
-          />
+          Shop Now
+          <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </Link>
       </div>
       <div
@@ -207,7 +208,7 @@ function FeaturedProductRow({ category, products, productCard }: { category: Cat
             isAutoScrollPaused.current = false;
           }
         }}
-        className="scrollbar-hide flex snap-x gap-4 overflow-x-auto scroll-smooth border-t border-[#C6A24A]/15 bg-white p-4 sm:gap-6 sm:p-6"
+        className="scrollbar-hide flex gap-4 overflow-x-auto py-2 sm:gap-6"
       >
         {[...products, ...products].map((product, index) => {
           const isDuplicate = index >= products.length;
@@ -220,7 +221,7 @@ function FeaturedProductRow({ category, products, productCard }: { category: Cat
               data-loop-first={index === 0 ? "" : undefined}
               data-loop-start={index === products.length ? "" : undefined}
               data-product-card
-              className="w-[17.5rem] shrink-0 snap-start sm:w-[18.5rem] lg:w-[19rem]"
+              className="w-[17.5rem] shrink-0 sm:w-[18.5rem] lg:w-[19rem]"
             >
               {productCard(product)}
             </div>
@@ -370,12 +371,13 @@ export function ProductsSection({ categories, products, collections }: { categor
       {featuredRows.length > 0 && (
         <section className="bg-white mx-auto w-full max-w-7xl px-6 lg:px-8 py-16">
           <div className="space-y-12">
-            {featuredRows.map((row) => (
+            {featuredRows.map((row, index) => (
               <FeaturedProductRow
                 key={row.category.id}
                 category={row.category}
                 products={row.products}
                 productCard={productCard}
+                direction={index % 2 === 0 ? "left" : "right"}
               />
             ))}
           </div>
