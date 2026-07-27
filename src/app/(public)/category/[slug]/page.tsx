@@ -131,9 +131,10 @@ export default async function CategoryPage({
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {categoryProducts.map((product) => {
-              const firstImage = Array.isArray(product.images)
-                ? product.images.find((x): x is string => typeof x === "string")
-                : null;
+              const productImageUrls = Array.isArray(product.images)
+                ? product.images.filter((x): x is string => typeof x === "string")
+                : [];
+              const firstImage = productImageUrls[0] || null;
               const firstTag = Array.isArray(product.tags)
                 ? product.tags.find((x): x is string => typeof x === "string")
                 : undefined;
@@ -143,6 +144,7 @@ export default async function CategoryPage({
                   handle={product.handle}
                   title={product.title}
                   featuredImageUrl={product.featuredImage || firstImage || FALLBACK_IMAGE}
+                  imageUrls={productImageUrls}
                   price={{ amount: Number(product.price || 0).toFixed(2), currencyCode: "PKR" }}
                   compareAtPrice={product.compareAtPrice ? { amount: Number(product.compareAtPrice).toFixed(2), currencyCode: "PKR" } : null}
                   tag={firstTag}

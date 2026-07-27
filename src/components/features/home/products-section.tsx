@@ -95,7 +95,7 @@ export function CategoriesSection({ categories }: { categories: Category[] }) {
            {[...mainCategories, ...mainCategories].map((category, idx) => (
              <Link
                key={`${category.id}-${idx}`}
-               href="/products"
+               href={`/category/${encodeURIComponent(category.slug)}`}
                className="group flex flex-col items-center flex-shrink-0"
              >
               <div className="relative h-32 w-32 overflow-hidden rounded-2xl sm:h-40 sm:w-40 lg:h-48 lg:w-48">
