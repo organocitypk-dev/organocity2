@@ -26,18 +26,26 @@ export function ChatIntegrations() {
     window.addEventListener("scroll", onScroll, { passive: true });
 
     const handleOpenMobileChat = () => setOpenChat(true);
+    const handleCloseMobileChat = () => setOpenChat(false);
     window.addEventListener("open-mobile-chat", handleOpenMobileChat);
+    window.addEventListener("close-mobile-chat", handleCloseMobileChat);
 
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("open-mobile-chat", handleOpenMobileChat);
+      window.removeEventListener("close-mobile-chat", handleCloseMobileChat);
     };
   }, []);
+
+  const closeChat = () => {
+    setOpenChat(false);
+    window.dispatchEvent(new CustomEvent("mobile-chat-closed"));
+  };
 
   return (
     <>
       <ChatButton open={openChat} onClick={() => setOpenChat((prev) => !prev)} />
-      <ChatPopup open={openChat} onClose={() => setOpenChat(false)} />
+      <ChatPopup open={openChat} onClose={closeChat} />
 
       {/* WhatsApp Floating Button - Only on Desktop */}
       <Link
