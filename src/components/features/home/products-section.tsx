@@ -117,27 +117,39 @@ export function CategoriesSection({ categories }: { categories: Category[] }) {
 
 function FeaturedProductRow({ category, products, productCard }: { category: Category; products: Product[]; productCard: (product: Product) => React.ReactNode }) {
   const rowRef = useRef<HTMLDivElement | null>(null);
+  const isAutoScrollPaused = useRef(false);
 
   useEffect(() => {
     if (products.length <= 1) return;
 
-    const interval = window.setInterval(() => {
+    let animationFrame = 0;
+    let previousTime = performance.now();
+    const pixelsPerSecond = 16;
+
+    const moveRow = (currentTime: number) => {
       const row = rowRef.current;
-      if (!row) return;
+      const elapsedSeconds = Math.min((currentTime - previousTime) / 1000, 0.1);
+      previousTime = currentTime;
 
-      const firstCard = row.querySelector<HTMLElement>("[data-product-card]");
-      const cardWidth = firstCard?.offsetWidth || 280;
-      const gap = 24;
-      const nextLeft = row.scrollLeft + cardWidth + gap;
-      const atEnd = nextLeft >= row.scrollWidth - row.clientWidth - 4;
+      if (row && !isAutoScrollPaused.current) {
+        const firstCard = row.querySelector<HTMLElement>("[data-loop-first]");
+        const duplicateStart = row.querySelector<HTMLElement>("[data-loop-start]");
+        const loopWidth =
+          firstCard && duplicateStart
+            ? duplicateStart.offsetLeft - firstCard.offsetLeft
+            : row.scrollWidth / 2;
+        row.scrollLeft += pixelsPerSecond * elapsedSeconds;
 
-      row.scrollTo({
-        left: atEnd ? 0 : nextLeft,
-        behavior: "smooth",
-      });
-    }, 5000);
+        if (row.scrollLeft >= loopWidth) {
+          row.scrollLeft -= loopWidth;
+        }
+      }
 
-    return () => window.clearInterval(interval);
+      animationFrame = window.requestAnimationFrame(moveRow);
+    };
+
+    animationFrame = window.requestAnimationFrame(moveRow);
+    return () => window.cancelAnimationFrame(animationFrame);
   }, [products.length]);
 
   if (!products.length) return null;
@@ -181,13 +193,39 @@ function FeaturedProductRow({ category, products, productCard }: { category: Cat
       </div>
       <div
         ref={rowRef}
+        onMouseEnter={() => {
+          isAutoScrollPaused.current = true;
+        }}
+        onMouseLeave={() => {
+          isAutoScrollPaused.current = false;
+        }}
+        onFocusCapture={() => {
+          isAutoScrollPaused.current = true;
+        }}
+        onBlurCapture={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) {
+            isAutoScrollPaused.current = false;
+          }
+        }}
         className="scrollbar-hide flex snap-x gap-4 overflow-x-auto scroll-smooth border-t border-[#C6A24A]/15 bg-white p-4 sm:gap-6 sm:p-6"
       >
-        {products.map((product) => (
-          <div key={product.handle} data-product-card className="w-[17.5rem] shrink-0 snap-start sm:w-[18.5rem] lg:w-[19rem]">
-            {productCard(product)}
-          </div>
-        ))}
+        {[...products, ...products].map((product, index) => {
+          const isDuplicate = index >= products.length;
+
+          return (
+            <div
+              key={`${product.handle}-${isDuplicate ? "duplicate" : "original"}`}
+              aria-hidden={isDuplicate || undefined}
+              inert={isDuplicate || undefined}
+              data-loop-first={index === 0 ? "" : undefined}
+              data-loop-start={index === products.length ? "" : undefined}
+              data-product-card
+              className="w-[17.5rem] shrink-0 snap-start sm:w-[18.5rem] lg:w-[19rem]"
+            >
+              {productCard(product)}
+            </div>
+          );
+        })}
       </div>
     </section>
   );
