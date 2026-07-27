@@ -109,19 +109,6 @@ export function MobileBottomNav() {
             <BsChatDots className="h-5 w-5" />
           </button>
 
-          {/* Home */}
-          <Link
-            href="/"
-            aria-label="Home"
-            aria-current={homeActive ? "page" : undefined}
-            onClick={() => setSelectedAction(null)}
-            className={`${navItemClass} ${
-              homeActive ? activeItemClass : inactiveItemClass
-            }`}
-          >
-            <Home className="h-5 w-5" />
-          </Link>
-
           {/* Products */}
           <Link
             href="/products"
@@ -133,6 +120,19 @@ export function MobileBottomNav() {
             }`}
           >
             <Grid3X3 className="h-5 w-5" />
+          </Link>
+
+          {/* Home */}
+          <Link
+            href="/"
+            aria-label="Home"
+            aria-current={homeActive ? "page" : undefined}
+            onClick={() => setSelectedAction(null)}
+            className={`${navItemClass} ${
+              homeActive ? activeItemClass : inactiveItemClass
+            }`}
+          >
+            <Home className="h-5 w-5" />
           </Link>
 
           {/* Phone */}
