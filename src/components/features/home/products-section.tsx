@@ -119,12 +119,10 @@ function FeaturedProductRow({
   category,
   products,
   productCard,
-  direction,
 }: {
   category: Category;
   products: Product[];
   productCard: (product: Product) => React.ReactNode;
-  direction: "left" | "right";
 }) {
   const rowRef = useRef<HTMLDivElement | null>(null);
   const isAutoScrollPaused = useRef(false);
@@ -132,44 +130,24 @@ function FeaturedProductRow({
   useEffect(() => {
     if (products.length <= 1) return;
 
-    let animationFrame = 0;
-    let previousTime = performance.now();
-    let initialized = false;
-    const pixelsPerSecond = 22;
-
-    const moveRow = (currentTime: number) => {
+    const interval = window.setInterval(() => {
       const row = rowRef.current;
-      const elapsedSeconds = Math.min((currentTime - previousTime) / 1000, 0.1);
-      previousTime = currentTime;
+      if (!row || isAutoScrollPaused.current || document.hidden) return;
 
-      if (row && !isAutoScrollPaused.current) {
-        const firstCard = row.querySelector<HTMLElement>("[data-loop-first]");
-        const duplicateStart = row.querySelector<HTMLElement>("[data-loop-start]");
-        const loopWidth =
-          firstCard && duplicateStart
-            ? duplicateStart.offsetLeft - firstCard.offsetLeft
-            : row.scrollWidth / 2;
+      const firstCard = row.querySelector<HTMLElement>("[data-product-card]");
+      const cardWidth = firstCard?.offsetWidth || 280;
+      const gap = 24;
+      const nextLeft = row.scrollLeft + cardWidth + gap;
+      const atEnd = nextLeft >= row.scrollWidth - row.clientWidth - 4;
 
-        if (!initialized) {
-          if (direction === "right") row.scrollLeft = loopWidth;
-          initialized = true;
-        }
+      row.scrollTo({
+        left: atEnd ? 0 : nextLeft,
+        behavior: "smooth",
+      });
+    }, 5000);
 
-        row.scrollLeft += (direction === "left" ? 1 : -1) * pixelsPerSecond * elapsedSeconds;
-
-        if (direction === "left" && row.scrollLeft >= loopWidth) {
-          row.scrollLeft -= loopWidth;
-        } else if (direction === "right" && row.scrollLeft <= 0) {
-          row.scrollLeft += loopWidth;
-        }
-      }
-
-      animationFrame = window.requestAnimationFrame(moveRow);
-    };
-
-    animationFrame = window.requestAnimationFrame(moveRow);
-    return () => window.cancelAnimationFrame(animationFrame);
-  }, [direction, products.length]);
+    return () => window.clearInterval(interval);
+  }, [products.length]);
 
   if (!products.length) return null;
 
@@ -210,21 +188,15 @@ function FeaturedProductRow({
         }}
         className="scrollbar-hide flex gap-4 overflow-x-auto py-2 sm:gap-6"
       >
-        {[...products, ...products].map((product, index) => {
-          const isDuplicate = index >= products.length;
-
-          return (
-            <div
-              key={`${product.handle}-${isDuplicate ? "duplicate" : "original"}`}
-              data-loop-first={index === 0 ? "" : undefined}
-              data-loop-start={index === products.length ? "" : undefined}
-              data-product-card
-              className="w-[17.5rem] shrink-0 sm:w-[18.5rem] lg:w-[19rem]"
-            >
-              {productCard(product)}
-            </div>
-          );
-        })}
+        {products.map((product) => (
+          <div
+            key={product.handle}
+            data-product-card
+            className="w-[17.5rem] shrink-0 sm:w-[18.5rem] lg:w-[19rem]"
+          >
+            {productCard(product)}
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -369,13 +341,12 @@ export function ProductsSection({ categories, products, collections }: { categor
       {featuredRows.length > 0 && (
         <section className="bg-white mx-auto w-full max-w-7xl px-6 lg:px-8 py-16">
           <div className="space-y-12">
-            {featuredRows.map((row, index) => (
+            {featuredRows.map((row) => (
               <FeaturedProductRow
                 key={row.category.id}
                 category={row.category}
                 products={row.products}
                 productCard={productCard}
-                direction={index % 2 === 0 ? "left" : "right"}
               />
             ))}
           </div>
